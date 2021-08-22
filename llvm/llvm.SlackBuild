@@ -149,7 +149,7 @@ echo "|| Compiling Compleate"
 echo "|| Start install"
 echo "++"
 
-DESTDIR=$PKG ninja install  2>&1 | tee -a ${OUTPUT}/ninja_install-${PRGNAM}.log || exit 1
+DESTDIR=$PKG ninja install  2>&1 | tee -a ${OUTPUT}/ninja_install-${PRGNAM}.log
 
 echo "++"
 echo "|| Install Compleate"
