@@ -1,0 +1,7 @@
+SlackBuild script aiming to build llvm for Slackware ARM.
+Installing clang, lld and clang-tools-extra and aiming targets
+ARM,X86 and AArch64 as it's not likely one will be using a Raspberry Pi 
+to crosscompile to any other architectures.
+
+This script installs the clang toolchain to /opt/llvm
+
