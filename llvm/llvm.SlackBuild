@@ -184,7 +184,6 @@ cp -a lld/{CODE_OWNERS,LICENSE}* \
 cp -a openmp/{CREDITS,LICENSE}* \
   $PKG/opt/llvm/doc/$PRGNAM-$VERSION/openmp
 
-
 mkdir -p $PKG/install
 cat $CWD/slack-desc > $PKG/install/slack-desc
 
