@@ -171,16 +171,19 @@ rm -rf $PKG${PKGPATH}/share/man
   find . | xargs file | grep "shared object" | grep ELF | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null
 )
 
-mkdir -p $PKG${PKGPATH}/doc/$PRGNAM-$VERSION/{clang,lld,clang-tools-extra}
-cp -a CREDITS* LICENSE* README* $PKG${PKGPATH}/doc/$PRGNAM-$VERSION
-cp -a tools/clang/{INSTALL,LICENSE,NOTES,README}* \
+cd $TMP/$LLVMSRC
+mkdir -p $PKG${PKGPATH}/doc/$PRGNAM-$VERSION/{llvm,clang,lld,clang-tools-extra}
+cp -a llvm/{CODE_OWNERS,CREDITS,LICENSE,README,RELEASE_TESTERS}* \
+  $PKG${PKGPATH}/doc/$PRGNAM-$VERSION/llvm
+cp -a clang/{CODE_OWNERS,INSTALL,LICENSE,NOTES,README}* \
   $PKG${PKGPATH}/doc/$PRGNAM-$VERSION/clang
-cp -a tools/clang/tools/extra/{CODE_OWNERS,LICENSE,README}* \
+cp -a clang-tools-extra/{CODE_OWNERS,LICENSE,README}* \
   $PKG${PKGPATH}/doc/$PRGNAM-$VERSION/clang-tools-extra
-cp -a projects/openmp/{CREDITS,LICENSE}* \
+cp -a lld/{CODE_OWNERS,LICENSE}* \
+  $PKG${PKGPATH}/doc/$PRGNAM-$VERSION/lld
+cp -a openmp/{CREDITS,LICENSE}* \
   $PKG/opt/llvm/doc/$PRGNAM-$VERSION/openmp
-mv $PKG${PKGPATH}/docs//llvm/* $PKG${PKGPATH}/doc/$PRGNAM-$VERSION
-rm -rf $PKG${PKGPATH}/docs
+
 
 mkdir -p $PKG/install
 cat $CWD/slack-desc > $PKG/install/slack-desc
