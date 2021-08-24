@@ -38,10 +38,12 @@
 #######################################################################
 
 PRGNAM=llvm
-#GIT_REV=llvmorg-12.0.1
-GIT_REV=llvmorg-13.0.0-rc1
-#VERSION=${VERSION:-12.0.1}
-VERSION=${VERSION:-13.0.0}
+#VERSION=${VERSION:-13.0.0}
+#GIT_REV=llvmorg-13.0.0-rc1
+# Got longer with llvm 12.0.1 in the compile before any errors
+# than using llvm 13.0.0-rc1.
+VERSION=${VERSION:-12.0.1}
+GIT_REV=llvmorg-12.0.1
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SLse}
 
