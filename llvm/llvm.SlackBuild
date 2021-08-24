@@ -37,17 +37,6 @@
 #
 #######################################################################
 
-#cmake ../llvm-project -DCMAKE_BUILD_TYPE=Release \
-#                      -DLLVM_ENABLE_PROJECTS="clang;libcxx;libcxxabi"
-#                      -DLLVM_TARGETS_TO_BUILD="ARM;X86;AArch64" \
-#                      -DLLVM_ENABLE_ASSERTIONS=True \
-#                      -DCMAKE_C_FLAGS=-mcpu=cortex-a72"
-#                      -DCMAKE_CXX_FLAGS=-mcpu=cortex-a72"
-#                      -DCMAKE_INSTALL_PREFIX=/opt/llvm
-
-#mkdir ../llvm-project
-#tar xf llvmorg-13.0.0-rc1.tar.gz -C ../llvm-project
-
 PRGNAM=llvm
 #GIT_REV=llvmorg-12.0.1
 GIT_REV=llvmorg-13.0.0-rc1
@@ -112,10 +101,7 @@ else
   echo "++"
   echo "|| $PRGNAM-$GIT_REV"
   echo "|| Downloading ${PRGNAM} ${VERSION}"
-  #echo "|| Downloading from git"
   echo "++"
-
-  #git clone -b ${GIT_REV} https://github.com/${PRGNAM}/${PRGNAM}-project ${PRGNAM}-${GIT_REV}
   wget https://github.com/llvm/llvm-project/archive/refs/tags/${GIT_REV}.tar.gz -P $CWD
 fi
 
@@ -143,7 +129,6 @@ echo "++"
 echo "|| Building"
 echo "++"
 
-# llvm-project-llvmorg-12.0.1
 cmake -DCMAKE_BUILD_TYPE=Release \
       -DLLVM_ENABLE_ASSERTIONS=OFF \
       -DLLVM_TARGETS_TO_BUILD="ARM;X86;AArch64" \
@@ -180,18 +165,6 @@ cd ..
   ln -sf clang $ARCH-slackware-linux-clang
   ln -sf clang++ $ARCH-slackware-linux-clang++
 )
-
-# Install Python bindings:
-#for pyver in ${PY2} ${PY3}; do
-#  mkdir -p "$PKG${PKGPATH}/lib$LIBDIRSUFFIX/python$pyver/site-packages"
-#  cp -a tools/clang/bindings/python/clang "$PKG${PKGPATH}/lib$LIBDIRSUFFIX/python$pyver/site-packages/"
-#done
-
-# Compile Python scripts:
-#python -m compileall "$PKG${PKGPATH}/lib$LIBDIRSUFFIX/python${PY2}/site-packages/clang"
-#python -O -m compileall "$PKG${PKGPATH}/lib$LIBDIRSUFFIX/python${PY2}/site-packages/clang"
-#python3 -m compileall "$PKG${PKGPATH}/lib$LIBDIRSUFFIX/python${PY3}/site-packages/clang"
-#python3 -O -m compileall "$PKG/opt/llvm/lib$LIBDIRSUFFIX/python${PY3}/site-packages/clang"
 
 # Remove man page directory:
 rm -rf $PKG${PKGPATH}/share/man
