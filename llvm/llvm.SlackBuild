@@ -101,7 +101,7 @@ else
   echo "|| Downloading ${PRGNAM} ${VERSION}"
   echo "++"
 
-  wget https://github.com/llvm/llvm-project/archive/refs/tags/llvmorg-${VERSION}.tar.gz -P $CWD
+  wget https://github.com/llvm/llvm-project/archive/refs/tags/${GIT_REV}.tar.gz -P $CWD
 fi
 
 echo "++"
@@ -172,7 +172,7 @@ rm -rf $PKG${PKGPATH}/share/man
 )
 
 cd $TMP/$LLVMSRC
-mkdir -p $PKG${PKGPATH}/doc/$PRGNAM-$VERSION/{llvm,clang,lld,clang-tools-extra}
+mkdir -p $PKG${PKGPATH}/doc/$PRGNAM-$VERSION/{llvm,clang,lld,clang-tools-extra,openmp}
 cp -a llvm/{CODE_OWNERS,CREDITS,LICENSE,README,RELEASE_TESTERS}* \
   $PKG${PKGPATH}/doc/$PRGNAM-$VERSION/llvm
 cp -a clang/{CODE_OWNERS,INSTALL,LICENSE,NOTES,README}* \
