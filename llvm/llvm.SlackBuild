@@ -1,3 +1,4 @@
+
 #!/bin/bash
 # $Id: chromium.SlackBuild,v 1.253 2021/08/05 06:11:25 root Exp root $
 # Copyright 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021  Eric Hameleers, Eindhoven, NL
@@ -27,23 +28,23 @@
 # ===========================
 # By:              Minime <slackinfo[at]slackwarelinux[dot]se>
 # For:             llvm/clang
-# Descr:           Open Source version of Chrome Web Browser
-# URL:             http://www.chromium.org/
-# Build needs:     - ninja;
-#                  - gcc >= 8 for bootstrapping gn;
-#                  - nasm >= 2.14 (yasm no longer being used);
-#                  - cmake >= 3.13.4;
+# Descr:           Open Source version of llvm/clang
+# URL:             https://github.com/llvm/llvm-project
+# Build needs:     - cmake
+#                  - ninja
+#                  - ncurses
+#                  - libxml2
+#                  - zlib
+#                  - clang
 #                  - python3 >= 3.7, python3-setuptools;
 #
 #######################################################################
 
 PRGNAM=llvm
-#VERSION=${VERSION:-13.0.0}
-#GIT_REV=llvmorg-13.0.0-rc1
-# Got longer with llvm 12.0.1 in the compile before any errors
-# than using llvm 13.0.0-rc1.
-VERSION=${VERSION:-12.0.1}
-GIT_REV=llvmorg-12.0.1
+#GIT_REV=llvmorg-12.0.1
+GIT_REV=llvmorg-13.0.0-rc1
+#VERSION=${VERSION:-12.0.1}
+VERSION=${VERSION:-13.0.0}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SLse}
 
@@ -63,6 +64,9 @@ LLVMBUILD=$TMP/$PRGNAM-build
 LLVMSRC=${PRGNAM}-project-${GIT_REV}
 OUTPUT=${OUTPUT:-/tmp}
 
+# Build Clang with Clang
+USE_CLANG=${USE_CLANG:-1}
+
 if [ "$ARCH" = "i586" ]; then
   SLKCFLAGS="-O2 -march=i586 -mtune=i686"
   LIBDIRSUFFIX=""
@@ -75,6 +79,18 @@ elif [ "$ARCH" = "x86_64" ]; then
 else
   SLKCFLAGS="-O2"
   LIBDIRSUFFIX=""
+fi
+
+# Building clang with clang
+if [ ${USE_CUSTCLANG} -eq 1 ]; then
+  CCOMPILER=clang
+  CPPCOMPILER=clang++
+  SLKCXXFLAGS="$SLKCFLAGS -std=c++11"
+# Building clang with gcc
+else
+  CCOMPILER=gcc
+  CPPCOMPILER=g++
+  SLKCXXFLAGS="$SLKCFLAGS"
 fi
 
 if [[ $ARCH =~ arm.* ]]; then
@@ -128,23 +144,33 @@ fi
 cd ../${PRGNAM}-build
 
 echo "++"
-echo "|| Building"
+echo "|| Build process"
+echo "||"
+echo "|| Configure"
 echo "++"
 
 cmake -DCMAKE_BUILD_TYPE=Release \
       -DLLVM_ENABLE_ASSERTIONS=OFF \
       -DLLVM_TARGETS_TO_BUILD="ARM;X86;AArch64" \
-      -DLLVM_ENABLE_PROJECTS="clang;lld;clang-tools-extra" \
-      -DLLVM_DEFAULT_TARGET_TRIPLE=$TARGET \
-      -DCMAKE_INSTALL_PREFIX=${PKGPATH} \
-      -DLLVM_LIBDIR_SUFFIX=${LIBDIRSUFFIX} \
-      -DCMAKE_C_FLAGS:STRING="$SLKCFLAGS" \
-      -DCMAKE_CXX_FLAGS:STRING="$SLKCFLAGS" \
+      -DLLVM_ENABLE_PROJECTS="clang;lld" \
+      -DLLVM_DEFAULT_TARGET_TRIPLE="${TARGET}" \
+      -DLLVM_BUILD_LLVM_DYLIB=ON \
+      -DLLVM_LINK_LLVM_DYLIB=ON \
+      -DCMAKE_INSTALL_PREFIX="${PKGPATH}" \
+      -DLLVM_LIBDIR_SUFFIX="${LIBDIRSUFFIX}" \
+      -DLLVM_BINUTILS_INCDIR="/usr/include" \
+      -DLLVM_INSTALL_UTILS=ON \
+      -DLLVM_BUILD_DOCS=OFF \
+      -DCMAKE_C_COMPILER="${CCOMPILER}" \
+      -DCMAKE_CXX_COMPILER="${CPPCOMPILER}" \
+      -DCMAKE_C_FLAGS:STRING="${SLKCFLAGS}" \
+      -DCMAKE_CXX_FLAGS:STRING="${SLKCXXFLAGS}" \
       ../$LLVMSRC/${PRGNAM} \
       -G Ninja 2>&1 | tee -a ${OUTPUT}/cmake-${PRGNAM}.log
 
 echo "++"
-echo "|| Build done"
+echo "|| Configure done"
+echo "||"
 echo "|| Start compiling"
 echo "++"
 
@@ -152,13 +178,16 @@ ninja 2>&1 | tee -a ${OUTPUT}/ninja-${PRGNAM}.log
 
 echo "++"
 echo "|| Compiling Compleate"
-echo "|| Start install"
+echo "||"
+echo "|| Start install to ${PKG}"
 echo "++"
 
 DESTDIR=$PKG ninja install  2>&1 | tee -a ${OUTPUT}/ninja_install-${PRGNAM}.log
 
 echo "++"
 echo "|| Install Compleate"
+echo "||"
+echo "|| Build process done"
 echo "++"
 
 cd ..
@@ -194,4 +223,4 @@ mkdir -p $PKG/install
 cat $CWD/slack-desc > $PKG/install/slack-desc
 
 cd $PKG
-/sbin/makepkg -l y -c n $TMP/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.txz
+/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.txz
