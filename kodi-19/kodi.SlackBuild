@@ -196,8 +196,11 @@ cmake ../$SRCNAM-$VERSION-$CODNAM \
    -DENABLE_VDPAU=ON \
    2>&1 | tee $OUTPUT/$PRGNAM-build.log
 
-cmake ../$SRCNAM-$VERSION-$CODNAM -DCMAKE_INSTALL_PREFIX=/usr \
-   2>&1 | tee $OUTPUT/$PRGNAM-build_conf.log
+# Missed, this...already configured.
+# No need to run this twice.
+#cmake ../$SRCNAM-$VERSION-$CODNAM -DCMAKE_INSTALL_PREFIX=/usr \
+#   2>&1 | tee $OUTPUT/$PRGNAM-build_conf.log
+
 cmake --build . -- VERBOSE=1 -j$(getconf _NPROCESSORS_ONLN) \
    2>&1 | tee $OUTPUT/$PRGNAM-build.log
 cd $KODIBUILD
