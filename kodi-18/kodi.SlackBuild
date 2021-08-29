@@ -27,7 +27,7 @@ SRCNAM=xbmc
 CODNAM=Leia
 VERSION=${VERSION:-18.9}
 BUILD=${BUILD:-1}
-TAG=${TAG:-_SBo}
+TAG=${TAG:-_SLse}
 
 if [ -z "$ARCH" ]; then
   case "$( uname -m )" in
@@ -38,7 +38,7 @@ if [ -z "$ARCH" ]; then
 fi
 
 CWD=$(pwd)
-TMP=${TMP:-/tmp/SBo}
+TMP=${TMP:-/tmp/SLse}
 PKG=$TMP/package-$PRGNAM
 ADDPKG=$TMP/package-$PRGNAM-addons
 KODIBUILD=$TMP/$PRGNAM-build
