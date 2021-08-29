@@ -127,9 +127,8 @@ cmake ../$SRCNAM-$VERSION-$CODNAM \
    -DENABLE_VAAPI=ON \
    -DENABLE_VDPAU=ON
 
-# Missed, this...already configured.
-# No need to run this twice.
-#cmake ../$SRCNAM-$VERSION-$CODNAM -DCMAKE_INSTALL_PREFIX=/usr
+
+# Compile and install
 cmake --build . -- VERBOSE=1 -j$(getconf _NPROCESSORS_ONLN)
 cd $KODIBUILD
 make install DESTDIR=$PKG
