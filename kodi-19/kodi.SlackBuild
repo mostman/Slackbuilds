@@ -85,36 +85,48 @@ case "$ARCH" in
              LIBDIRSUFFIX=""
              CORE_PLATFORM="x11"
              RENDER_SYSTEM="gl"
+             DO_VAAPI=ON
+             DO_VDPAU=ON
              ;;
   x86_64)    SLKCFLAGS="-O2 -fPIC"
              SARCH=x86_64
              LIBDIRSUFFIX="64"
              CORE_PLATFORM="x11"
              RENDER_SYSTEM="gl"
+             DO_VAAPI=ON
+             DO_VDPAU=ON
              ;;
   armv8*)    SLKCFLAGS="-O2 -march=armv8-a -mtune=cortex-a72 mfpu=neon-fp-armv8 -mfloat-abi=hard"
              SARCH=arm64
              LIBDIRSUFFIX=""
-             CORE_PLATFORM="x11"
+             CORE_PLATFORM="x11" #Change this to "gbm" if you want to use gbm instead of x11
              RENDER_SYSTEM="gles"
+             DO_VAAPI=OFF # Does not support Intel, AMD and Nvidia. (Pi uses Broadcom chips)
+             DO_VDPAU=OFF # Does not support NVIDIA GPU. (Pi uses Broadcom chips)
              ;;
   armv7*)    SLKCFLAGS="-O2 -march=armv7-a -mtune=cortex-a72 -mfpu=vfpv3-d16 -mfloat-abi=hard"
              SARCH=arm
              LIBDIRSUFFIX=""
-             CORE_PLATFORM="x11"
+             CORE_PLATFORM="x11" #Change this to "gbm" if you want to use gbm instead of x11
              RENDER_SYSTEM="gles"
+             DO_VAAPI=OFF # Does not support Intel, AMD and Nvidia. (Pi uses Broadcom chips)
+             DO_VDPAU=OFF # Does not support NVIDIA GPU. (Pi uses Broadcom chips)
              ;;
   armv6*)    SLKCFLAGS="-O2 -march=armv6 -mfpu=vfp -mfloat-abi=hard"
              SARCH=arm
              SLKLDFLAGS=""; LIBDIRSUFFIX=""
-             CORE_PLATFORM="x11"
+             CORE_PLATFORM="x11" #Change this to "gbm" if you want to use gbm instead of x11
              RENDER_SYSTEM="gles"
+             DO_VAAPI=OFF # Does not support Intel, AMD and Nvidia. (Pi uses Broadcom chips)
+             DO_VDPAU=OFF # Does not support NVIDIA GPU. (Pi uses Broadcom chips)
              ;;
   *)         SLKCFLAGS="-O2"
              SARCH=$MARCH
              LIBDIRSUFFIX=""
              CORE_PLATFORM="x11"
              RENDER_SYSTEM="gl"
+             DO_VAAPI=ON
+             DO_VDPAU=ON
              ;;
 esac
 
@@ -192,8 +204,8 @@ cmake ../$SRCNAM-$VERSION-$CODNAM \
    -DENABLE_MICROHTTPD=$OPT_WEB \
    -DENABLE_AVAHI=OFF \
    -DENABLE_AIRTUNES=OFF \
-   -DENABLE_VAAPI=ON \
-   -DENABLE_VDPAU=ON \
+   -DENABLE_VAAPI=$DO_VAAPI \
+   -DENABLE_VDPAU=$DO_VDPAU \
    2>&1 | tee $OUTPUT/$PRGNAM-configure.log
 
 # Start compile
