@@ -194,16 +194,14 @@ cmake ../$SRCNAM-$VERSION-$CODNAM \
    -DENABLE_AIRTUNES=OFF \
    -DENABLE_VAAPI=ON \
    -DENABLE_VDPAU=ON \
-   2>&1 | tee $OUTPUT/$PRGNAM-build.log
+   2>&1 | tee $OUTPUT/$PRGNAM-configure.log
 
-# Missed, this...already configured.
-# No need to run this twice.
-#cmake ../$SRCNAM-$VERSION-$CODNAM -DCMAKE_INSTALL_PREFIX=/usr \
-#   2>&1 | tee $OUTPUT/$PRGNAM-build_conf.log
-
+# Start compile
 cmake --build . -- VERBOSE=1 -j$(getconf _NPROCESSORS_ONLN) \
    2>&1 | tee $OUTPUT/$PRGNAM-build.log
 cd $KODIBUILD
+
+# Install compiled files to $PKG directory
 make install DESTDIR=$PKG \
    2>&1 | tee $OUTPUT/$PRGNAM-pkg_install.log
 
