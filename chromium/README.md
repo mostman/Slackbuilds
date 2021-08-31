@@ -27,5 +27,6 @@ dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * Fixed link for debians arm-linux-gnueabihf-readelf to slackwares readelf
 * Fixed compiling google's internal clang for ARM.
 
-Some last notes, make sure you have atleast 15-30 GB free space and atleast 1 GB swap space.
-And i´am sorry to say estemated compiling time will be atleast 24 hours if not even more.
+Some last notes.
+Make sure you have at least 15-30 GB free space on your memmorycard or drive (Where eve3r you store the source code and tmp folder) and at least 1 GB swap space.
+I´am sorry to say, that estimated compiling time will be at least 24 hours if not even more.
