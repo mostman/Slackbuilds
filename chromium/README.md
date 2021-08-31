@@ -15,7 +15,7 @@ and then to apply the patch you type the following command in the terminal:
 
 $ patch -s -p0 < chromium.arm.SlackBuild.diff
 
-Might also want to add the patches from the patch directory.
+Might also want to download/copy the patches from the patch directory to Alien BOB´s patch directory of the chromium slackbuild directory.
 
 # What i have done and what the diff/patch does is:
 * Added lates patchset "92.0.4515.x"
