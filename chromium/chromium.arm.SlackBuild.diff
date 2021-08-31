@@ -1,0 +1,393 @@
+--- chromium.SlackBuild.orgi	2021-08-31 17:40:35.694740582 +0200
++++ chromium.SlackBuild	2021-08-31 19:41:59.165325096 +0200
+@@ -409,7 +409,16 @@
+ #                  * Update.
+ # 92.0.4515.159-1: 17/aug/2021 by Eric Hameleers <alien@slackware.com>
+ #                  * Update.
+-# 
++#                  30/aug/2021 by Minime <slackware[at]slackwarelinux[dot]se
++#                  * Added lates patchset "92.0.4515.x"
++#                  * Repatched clang.toolchains.arm_i586.triple for ARM.
++#                  * Fixed chromium_conf for ARM
++#                  * Fixed target triple for arm.
++#                  * Fixed ARM sysroot path to libsqlite3.so
++#                  * Fixed compiling google's internal clang for ARM.
++#                  31/aug/2021 by Minime <slackware[at]slackwarelinux[dot]se
++#                  * Fixed missing link to debias readelf for ARM.
++#
+ # -----------------------------------------------------------------------------
+ # 
+ # -----------------------------------------------------------------------------
+@@ -568,7 +577,7 @@
+ if [ -z "$ARCH" ]; then
+   case "$MARCH" in
+     i?86)    export ARCH=i586 ;;
+-    armv7hl) export ARCH=$MARCH ;;
++    armv7*) export ARCH=$MARCH ;;
+     armv6hl) export ARCH=$MARCH ;;
+     arm*)    export ARCH=arm ;;
+     # Unless $ARCH is already set, use uname -m for all other archs:
+@@ -605,8 +614,10 @@
+              #DSSE="0"
+              DSSE="1"
+              ;;
+-  armv7hl)   SLKCFLAGS="-O2 -march=armv7-a -mfpu=vfpv3-d16"
+-             SLKLDFLAGS=""; LIBDIRSUFFIX=""
++  armv7*)    SLKCFLAGS="-O2 -march=armv7-a -mtune=cortex-a72 -mfpu=vfpv3-d16 -mfloat-abi=hard"
++             #SLKLDFLAGS=""; LIBDIRSUFFIX=""
++             # Fix for using lld while linking chromium in a 32bit chroot:
++             SLKLDFLAGS="-Wl,-z,notext"; LIBDIRSUFFIX=""
+              DSSE="1"
+              # Widevine not supported (no binary library available):
+              USE_CDM=0
+@@ -616,7 +627,9 @@
+              PKGARCH="$ARCH"
+              ;;
+   armv6hl)   SLKCFLAGS="-O2 -march=armv6 -mfpu=vfp -mfloat-abi=hard"
+-             SLKLDFLAGS=""; LIBDIRSUFFIX=""
++             #SLKLDFLAGS=""; LIBDIRSUFFIX=""
++             # Fix for using lld while linking chromium in a 32bit chroot:
++             SLKLDFLAGS="-Wl,-z,notext"; LIBDIRSUFFIX=""
+              DSSE="1"
+              # Widevine not supported (no binary library available):
+              USE_CDM=0
+@@ -638,7 +651,8 @@
+ esac
+ 
+ case "$ARCH" in
+-    arm*)    TARGET=$ARCH-slackware-linux-gnueabi ;;
++    #arm*)    TARGET=$ARCH-slackware-linux-gnueabi ;;
++    arm*)    TARGET=$SYSROOT_TARGET-slackware-linux-gnueabihf ;;
+     *)       TARGET=$ARCH-slackware-linux ;;
+ esac
+ 
+@@ -750,6 +764,37 @@
+ # Be compatible with gcc 10:
+ cat $SRCDIR/patches/chromium_gcc10.patch | patch -p1 --verbose \
+   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
++
++# Latest patchsets for chromium-92.0.4515.x
++# Fixes for building with libstdc++ instead of libc++
++cat $SRCDIR/patches/chromium-90-ruy-include.patch \
++  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
++cat $SRCDIR/patches/chromium-78-protobuf-RepeatedPtrField-export.patch \
++  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
++# Disable various compiler configs
++#cat $SRCDIR/patches/chromium-91-compiler.patch \
++#  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
++cat $SRCDIR/patches/chromium-swiftshader-export.patch \
++  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
++# GCC: make VRegister::from_code() constexpr on aarch64
++# On arm64 you need to update bundled third_party/highway to 0.12.1
++# and append -flax-vector-conversions to your CXXFLAGS.
++cat $SRCDIR/patches/chromium-92-v8-constexpr.patch \
++  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
++# Additional patch for chromium-91 (arm64 only)
++cat $SRCDIR/patches/chromium-91-libyuv-aarch64.patch \
++  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
++
++# Arch Chromium patches
++# Fixes eu-strip
++cat $SRCDIR/patches/arch-fix-eu-strip-build-for-newer-GCC.patch \
++  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/arch_patch-${PRGNAM}.log
++
++# Third party patches
++# Fixes harfbuzz-ng unused variable `supp_size` from plan_subset_encoding(...)
++cat $SRCDIR/patches/fix-harfbuzz-supp-size.patch \
++  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/arch_patch-${PRGNAM}.log
++
+ # Fix the link on 32bit:
+ sed -e '/ldflags /s/-m32/&", "-Wl,-z,notext/' \
+   -i build/config/compiler/BUILD.gn
+@@ -760,7 +805,8 @@
+ # Slackware specific:
+ # When compiling google's clang on 32bit Slackware use 'i586' in the triplet.
+ # I am a python noob so this is clumsy, better implementation is welcome :-)
+-cp $SRCDIR/patches/clang.toolchains.i586.triple.diff .
++#cp $SRCDIR/patches/clang.toolchains.i586.triple.diff .
++cp $SRCDIR/patches/clang.toolchains.arm_i586.triple.diff .
+ cat $SRCDIR/patches/chromium_32bit_triplet.patch | patch -p1 --verbose \
+   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+ # Don't crap out when gzip does not support '--rsyncable' (Slackware < 14.2):
+@@ -797,6 +843,22 @@
+     2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+ fi
+ 
++# If ARM, then try to force the build script to build clang for arm instead of x86
++# Fix debians readelf while we are at it.
++if [[ "$ARCH" =~ arm.* ]]; then
++  # We are compiling bootstrap for ARM and not X86.
++  sed -i tools/clang/scripts/build.py -e "s/bootstrap_targets = \x27X86\x27/bootstrap_targets = \x27ARM\x27/"
++  # We are using ARM, so to speed things up we only build the relevant back-ends
++  # (ARM,AArch64 and x86), since it’s very unlikely that we will cross-compile to other arches.
++  # x86 is allso needed for Compiler-RT tests.
++  sed -i tools/clang/scripts/build.py -e "s/targets = \x27AArch64;ARM;Mips;PowerPC;SystemZ;WebAssembly;X86\x27/targets = \x27ARM;X86;AArch64\x27/"
++
++  # Fix debians readelf
++  if [ ! -f  "/usr/bin/arm-linux-gnueabihf-readelf" ];then
++    ln -s /usr/bin/readelf /usr/bin/arm-linux-gnueabihf-readelf
++  fi
++fi
++
+ # When compiling google's clang, we want 32bit too - don't limit us, devs:
+ sed -i tools/clang/scripts/build.py -e "s/x86_64-unknown-linux-gnu/$TARGET/g"
+ 
+@@ -860,69 +922,122 @@
+ # After building gn, run:
+ # "./out/Release/gn args out/Release --list"
+ # for a list of all variables.
+-_chromium_conf=(
+-    'enable_hidpi=true'
+-    "enable_platform_hevc=${do_hevc}"
+-    'enable_platform_ac3_eac3_audio=true'
+-    'enable_platform_mpeg_h_audio=true'
+-    'enable_platform_dolby_vision=true'
+-    'enable_mse_mpeg2ts_stream_parser=true'
+-    'enable_precompiled_headers=false'
+-    'enable_swiftshader=true'
+-    'enable_webrtc=true'
+-    'fatal_linker_warnings=false'
+-    "ffmpeg_branding=\"${FFMPEG_BRANDING}\""
+-    "is_clang=${do_clang}"
+-    'is_debug=false'
+-    "is_component_build=${SHARED_FFMPEG}"
+-    "is_component_ffmpeg=${SHARED_FFMPEG}"
+-    "link_pulseaudio=${do_pa}"
+-    "linux_sandbox_path=\"/usr/lib${LIBDIRSUFFIX}/${PRGNAM}/chrome_sandbox\""
+-    #'linux_strip_binary=true'
+-    'linux_use_bundled_binutils=false'
+-    "ozone_platform_wayland=${do_wayland}"
+-    #"rtc_use_pipewire=${do_wayland}"
+-    #"rtc_link_pipewire=${do_wayland}"
+-    #'rtc_pipewire_version="0.3"' # Otherwise chromium tries to link absent 0.2 
+-    'proprietary_codecs=true'
+-    'remove_webcore_debug_symbols=true'
+-    'symbol_level=0'
+-    'treat_warnings_as_errors=false'
+-    "usb_ids_path=\"/usr/share/hwdata/usb.ids\""
+-    'use_allocator="none"'
+-    'use_bundled_fontconfig=false'
+-    'use_cfi_icall=false' # https://crbug.com/866290
+-    'use_cups=true'
+-    'use_custom_libcxx=true'
+-    'use_gconf=false'
+-    'use_kerberos=false'
+-    'use_lld=true'
+-    'use_ozone=true'
+-    "use_pulseaudio=${do_pa}"
+-    "use_sysroot=${do_sysroot}"
+-    'use_vaapi=true'
+-    "use_xkbcommon=${do_wayland}"
+-    "extra_cxxflags=\"${CXXFLAGS}\""
+-    "extra_ldflags=\"${LDFLAGS}\""
+-)
++if [[ ! "$ARCH" =~ arm.* ]]; then
++  _chromium_conf=(
++      'enable_hidpi=true'
++      "enable_platform_hevc=${do_hevc}"
++      'enable_platform_ac3_eac3_audio=true'
++      'enable_platform_mpeg_h_audio=true'
++      'enable_platform_dolby_vision=true'
++      'enable_mse_mpeg2ts_stream_parser=true'
++      'enable_precompiled_headers=false'
++      'enable_swiftshader=true'
++      'enable_webrtc=true'
++      'fatal_linker_warnings=false'
++      "ffmpeg_branding=\"${FFMPEG_BRANDING}\""
++      "is_clang=${do_clang}"
++      'is_debug=false'
++      "is_component_build=${SHARED_FFMPEG}"
++      "is_component_ffmpeg=${SHARED_FFMPEG}"
++      "link_pulseaudio=${do_pa}"
++      "linux_sandbox_path=\"/usr/lib${LIBDIRSUFFIX}/${PRGNAM}/chrome_sandbox\""
++      #'linux_strip_binary=true'
++      'linux_use_bundled_binutils=false'
++      "ozone_platform_wayland=${do_wayland}"
++      #"rtc_use_pipewire=${do_wayland}"
++      #"rtc_link_pipewire=${do_wayland}"
++      #'rtc_pipewire_version="0.3"' # Otherwise chromium tries to link absent 0.2 
++      'proprietary_codecs=true'
++      'remove_webcore_debug_symbols=true'
++      'symbol_level=0'
++      'treat_warnings_as_errors=false'
++      "usb_ids_path=\"/usr/share/hwdata/usb.ids\""
++      'use_allocator="none"'
++      'use_bundled_fontconfig=false'
++      'use_cfi_icall=false' # https://crbug.com/866290
++      'use_cups=true'
++      'use_custom_libcxx=true'
++      'use_gconf=false'
++      'use_kerberos=false'
++      'use_lld=true'
++      'use_ozone=true'
++      "use_pulseaudio=${do_pa}"
++      "use_sysroot=${do_sysroot}"
++      'use_vaapi=true'
++      "use_xkbcommon=${do_wayland}"
++      "extra_cxxflags=\"${CXXFLAGS}\""
++      "extra_ldflags=\"${LDFLAGS}\""
++  )
++else
++  _chromium_conf=(
++      "enable_platform_hevc=${do_hevc}"
++      'enable_platform_ac3_eac3_audio=true'
++      'enable_platform_mpeg_h_audio=true'
++      'enable_platform_dolby_vision=true'
++      'enable_mse_mpeg2ts_stream_parser=true'
++      'enable_precompiled_headers=false'
++      'enable_swiftshader=true'
++      'fatal_linker_warnings=false'
++      "ffmpeg_branding=\"${FFMPEG_BRANDING}\""
++      "is_clang=${do_clang}"
++      'is_debug=false'
++      "is_component_build=${SHARED_FFMPEG}"
++      "is_component_ffmpeg=${SHARED_FFMPEG}"
++      "link_pulseaudio=${do_pa}"
++      "ozone_platform_wayland=${do_wayland}"
++      'proprietary_codecs=true'
++      'symbol_level=0'
++      'treat_warnings_as_errors=false'
++      'use_allocator="none"'
++      'use_bundled_fontconfig=false'
++      'use_cfi_icall=false' # https://crbug.com/866290
++      'use_cups=true'
++      'use_custom_libcxx=true'
++      #"use_custom_libcxx_for_host=true"
++      #"libcxx_natvis_include=false"
++      'use_kerberos=false'
++      'use_lld=true'
++      'use_ozone=true'
++      "use_pulseaudio=${do_pa}"
++      "use_sysroot=${do_sysroot}"
++      'use_vaapi=false'
++      "use_xkbcommon=${do_wayland}"
++      "extra_cxxflags=\"${CXXFLAGS}\""
++      "extra_ldflags=\"${LDFLAGS}\""
++  )
++fi
++
+ if [ ${USE_UNGOOGLED} -ne 0 ]; then
+   # Add ungoogled flags if requested:
+   readarray -t -O ${#_chromium_conf[@]} _chromium_conf < ${UGDIR}/flags.gn
+ else
+-  # Add remainder of standard chromium flags:
+-  _chromium_conf+=(
+-    "clang_use_chrome_plugins=${do_clang}"
+-    'enable_hangout_services_extension=true'
+-    "enable_hotwording=${do_hotword}"
+-    'enable_js_type_check=true'
+-    'enable_nacl=false'
+-    'enable_nacl_nonsfi=false'
+-    'enable_pepper_cdms=true'
+-    "enable_widevine=${do_cdm}"
+-    'exclude_unwind_tables=true'
+-    'fieldtrial_testing_like_official_build=true'
+-    'logging_like_official_build=true'
+-  )
++  if [[ ! "$ARCH" =~ arm.* ]]; then
++    # Add remainder of standard chromium flags:
++    _chromium_conf+=(
++        "clang_use_chrome_plugins=${do_clang}"
++        'enable_hangout_services_extension=true'
++        "enable_hotwording=${do_hotword}"
++        'enable_js_type_check=true'
++        'enable_nacl=false'
++        'enable_nacl_nonsfi=false'
++        'enable_pepper_cdms=true'
++        "enable_widevine=${do_cdm}"
++        'exclude_unwind_tables=true'
++        'fieldtrial_testing_like_official_build=true'
++        'logging_like_official_build=true'
++    )
++  else
++    _chromium_conf+=(
++        "clang_use_chrome_plugins=${do_clang}"
++        'enable_hangout_services_extension=true'
++        'enable_js_type_check=true'
++        'enable_nacl=false'
++        'enable_nacl_nonsfi=false'
++        "enable_widevine=${do_cdm}"
++        'exclude_unwind_tables=true'
++        'fieldtrial_testing_like_official_build=true'
++    )
++  fi
+ fi
+ # Add Google API key if defined:
+ if [ -n "$_google_api_key" ]; then
+@@ -939,6 +1054,9 @@
+ if [ "$ARCH" == "i586" ] || [ "${CROSS32}" = "YES" ]; then
+   _chromium_conf=("${_chromium_conf[@]}" 'target_cpu="x86"')
+ fi
++if [[ "$ARCH" =~ arm.* ]]; then
++  _chromium_conf=("${_chromium_conf[@]}" 'target_cpu="arm"' 'target_os="linux"')
++fi
+ 
+     # Change this back when CRBUG 592268 is fixed (error during final link:
+     # undefined reference to `base::i18n::GetRawIcuMemory())
+@@ -1017,18 +1135,34 @@
+   # Take care of Debian/Ubuntu related missing header issues:
+   SYSROOTDIR=$(basename $(ls build/linux/ |grep ${SYSROOT_ARCH}-sysroot))
+ 
+-  ln -s ../../lib/${SYSROOT_TARGET}-linux-gnu/glib-2.0/include/glibconfig.h \
+-    build/linux/${SYSROOTDIR}/usr/include/glib-2.0/glibconfig.h
+-  ln -s ../../../lib/${SYSROOT_TARGET}-linux-gnu/dbus-1.0/include/dbus/dbus-arch-deps.h \
+-    build/linux/${SYSROOTDIR}/usr/include/dbus-1.0/dbus/dbus-arch-deps.h
+-  ln -s ../../lib/${SYSROOT_TARGET}-linux-gnu/graphene-1.0/include/graphene-config.h \
+-    build/linux/${SYSROOTDIR}/usr/include/graphene-1.0/graphene-config.h
+-
+-  # Take care of Debian/Ubuntu related linker issues:
+-  echo "/usr/lib/${SYSROOT_TARGET}-linux-gnu/nss" >> \
+-    build/linux/${SYSROOTDIR}/etc/ld.so.conf.d/${SYSROOT_TARGET}-linux-gnu.conf
+-  ln -s libsqlite3.so.0 \
+-    build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}-linux-gnu/libsqlite3.so
++  case "$ARCH" in
++    arm*) ln -s ../../lib/${SYSROOT_TARGET}-linux-gnueabihf/glib-2.0/include/glibconfig.h \
++              build/linux/${SYSROOTDIR}/usr/include/glib-2.0/glibconfig.h
++          ln -s ../../../lib/${SYSROOT_TARGET}-linux-gnueabihf/dbus-1.0/include/dbus/dbus-arch-deps.h \
++              build/linux/${SYSROOTDIR}/usr/include/dbus-1.0/dbus/dbus-arch-deps.h
++          ln -s ../../lib/${SYSROOT_TARGET}-linux-gnueabihf/graphene-1.0/include/graphene-config.h \
++              build/linux/${SYSROOTDIR}/usr/include/graphene-1.0/graphene-config.h
++
++          # Take care of Debian/Ubuntu related linker issues:
++          echo "/usr/lib/${SYSROOT_TARGET}-linux-gnueabihf/nss" >> \
++              build/linux/${SYSROOTDIR}/etc/ld.so.conf.d/${SYSROOT_TARGET}-linux-gnueabihf.conf
++          ln -s libsqlite3.so.0 \
++              build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}-linux-gnueabihf/libsqlite3.so
++          ;;
++    *)    ln -s ../../lib/${SYSROOT_TARGET}-linux-gnu/glib-2.0/include/glibconfig.h \
++              build/linux/${SYSROOTDIR}/usr/include/glib-2.0/glibconfig.h
++          ln -s ../../../lib/${SYSROOT_TARGET}-linux-gnu/dbus-1.0/include/dbus/dbus-arch-deps.h \
++              build/linux/${SYSROOTDIR}/usr/include/dbus-1.0/dbus/dbus-arch-deps.h
++          ln -s ../../lib/${SYSROOT_TARGET}-linux-gnu/graphene-1.0/include/graphene-config.h \
++              build/linux/${SYSROOTDIR}/usr/include/graphene-1.0/graphene-config.h
++
++          # Take care of Debian/Ubuntu related linker issues:
++          echo "/usr/lib/${SYSROOT_TARGET}-linux-gnu/nss" >> \
++              build/linux/${SYSROOTDIR}/etc/ld.so.conf.d/${SYSROOT_TARGET}-linux-gnu.conf
++          ln -s libsqlite3.so.0 \
++              build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}-linux-gnu/libsqlite3.so
++          ;;
++  esac
+ fi
+ 
+ # Do not make the build fail on stripping chromedriver,
+@@ -1037,6 +1171,12 @@
+   if ! file $TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/buildtools/third_party/eu-strip/bin/eu-strip 2>/dev/null | grep -q "ELF 32-bit" ; then
+     install -D -m0755 -t $TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/buildtools/third_party/eu-strip/bin /usr/bin/eu-strip
+   fi
++elif [[ "$ARCH" =~ arm.* ]]; then
++  echo "-- Make sure we have eu-strip for ARM, So we will rebuild eu-strip."
++  pushd buildtools/third_party/eu-strip
++  sh build.sh > /dev/null 2>&1 | tee $OUTPUT/eu-strip-build-${PRGNAM}.log
++  popd
++  install -D -m0755 -t $TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/buildtools/third_party/eu-strip/bin /usr/bin/eu-strip
+ fi
+ 
+ # --- Compile --- #
+@@ -1402,4 +1542,4 @@
+ cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
+ 
+ # Restore the original umask:
+-umask ${_UMASK_}
+\ Ingen nyrad vid filslut
++umask ${_UMASK_}

@@ -1,0 +1,13 @@
+--- native_client/src/trusted/service_runtime/linux/nacl_bootstrap_munge_phdr.c.orig	2013-11-16 01:22:50.000000000 +0100
++++ native_client/src/trusted/service_runtime/linux/nacl_bootstrap_munge_phdr.c	2013-11-19 00:04:46.354265032 +0100
+@@ -14,8 +14,8 @@
+ #include <errno.h>
+ #include <error.h>
+ #include <fcntl.h>
+-#include <gelf.h>
+-#include <libelf.h>
++#include <libelf/gelf.h>
++#include <libelf/libelf.h>
+ #include <stdlib.h>
+ #include <unistd.h>
+ 

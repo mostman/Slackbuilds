@@ -1,0 +1,58 @@
+--- a/content/browser/accessibility/accessibility_tree_formatter_blink.cc	2018-03-13 21:40:54.741459989 +0100
++++ b/content/browser/accessibility/accessibility_tree_formatter_blink.cc	2018-03-13 21:50:37.661460741 +0100
+@@ -4,7 +4,7 @@
+ 
+ #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
+ 
+-#include <math.h>
++#include <cmath>
+ #include <stddef.h>
+ 
+ #include <utility>
+@@ -194,7 +194,7 @@
+        attr_index <= ui::AX_FLOAT_ATTRIBUTE_LAST;
+        ++attr_index) {
+     auto attr = static_cast<ui::AXFloatAttribute>(attr_index);
+-    if (node.HasFloatAttribute(attr) && isfinite(node.GetFloatAttribute(attr)))
++    if (node.HasFloatAttribute(attr) && std::isfinite(node.GetFloatAttribute(attr)))
+       dict->SetDouble(ui::ToString(attr), node.GetFloatAttribute(attr));
+   }
+ 
+--- a/third_party/WebKit/Source/modules/accessibility/AXNodeObject.cpp	2018-03-07 00:05:05.000000000 +0100
++++ b/third_party/WebKit/Source/modules/accessibility/AXNodeObject.cpp	2018-03-14 09:52:43.832466351 +0100
+@@ -1559,7 +1559,7 @@
+ 
+   if (IsNativeSlider() || IsNativeSpinButton()) {
+     *out_value = ToHTMLInputElement(*GetNode()).valueAsNumber();
+-    return isfinite(*out_value);
++    return std::isfinite(*out_value);
+   }
+ 
+   if (auto* meter = ToHTMLMeterElementOrNull(GetNode())) {
+@@ -1604,7 +1604,7 @@
+ 
+   if (IsNativeSlider() || IsNativeSpinButton()) {
+     *out_value = static_cast<float>(ToHTMLInputElement(*GetNode()).Maximum());
+-    return isfinite(*out_value);
++    return std::isfinite(*out_value);
+   }
+ 
+   if (auto* meter = ToHTMLMeterElementOrNull(GetNode())) {
+@@ -1637,7 +1637,7 @@
+ 
+   if (IsNativeSlider() || IsNativeSpinButton()) {
+     *out_value = static_cast<float>(ToHTMLInputElement(*GetNode()).Minimum());
+-    return isfinite(*out_value);
++    return std::isfinite(*out_value);
+   }
+ 
+   if (auto* meter = ToHTMLMeterElementOrNull(GetNode())) {
+@@ -1666,7 +1666,7 @@
+     Decimal step =
+         ToHTMLInputElement(*GetNode()).CreateStepRange(kRejectAny).Step();
+     *out_value = step.ToString().ToFloat();
+-    return isfinite(*out_value);
++    return std::isfinite(*out_value);
+   }
+ 
+   switch (AriaRoleAttribute()) {

@@ -1,0 +1,10 @@
+--- chromium-37.0.2062.94/sandbox/linux/seccomp-bpf/linux_seccomp.h.orig	2014-09-05 16:46:51.556381746 +0200
++++ chromium-37.0.2062.94/sandbox/linux/seccomp-bpf/linux_seccomp.h	2014-09-05 18:03:04.481578034 +0200
+@@ -21,6 +21,7 @@
+ // longer need to support these old Bionic versions.
+ // All x86_64 builds use a new enough bionic to have sys/user.h.
+ #if !defined(__BIONIC__) || defined(__x86_64__)
++#include <sys/types.h>
+ #include <sys/user.h>
+ #endif
+ 

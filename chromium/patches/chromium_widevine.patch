@@ -1,0 +1,12 @@
+--- chromium-44.0.2403.89/third_party/widevine/cdm/widevine_cdm_version.h.widevine   2015-07-15 22:30:08.000000000 +0200
++++ chromium-44.0.2403.89/third_party/widevine/cdm/widevine_cdm_version.h   2015-07-22 21:03:36.223548063 +0200
+@@ -14,4 +14,8 @@
+ //  - WIDEVINE_CDM_VERSION_STRING (with the version of the CDM that's available
+ //    as a string, e.g., "1.0.123.456").
+ 
++#include "third_party/widevine/cdm/widevine_cdm_common.h"
++#define WIDEVINE_CDM_AVAILABLE
++#define WIDEVINE_CDM_VERSION_STRING "@WIDEVINE_VERSION@"
++
+ #endif  // WIDEVINE_CDM_VERSION_H_
+

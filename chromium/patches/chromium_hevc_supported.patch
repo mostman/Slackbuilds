@@ -1,0 +1,30 @@
+--- chromium-75.0.3770.100/content/browser/media/media_canplaytype_browsertest.cc.orig	2018-01-24 21:05:46.000000000 +0100
++++ chromium-75.0.3770.100/content/browser/media/media_canplaytype_browsertest.cc	2018-02-01 23:27:46.776168423 +0100
+@@ -48,8 +48,8 @@
+ const char* kHlsMaybe = kPropMaybe;
+ #endif  // !OS_ANDROID
+ 
+-// Chrome doesn't support HEVC.
+-const char* kHevcSupported = kNot;
++// Alien's Chromium does support HEVC.
++const char* kHevcSupported = kPropProbably;
+ 
+ #if BUILDFLAG(ENABLE_MSE_MPEG2TS_STREAM_PARSER)
+ const char* kMp2tsMaybe = kPropMaybe;
+--- chromium-75.0.3770.100/media/base/mime_util_internal.cc.orig	2019-06-18 17:48:14.000000000 +0200
++++ chromium-75.0.3770.100/media/base/mime_util_internal.cc	2019-06-21 16:14:45.786555418 +0200
+@@ -901,6 +901,14 @@
+       return IsNotSupported;
+   }
+ 
++  if (video_codec == kCodecHEVC) {
++#if BUILDFLAG(ENABLE_HEVC_DEMUXING)
++    return IsSupported;
++#else
++    return IsNotSupported;
++#endif
++}
++
+   if (video_codec != kUnknownVideoCodec) {
+     if (!IsSupportedVideoType(
+             {video_codec, video_profile, video_level, color_space}))

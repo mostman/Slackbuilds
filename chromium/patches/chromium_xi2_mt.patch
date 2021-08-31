@@ -1,0 +1,42 @@
+--- ui/events/x/events_x.cc.orig	2014-05-24 19:53:10.646738059 +0200
++++ ui/events/x/events_x.cc	2014-05-24 20:03:36.254248181 +0200
+@@ -231,11 +231,13 @@
+     case XI_ButtonRelease:
+       return ui::ET_TOUCH_RELEASED;
+     case XI_Motion:
++#if defined(USE_XI2_MT)
+       // Should not convert any emulated Motion event from touch device to
+       // touch event.
+       if (!(event->flags & XIPointerEmulated) &&
+           GetButtonMaskForX2Event(event))
+         return ui::ET_TOUCH_MOVED;
++#endif  // defined(USE_XI2_MT)
+       return ui::ET_UNKNOWN;
+     default:
+       NOTREACHED();
+@@ -306,12 +308,14 @@
+         return GetTouchEventType(native_event);
+ 
+       switch (xievent->evtype) {
++#if defined(USE_XI2_MT)
+         case XI_TouchBegin:
+           return ui::ET_TOUCH_PRESSED;
+         case XI_TouchUpdate:
+           return ui::ET_TOUCH_MOVED;
+         case XI_TouchEnd:
+           return ui::ET_TOUCH_RELEASED;
++#endif  // defined(USE_XI2_MT)
+         case XI_ButtonPress: {
+           int button = EventButtonFromNative(native_event);
+           if (button >= kMinWheelButton && button <= kMaxWheelButton)
+--- ui/base/x/x11_util.cc.orig	2014-05-24 22:09:17.073808138 +0200
++++ ui/base/x/x11_util.cc	2014-05-24 22:47:38.923116617 +0200
+@@ -445,7 +445,7 @@
+   XDisplay* display = xev->xany.display;
+   int event_type = xev->xgeneric.evtype;
+ 
+-  DCHECK(event_type == XI_Motion || event_type == XI_TouchUpdate);
++  DCHECK(event_type == XI_Motion);
+ 
+   while (XPending(display)) {
+     XEvent next_event;

@@ -1,0 +1,9 @@
+--- tools/find_depot_tools.py.orig	2014-04-02 21:03:21.000000000 +0200
++++ tools/find_depot_tools.py	2014-04-09 20:55:21.748091689 +0200
+@@ -42,4 +42,5 @@
+ add_depot_tools_to_path()
+ 
+ # pylint: disable=W0611
+-import breakpad
++if sys.platform in ('win32', 'cygwin'):
++  import breakpad
