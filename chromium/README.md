@@ -28,7 +28,7 @@ dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * Fixed compiling google's internal clang for ARM.
 
 Some last notes.
-Make sure you have at least 15-30 GB free space on your memmorycard or drive (Where ever you store the source code and tmp folder) and at least 1 GB swap space.
-Recommended to set "gpu_mem" to 32 or 64, run system in runlevel 3 when compiling.
+Make sure you have at least 15-30 GB free space on your memory card, drive or USBstick (Or where ever you store the source code and tmp folder) and at least 1 GB swap space.
+Recommended to set "gpu_mem" to 32 or 64 and then run system in runlevel 3 when compiling.
 I´am sorry to say, that estimated compiling time will be at least 24 hours if not even more.
 
