@@ -9,6 +9,7 @@ This is also just a diff patch.
 
 This is done by placing the diff file in the same directory as chromium.SlackBuild
 and then to apply the patch you type the following command in the terminal:
+
 $ patch -s -p0 < chromium.arm.SlackBuild.diff
 
 You can download the script from [Alien BOB´s site](http://www.slackware.com/~alien/slackbuilds).
