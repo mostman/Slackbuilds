@@ -7,13 +7,13 @@ I have not tried to build this on any other device nore architecture other than 
 
 This is also just a diff patch.
 
+You can download the script from [Alien BOB´s site](http://www.slackware.com/~alien/slackbuilds).
+And then all you need to do is to patch the [chromium.Slackbuild](http://www.slackware.com/~alien/slackbuilds/chromium/build/) with this diff.
+
 This is done by placing the diff file in the same directory as chromium.SlackBuild
 and then to apply the patch you type the following command in the terminal:
 
 $ patch -s -p0 < chromium.arm.SlackBuild.diff
-
-You can download the script from [Alien BOB´s site](http://www.slackware.com/~alien/slackbuilds).
-And then all you need to do is to patch the [chromium.Slackbuild](http://www.slackware.com/~alien/slackbuilds/chromium/build/) with this diff.
 
 Might also want to add the patches from the patch directory.
 
