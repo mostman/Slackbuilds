@@ -1,5 +1,5 @@
-# Alien Bob´s Chromium slackbuild adopted for Slackware ARM (SARPI Current)
-Addopted Alienbob´s Chromium Slackbuild for Slackware ARM SARPI-Current.
+# Alien BOB´s Chromium slackbuild adopted for Slackware ARM (SARPI Current)
+Adopted Alien BOB´s Chromium Slackbuild for Slackware ARM SARPI-Current.
 so one can compile chromium for your Slackware ARM Rasberry Pi.
 
 This is only built on SARPI Current Rasberry Pi 4.
