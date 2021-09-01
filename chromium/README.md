@@ -27,6 +27,16 @@ dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * Fixed link for debians arm-linux-gnueabihf-readelf to slackwares readelf
 * Fixed compiling google's internal clang for ARM.
 
+# Dependencies needed to build:
+* ninja (Is avalible throught slack package)
+* nodejs >= 15.6.0 (Is avalible at [Alien's SlackBuilds](http://www.slackware.com/~alien/slackbuilds/nodejs/build/))
+* gcc >= 8 for bootstrapping gn (Is avalible throught slack package)
+* nasm >= 2.14 (yasm no longer being used) (Is avalible throught slack package)
+* cmake >= 3.13.4 (Is avalible throught slack package)
+* python3 >= 3.7, python3-setuptools (Is avalible throught slack package)
+* java runtime (Is avalible throught [SARPi Project](https://sarpi.penthux.net/index.php?p=rpiarmcurrentpkgs))
+* Internet access (for downloading toolchain bins)
+
 Some last notes.
 Make sure you have at least 15-30 GB free space on your memory card, drive or USBstick (Or where ever you store the source code and tmp folder) and at least 1 GB swap space.
 Recommended to set "gpu_mem" to 32 or 64 and then run system in runlevel 3 when compiling.
