@@ -2,8 +2,8 @@ SlackBuild script aiming to build llvm for Slackware ARM.
 Installing modules clang, lld, clang-tools-extra, compiler-rt and aiming targets
 ARM,X86 and AArch64 as it's not likely one will be using a Raspberry Pi 
 to crosscompile to any other architectures.
-The script is designed to souit my slackbuild for chromium that i adopted from AlienBOB
-inorder to beable to compile for Slackware ARM on a Rasberry Pi.
+The script is designed to suit my slackbuild for chromium that i adopted from AlienBOB
+in order to beable to compile chromium for Slackware ARM on a Rasberry Pi.
 
 This script installs the llvm/clang toolchain to /opt/llvm.
 
