@@ -630,7 +630,7 @@ case "$ARCH" in
              SLKLDFLAGS="-Wl,-z,notext"; LIBDIRSUFFIX=""
              DSSE="1"
              # Widevine not supported (no binary library available):
-             #USE_CDM=0
+             USE_CDM=0
              # VAAPI not supported:
              USE_VAAPI=0
              FFMPEG_ARCH="arm"
@@ -799,10 +799,8 @@ cat $SRCDIR/patches/chromium-91-libyuv-aarch64.patch \
 
 # Arch Chromium patches and New google patches.
 # Fixes widevine support for arm
-cat $SRCDIR/arch_patches/0001-widevine-support-for-arm.patch \
+cat $SRCDIR/patches/0001-widevine-support-for-arm.patch \
   | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/arch_patch-${PRGNAM}.log
-#cat $SRCDIR/arch_patches/0003-Fix-eu-strip-build-for-newer-GCC.patch \
-#  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/arch_patch-${PRGNAM}.log
 
 # Third party patches
 # Fixes harfbuzz-ng unused variable `supp_size` from plan_subset_encoding(...)
@@ -1127,13 +1125,6 @@ if [ "$ARCH" != "x86_64" ]; then
     install -D -m0755 -t $TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/buildtools/third_party/eu-strip/bin /usr/bin/eu-strip
   fi
 fi
-#elif [[ "$ARCH" =~ arm.* ]]; then
-#  echo "-- Make sure we have eu-strip for ARM, So we will rebuild eu-strip."
-#  pushd buildtools/third_party/eu-strip
-#  sh build.sh > /dev/null 2>&1 | tee $OUTPUT/eu-strip-build-${PRGNAM}.log
-#  popd
-#  install -D -m0755 -t $TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/buildtools/third_party/eu-strip/bin /usr/bin/eu-strip
-#fi
 
 # --- Compile --- #
 
