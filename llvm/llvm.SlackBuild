@@ -41,15 +41,10 @@
 #######################################################################
 
 PRGNAM=llvm
-#GIT_REV=llvmorg-12.0.1
-GIT_REV=llvmorg-13.0.0-rc1
-#VERSION=${VERSION:-12.0.1}
+GIT_REV=llvmorg-13.0.0-rc2
 VERSION=${VERSION:-13.0.0}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SLse}
-
-# Build Clang with Clang
-USE_CLANG=${USE_CLANG:-1}
 
 if [ -z "$ARCH" ]; then
   case "$( uname -m )" in
@@ -67,30 +62,34 @@ LLVMBUILD=$TMP/$PRGNAM-build
 LLVMSRC=${PRGNAM}-project-${GIT_REV}
 OUTPUT=${OUTPUT:-/tmp}
 
+# Use system´s clang, for a faster build
+# and make the binaries smaller.
+USE_CLANG=${USE_CLANG:-1}
+
 if [ "$ARCH" = "i586" ]; then
   SLKCFLAGS="-O2 -march=i586 -mtune=i686"
-  LIBDIRSUFFIX=""
+  SLKLDFLAGS="-Wl,-z,notext"; LIBDIRSUFFIX=""
 elif [ "$ARCH" = "i686" ]; then
   SLKCFLAGS="-O2 -march=i686 -mtune=i686"
-  LIBDIRSUFFIX=""
+  SLKLDFLAGS="-Wl,-z,notext"; LIBDIRSUFFIX=""
 elif [ "$ARCH" = "x86_64" ]; then
   SLKCFLAGS="-O2 -fPIC"
-  LIBDIRSUFFIX="64"
+  SLKLDFLAGS=""; LIBDIRSUFFIX="64"
 else
   SLKCFLAGS="-O2"
   LIBDIRSUFFIX=""
+  SLKLDFLAGS="-Wl,-z,notext"; LIBDIRSUFFIX=""
 fi
 
 # Building clang with clang
-if [ ${USE_CUSTCLANG} -eq 1 ]; then
-  CCOMPILER=clang
-  CPPCOMPILER=clang++
-  SLKCXXFLAGS="$SLKCFLAGS -std=c++11"
-# Building clang with gcc
+if [ ${USE_CLANG} -eq 1 ]; then
+  CUST_CLANG_PATH="/opt/llvm/bin"
+  export PATH="$CUST_CLANG_PATH:$PATH"
+  CCOMPILER=$CUST_CLANG_PATH/clang
+  CPPCOMPILER=$CUST_CLANG_PATH/clang++
 else
   CCOMPILER=gcc
   CPPCOMPILER=g++
-  SLKCXXFLAGS="$SLKCFLAGS"
 fi
 
 if [[ $ARCH =~ arm.* ]]; then
@@ -98,6 +97,8 @@ if [[ $ARCH =~ arm.* ]]; then
 else
   TARGET=${ARCH}-slackware-linux-gnu
 fi
+
+export LDFLAGS="$SLKLDFLAGS"
 
 # Exit the script on errors:
 set -e
@@ -149,28 +150,55 @@ echo "||"
 echo "|| Configure"
 echo "++"
 
-cmake -DCMAKE_BUILD_TYPE=Release \
+LDFLAGS="$LDFLAGS" \
+cmake -GNinja -DCMAKE_BUILD_TYPE=Release \
       -DLLVM_ENABLE_ASSERTIONS=OFF \
+      -DLLVM_ENABLE_PROJECTS="clang;compiler-rt;lld;clang-tools-extra" \
       -DLLVM_TARGETS_TO_BUILD="ARM;X86;AArch64" \
-      -DLLVM_ENABLE_PROJECTS="clang;lld" \
       -DLLVM_DEFAULT_TARGET_TRIPLE="${TARGET}" \
-      -DLLVM_BUILD_LLVM_DYLIB=ON \
-      -DLLVM_LINK_LLVM_DYLIB=ON \
+      -DLLVM_ENABLE_PIC=OFF \
+      -DLLVM_ENABLE_UNWIND_TABLES=OFF \
+      -DLLVM_ENABLE_TERMINFO=OFF \
+      -DLLVM_ENABLE_Z3_SOLVER=OFF \
+      -DCLANG_PLUGIN_SUPPORT=OFF \
+      -DCLANG_ENABLE_STATIC_ANALYZER=OFF \
+      -DCLANG_ENABLE_ARCMT=OFF \
+      -DLLVM_INCLUDE_GO_TESTS=OFF \
+      -DENABLE_X86_RELAX_RELOCATIONS=NO \
+      -DLLVM_ENABLE_DIA_SDK=OFF \
+      -DCOMPILER_RT_SANITIZERS_TO_BUILD="asan;dfsan;msan;hwasan;tsan;cfi" \
+      -DLLVM_LOCAL_RPATH=/usr/lib${LIBDIRSUFFIX} \
+      -DCOMPILER_RT_TEST_COMPILER_CFLAGS="--gcc-toolchain=/usr -Wl,-rpath,/usr/lib64 -Wl,-rpath,/usr/lib32" \
+      -DLLVM_ENABLE_LIBXML2=FORCE_ON \
+      -DLLVM_ENABLE_LLD=ON \
       -DCMAKE_INSTALL_PREFIX="${PKGPATH}" \
-      -DLLVM_LIBDIR_SUFFIX="${LIBDIRSUFFIX}" \
-      -DLLVM_BINUTILS_INCDIR="/usr/include" \
-      -DLLVM_INSTALL_UTILS=ON \
-      -DLLVM_BUILD_DOCS=OFF \
-      -DCMAKE_C_COMPILER="${CCOMPILER}" \
-      -DCMAKE_CXX_COMPILER="${CPPCOMPILER}" \
-      -DCMAKE_C_FLAGS:STRING="${SLKCFLAGS}" \
-      -DCMAKE_CXX_FLAGS:STRING="${SLKCXXFLAGS}" \
-      ../$LLVMSRC/${PRGNAM} \
-      -G Ninja 2>&1 | tee -a ${OUTPUT}/cmake-${PRGNAM}.log
+      -DCOMPILER_RT_BUILD_CRT=OFF \
+      -DCOMPILER_RT_BUILD_LIBFUZZER=OFF \
+      -DCOMPILER_RT_BUILD_MEMPROF=OFF \
+      -DCOMPILER_RT_BUILD_ORC=OFF \
+      -DCOMPILER_RT_BUILD_PROFILE=ON \
+      -DCOMPILER_RT_BUILD_SANITIZERS=ON \
+      -DCOMPILER_RT_BUILD_XRAY=OFF \
+      -DCOMPILER_RT_BUILD_BUILTINS=OFF \
+      -DCMAKE_C_FLAGS="--gcc-toolchain=/usr" \
+      -DCMAKE_CXX_FLAGS="--gcc-toolchain=/usr" \
+      -DCMAKE_EXE_LINKER_FLAGS=-latomic \
+      -DCMAKE_SHARED_LINKER_FLAGS=-latomic \
+      -DCMAKE_MODULE_LINKER_FLAGS=-latomic \
+      -DCMAKE_C_COMPILER=${CCOMPILER} \
+      -DCMAKE_CXX_COMPILER=${CPPCOMPILER} \
+      ../$LLVMSRC/${PRGNAM} 2>&1 | tee -a ${OUTPUT}/cmake-${PRGNAM}.log
 
 echo "++"
 echo "|| Configure done"
-echo "||"
+echo "|| Copying /usr/lib/libstdc++.so.6 to ${PKG}${PKGPATH}/lib"
+echo "++"
+
+mkdir -p ${PKG}${PKGPATH}/lib
+cp /usr/lib${LIBDIRSUFFIX}/libstdc++.so.6 ${PKG}${PKGPATH}/lib${LIBDIRSUFFIX}
+
+echo "++"
+echo "|| Copying libstdc++.so.6 done"
 echo "|| Start compiling"
 echo "++"
 
@@ -207,13 +235,15 @@ rm -rf $PKG${PKGPATH}/share/man
 )
 
 cd $TMP/$LLVMSRC
-mkdir -p $PKG${PKGPATH}/doc/$PRGNAM-$VERSION/{llvm,clang,lld,clang-tools-extra,openmp}
+mkdir -p $PKG${PKGPATH}/doc/$PRGNAM-$VERSION/{llvm,clang,lld,clang-tools-extra,compiler-rt,openmp}
 cp -a llvm/{CODE_OWNERS,CREDITS,LICENSE,README,RELEASE_TESTERS}* \
   $PKG${PKGPATH}/doc/$PRGNAM-$VERSION/llvm
 cp -a clang/{CODE_OWNERS,INSTALL,LICENSE,NOTES,README}* \
   $PKG${PKGPATH}/doc/$PRGNAM-$VERSION/clang
 cp -a clang-tools-extra/{CODE_OWNERS,LICENSE,README}* \
   $PKG${PKGPATH}/doc/$PRGNAM-$VERSION/clang-tools-extra
+cp -a compiler-rt/{CODE_OWNERS,LICENSE,README}* \
+  $PKG${PKGPATH}/doc/$PRGNAM-$VERSION/compiler-rt
 cp -a lld/{CODE_OWNERS,LICENSE}* \
   $PKG${PKGPATH}/doc/$PRGNAM-$VERSION/lld
 cp -a openmp/{CREDITS,LICENSE}* \
