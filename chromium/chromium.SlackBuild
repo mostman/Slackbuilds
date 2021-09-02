@@ -804,7 +804,7 @@ cat $SRCDIR/patches/0001-widevine-support-for-arm.patch \
 
 # Third party patches
 # Fixes harfbuzz-ng unused variable `supp_size` from plan_subset_encoding(...)
-cat $SRCDIR/third_party_patches/fix-harfbuzz-supp-size.patch \
+cat $SRCDIR/patches/fix-harfbuzz-supp-size.patch \
   | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/arch_patch-${PRGNAM}.log
 
 # Fix the link on 32bit:
