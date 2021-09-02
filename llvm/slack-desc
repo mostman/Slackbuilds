@@ -14,8 +14,8 @@ llvm:
 llvm: This package also includes the clang frontend for the C family of
 llvm: languages: C, C++, Objective-C, and Objective-C++
 llvm:
-llvm: Note, this package will install in /opt/llvm
-llvm: and is compiled for ARM with modules clang, lld and clang-tools-extra
+llvm: Note, this package will install in /opt/llvm and is compiled for ARM
+llvm: with modules clang, lld, clang-tools-extra and compiler-rt
 llvm:
 llvm: Homepage: http://llvm.org/
 llvm:
