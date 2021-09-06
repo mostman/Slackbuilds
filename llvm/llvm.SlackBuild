@@ -83,7 +83,7 @@ fi
 
 # Building clang with clang
 if [ ${USE_CLANG} -eq 1 ]; then
-  CUST_CLANG_PATH="/opt/llvm/bin"
+  CUST_CLANG_PATH="/usr/bin"
   export PATH="$CUST_CLANG_PATH:$PATH"
   CCOMPILER=$CUST_CLANG_PATH/clang
   CPPCOMPILER=$CUST_CLANG_PATH/clang++
