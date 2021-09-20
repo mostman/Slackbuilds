@@ -429,6 +429,8 @@
 # 93.0.4577.82-1:  20/sep/2021 by Minime <slackware[at]slackwarelinux[dot]se
 #                  * Update to M93.
 #                  * Added latest patchsets for chromium-93.0.4577.8
+#                  * Fixed incorrect/missing softlink
+#                  * Added softlink cleanup
 # 
 # -----------------------------------------------------------------------------
 # 
@@ -1134,10 +1136,8 @@ if [ ${USE_SYSROOT} -eq 1 ]; then
     build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}/libsqlite3.so
 
   # The platform-specific alias for the ARM readelf binary is missing
-  # from the debian sysroot image:
-  if [ ! -f build/linux/${SYSROOTDIR}/usr/bin/${SYSROOT_TARGET}-readelf ]; then
-    ln -s /usr/bin/readelf \
-      build/linux/${SYSROOTDIR}/usr/bin/${SYSROOT_TARGET}-readelf
+  if [ ! -f /usr/bin/${SYSROOT_TARGET}-readelf ]; then
+    ln -s /usr/bin/readelf /usr/bin/${SYSROOT_TARGET}-readelf
   fi
 fi
 
@@ -1510,6 +1510,11 @@ cd $OUTPUT
 md5sum ${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.${PKGTYPE:-txz} > ${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.${PKGTYPE:-txz}.md5
 cd -
 cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
+
+# Cleanup
+if [ -f /usr/bin/${SYSROOT_TARGET}-readelf ]; then
+  rm /usr/bin/${SYSROOT_TARGET}-readelf
+fi
 
 # Restore the original umask:
 umask ${_UMASK_}
