@@ -21,9 +21,7 @@ In this example i have the glibc directory under /usr/src
    # cd /usr/src/glibc/
    
 Copy the patches to "slackware64-current/source/l/glibc/" directory
-   # cp patches/elf.patch.gz /root/slackware64-current/source/l/glibc/
-   # cp patches/glibc-add-support-for-SHT_RELR-sections.patch.gz /root/slackware64-current/source/l/glibc/
-   # cp patches/glibc-tls-libwidevinecdm.so-since-4.10.2252.0-has-TLS-with.patch.gz /root/slackware64-current/source/l/glibc/
+   # cp patches/* /root/slackware64-current/source/l/glibc/
 
 And now we can compile glibc
    # ./arm/build
