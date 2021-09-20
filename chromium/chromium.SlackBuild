@@ -936,6 +936,7 @@ echo Building ...
 
 [ ${USE_CLANG} -eq 1 ] && do_clang=true || do_clang=false
 [ ${USE_CDM} -eq 1 ] && do_cdm=true || do_cdm=false
+[ ${USE_VAAPI} -eq 1 ] && do_vaapi=true || do_vaapi=false
 [ ${USE_HOTWORD} -eq 1 ] && do_hotword=true || do_hotword=false
 [ ${USE_PA} -eq 1 ] && do_pa=true || do_pa=false
 [ ${USE_SYSROOT} -eq 1 ] && do_sysroot=true || do_sysroot=false
@@ -982,7 +983,7 @@ _chromium_conf=(
     'use_ozone=true'
     "use_pulseaudio=${do_pa}"
     "use_sysroot=${do_sysroot}"
-    "use_vaapi=${USE_VAAPI}"
+    "use_vaapi=${do_vaapi}"
     "use_xkbcommon=${do_wayland}"
     "extra_cxxflags=\"${CXXFLAGS}\""
     "extra_ldflags=\"${LDFLAGS}\""
