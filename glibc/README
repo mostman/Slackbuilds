@@ -6,7 +6,7 @@ And we also have to download slackware64-current/source/l/glibc with rsync
 As root
    # cd /usr/src
    # wget ftp://ftp.arm.slackware.com/slackwarearm/slackwarearm-devtools/slackkit/pkgs/slackkit-1.23-arm-1.txz
-   # installpkg lackkit-1.23-arm-1.txz
+   # installpkg slackkit-1.23-arm-1.txz
 
    # cd /root
    # mkdir -p slackware64-current/source/l/glibc/
