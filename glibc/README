@@ -20,7 +20,7 @@ Now go to the directory where you have your downloaded my glibc slackbuild with 
 In this example i have the glibc directory under /usr/src
    # cd /usr/src/glibc/
    
-Copy the patches to "slackware64-current/source/l/glibc/" directory
+Copy the patches to "/root/slackware64-current/source/l/glibc/" directory
    # cp patches/* /root/slackware64-current/source/l/glibc/
 
 And now we can compile glibc
