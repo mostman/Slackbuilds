@@ -1369,6 +1369,12 @@ install -D -m0644 out/Release/${PRGNAM}.1 $PKG/usr/man/man1/${PRGNAM}.1
 # Add a desktop file:
 process_template chrome/installer/linux/common/desktop.template \
   out/Release/${PRGNAM}.desktop
+
+# Fix user-agent for ARM
+if [[ "$ARCH" =~ arm.* ]]; then
+  sed -i out/Release/${PRGNAM}.desktop -e "s/\/${PRGNAM}/\/${PRGNAM} \-\-user-agent=\"Mozilla\/5.0 \(X11; CrOS armv7l 10895.56.0\) AppleWebKit\/537.36 \(KHTML, like Gecko\) Chrome\/${VERSION} Safari\/537.36\"/"
+fi
+
 install -D -m0644 out/Release/${PRGNAM}.desktop \
   $PKG/usr/share/applications/${PRGNAM}.desktop
 
