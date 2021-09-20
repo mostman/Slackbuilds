@@ -1,1 +1,0 @@
-void abort(void) { for(;;); }
