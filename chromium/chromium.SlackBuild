@@ -431,6 +431,8 @@
 #                  * Added latest patchsets for chromium-93.0.4577.8
 #                  * Fixed incorrect/missing softlink
 #                  * Added softlink cleanup
+#                  * Fixed Widevine support patch for ARM
+#                    https://www.linuxquestions.org/questions/slackware-arm-108/how-to-get-widevine-4-10-2252-0-working-on-slackware-arm-4175700846/
 # 
 # -----------------------------------------------------------------------------
 # 
@@ -635,7 +637,9 @@ case "$ARCH" in
              SLKLDFLAGS="-Wl,-z,notext"; LIBDIRSUFFIX=""
              DSSE="1"
              # Widevine not supported (no binary library available):
-             USE_CDM=0
+             # However there are workarounds so why deny this?
+             # Added patch that enables widevine support for armv7
+             #USE_CDM=0
              # VAAPI not supported:
              USE_VAAPI=0
              FFMPEG_ARCH="arm"
