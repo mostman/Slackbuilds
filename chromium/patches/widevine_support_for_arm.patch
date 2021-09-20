@@ -1,0 +1,11 @@
+--- ./third_party/widevine/cdm/widevine.gni.orig  2021-09-20 21:55:34.936878531 +0200
++++ ./third_party/widevine/cdm/widevine.gni       2021-09-20 21:59:45.604524885 +0200
+@@ -26,7 +26,7 @@
+ library_widevine_cdm_available =
+     (is_chromeos_ash && (target_cpu == "x64" || target_cpu == "arm")) ||
+     ((target_os == "linux" || is_chromeos_lacros) &&
+-     (target_cpu == "x86" || target_cpu == "x64")) ||
++     (target_cpu == "x86" || target_cpu == "x64" || target_cpu == "arm")) ||
+     (target_os == "mac" && (target_cpu == "x64" || target_cpu == "arm64")) ||
+     (target_os == "win" && (target_cpu == "x86" || target_cpu == "x64"))
+
