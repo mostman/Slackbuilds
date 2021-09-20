@@ -821,15 +821,9 @@ cat $SRCDIR/patches/chromium-93-ScopedTestDialogAutoConfirm-include.patch \
 cat $SRCDIR/patches/chromium-93-pdfium-include.patch \
   | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 
-# Arch Chromium patches and New google patches.
 # Fixes widevine support for arm
-cat $SRCDIR/patches/0001-widevine-support-for-arm.patch \
-  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/arch_patch-${PRGNAM}.log
-
-# Third party patches
-# Fixes harfbuzz-ng unused variable `supp_size` from plan_subset_encoding(...)
-cat $SRCDIR/patches/fix-harfbuzz-supp-size.patch \
-  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/arch_patch-${PRGNAM}.log
+cat $SRCDIR/patches/widevine_support_for_arm.patch \
+  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 
 # Fix the link on 32bit:
 sed -e '/ldflags /s/-m32/&", "-Wl,-z,notext/' \
