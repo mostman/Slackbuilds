@@ -915,7 +915,7 @@ if [ "$USE_CLANG" -eq 1 ] && [ "$USE_CUSTCLANG" -eq 0 ]; then
   if [ ! -f ${MYCLANG_PATH}/ld ]; then
     cd ${MYCLANG_PATH} ; ln -s lld ld ; cd - 1>/dev/null
   fi
-elif [ "$USE_CLANG" -eq 1 ] && [ "$USE_CUSTCLANG" -eq 1 ] && [ ! "$CLANG_BASE_PATH" = "/usr" ]
+elif [ "$USE_CLANG" -eq 1 ] && [ "$USE_CUSTCLANG" -eq 1 ] && [ ! "$CLANG_BASE_PATH" = "/usr" ]; then
   if [ ! -f ${MYCLANG_PATH}/ld ]; then
     cd ${MYCLANG_PATH} ; ln -s lld ld ; cd - 1>/dev/null
   fi
@@ -929,7 +929,7 @@ if [ "$USE_CLANG" -eq 1 ] && [ "$USE_CUSTCLANG" -eq 0 ]; then
   if  [ -f ${MYCLANG_PATH}/ld ]; then
     rm ${MYCLANG_PATH}/ld
   fi
-elif [ "$USE_CLANG" -eq 1 ] && [ "$USE_CUSTCLANG" -eq 1 ] && [ ! "$CLANG_BASE_PATH" = "/usr" ]
+elif [ "$USE_CLANG" -eq 1 ] && [ "$USE_CUSTCLANG" -eq 1 ] && [ ! "$CLANG_BASE_PATH" = "/usr" ]; then
   if [ -f ${MYCLANG_PATH}/ld ]; then
    rm ${MYCLANG_PATH}/ld
   fi
