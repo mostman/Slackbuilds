@@ -16,6 +16,7 @@ Might also want to download/copy the patches from the patch directory to Alien B
 dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * Fixed link for debians arm-linux-gnueabihf-readelf to slackwares readelf
 * Fixed compiling google's internal clang for ARM.
+* Also made it possible to use eithers systems llvm/clang version or my slackbuild llvm/clang version.
 
 # Dependencies needed to build:
 * ninja (Is avalible throught slack package)
