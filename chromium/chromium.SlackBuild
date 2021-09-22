@@ -474,16 +474,6 @@ cat $SRCDIR/patches/chromium-90-ruy-include.patch \
   | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 cat $SRCDIR/patches/chromium-78-protobuf-RepeatedPtrField-export.patch \
   | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-# Disable various compiler configs
-#cat $SRCDIR/patches/chromium-91-compiler.patch \
-#  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-cat $SRCDIR/patches/chromium-swiftshader-export.patch \
-  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-# GCC: make VRegister::from_code() constexpr on aarch64
-# On arm64 you need to update bundled third_party/highway to 0.12.1
-# and append -flax-vector-conversions to your CXXFLAGS.
-cat $SRCDIR/patches/chromium-92-v8-constexpr.patch \
-  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # Additional patch for chromium-91 (arm64 only)
 cat $SRCDIR/patches/chromium-91-libyuv-aarch64.patch \
   | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
