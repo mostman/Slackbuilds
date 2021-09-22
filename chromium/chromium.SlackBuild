@@ -433,6 +433,9 @@
 #                  * Added softlink cleanup
 #                  * Fixed Widevine support patch for ARM
 #                    https://www.linuxquestions.org/questions/slackware-arm-108/how-to-get-widevine-4-10-2252-0-working-on-slackware-arm-4175700846/
+#                  22/sep/2021 by Minime <slackware[at]slackwarelinux[dot]se
+#                  * Fixed custom clang option, set default
+#                    to systems clang version
 # 
 # -----------------------------------------------------------------------------
 # 
@@ -518,6 +521,16 @@ FFMPEG_HEVC=${FFMPEG_HEVC:-0}
 # This script will compile google's modified clang from source, so that 32bit
 # can be supported (Google offers only 64bit pre-built clang for download0:
 USE_CLANG=${USE_CLANG:-1}
+
+# Use custom clang the systems clang version or if you installed the build i made
+# to save time rather than trying to compile googles clang build every time.
+USE_CUSTCLANG=${USE_CUSTCLANG:-1}
+
+# If set custom clang (USE_CUSTCLANG "1")
+# Make sure you to set correct clang base path.
+# Path where you installed clang, default is set to "/usr" (The system).
+# If you chose to use the buildscript i made then set CLANG_BASE_PATH="/opt/llvm".
+CLANG_BASE_PATH="/usr"
 
 # If you don't want to enable support for Widevine CDM
 # (content decryption module) say "0" here.
@@ -935,6 +948,7 @@ chmod -R u+w,go+r-w,a+X-s .
 echo Building ...
 
 [ ${USE_CLANG} -eq 1 ] && do_clang=true || do_clang=false
+[ ${USE_CUSTCLANG} -eq 1 ] && do_clang_plug=false || do_clang_plug=true
 [ ${USE_CDM} -eq 1 ] && do_cdm=true || do_cdm=false
 [ ${USE_VAAPI} -eq 1 ] && do_vaapi=true || do_vaapi=false
 [ ${USE_HOTWORD} -eq 1 ] && do_hotword=true || do_hotword=false
@@ -962,6 +976,7 @@ _chromium_conf=(
     'fatal_linker_warnings=false'
     "ffmpeg_branding=\"${FFMPEG_BRANDING}\""
     "is_clang=${do_clang}"
+    "clang_use_chrome_plugins=${do_clang_plug}"
     'is_debug=false'
     "is_component_build=${SHARED_FFMPEG}"
     "is_component_ffmpeg=${SHARED_FFMPEG}"
@@ -988,16 +1003,25 @@ _chromium_conf=(
     "extra_cxxflags=\"${CXXFLAGS}\""
     "extra_ldflags=\"${LDFLAGS}\""
 )
+
+# Set base path custom clang
+if [ ${USE_CUSTCLANG} -eq 1 ]; then
+  _chromium_conf+=(
+    'clang_use_default_sample_profile=false'
+    "clang_base_path=\"${CLANG_BASE_PATH}\""
+  )
+fi
+
 if [[ ! "$ARCH" =~ arm.* ]]; then
   _chromium_conf+=(
-      'enable_hidpi=true'
-      'enable_webrtc=true'
-      "linux_sandbox_path=\"/usr/lib${LIBDIRSUFFIX}/${PRGNAM}/chrome_sandbox\""
-      #'linux_strip_binary=true'
-      'linux_use_bundled_binutils=false'
-      'remove_webcore_debug_symbols=true'
-      "usb_ids_path=\"/usr/share/hwdata/usb.ids\""
-      'use_gconf=false'
+    'enable_hidpi=true'
+    'enable_webrtc=true'
+    "linux_sandbox_path=\"/usr/lib${LIBDIRSUFFIX}/${PRGNAM}/chrome_sandbox\""
+    #'linux_strip_binary=true'
+    'linux_use_bundled_binutils=false'
+    'remove_webcore_debug_symbols=true'
+    "usb_ids_path=\"/usr/share/hwdata/usb.ids\""
+    'use_gconf=false'
   )
 fi
 
@@ -1013,7 +1037,6 @@ else
     )
   fi
   _chromium_conf+=(
-      "clang_use_chrome_plugins=${do_clang}"
       'enable_hangout_services_extension=true'
       'enable_js_type_check=true'
       'enable_nacl=false'
@@ -1153,7 +1176,7 @@ fi
 ulimit -n 2048
 
 # Compile google's internal clang sources if needed
-if [ ${USE_CLANG} -eq 1 ]; then
+if [ ${USE_CLANG} -eq 1 ] && [ ${USE_CUSTCLANG} -eq 0 ]; then
   # Build clang from source instead of downloading:
   echo "-- Building google's clang toolchain."
   # Actually 32bit compilation fails by not finding 'bits/c++config.h'.
@@ -1170,11 +1193,15 @@ if [ ${USE_CLANG} -eq 1 ]; then
     --without-fuchsia \
     2>&1 | tee $OUTPUT/clang_build-${PRGNAM}.log
     #--llvm-force-head-revision \
-fi
 
-# Ensure that only this new clang is used, ignoring the system version:
-MYCLANG_PATH="$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/third_party/llvm-build/Release+Asserts/bin"
-export PATH="$MYCLANG_PATH:$PATH"
+  # Ensure that only this new clang is used, ignoring the system version:
+  MYCLANG_PATH="$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/third_party/llvm-build/Release+Asserts/bin"
+  export PATH="$MYCLANG_PATH:$PATH"
+elif [ ${USE_CLANG} -eq 1 ] && [ ${USE_CUSTCLANG} -eq 1 ]; then
+  # Ensure correct path for custom clang version:
+  MYCLANG_PATH="${CLANG_BASE_PATH}/bin"
+  export PATH="$MYCLANG_PATH:$PATH"
+fi
 
 # For Chromium 92, disable ffmpeg re-configuration on 32bit OS to avoid linking errors like:
 # "FAILED: v8_context_snapshot_generator - ld.lld: error: undefined symbol: ff_psdsp_init_x86"
@@ -1214,14 +1241,29 @@ fi
 echo "-- Bootstrapping 'gn'."
 
 # Symlink ld to lld to make gn linking stage succeed:
-cd $MYCLANG_PATH ; ln -s lld ld ; cd - 1>/dev/null
+if [ "$USE_CLANG" -eq 1 ] && [ "$USE_CUSTCLANG" -eq 0 ]; then
+  if [ ! -f ${MYCLANG_PATH}/ld ]; then
+    cd ${MYCLANG_PATH} ; ln -s lld ld ; cd - 1>/dev/null
+  fi
+elif [ "$USE_CLANG" -eq 1 ] && [ "$USE_CUSTCLANG" -eq 1 ] && [ ! "$CLANG_BASE_PATH" = "/usr" ]
+  if [ ! -f ${MYCLANG_PATH}/ld ]; then
+    cd ${MYCLANG_PATH} ; ln -s lld ld ; cd - 1>/dev/null
+  fi
+fi
 
 LDFLAGS="$LDFLAGS" python3 tools/gn/bootstrap/bootstrap.py \
   2>&1 | tee $OUTPUT/gyp-${PRGNAM}.log
-  #--use-custom-libcxx \
 
 # Remove symlink again:
-rm $MYCLANG_PATH/ld
+if [ "$USE_CLANG" -eq 1 ] && [ "$USE_CUSTCLANG" -eq 0 ]; then
+  if  [ -f ${MYCLANG_PATH}/ld ]; then
+    rm ${MYCLANG_PATH}/ld
+  fi
+elif [ "$USE_CLANG" -eq 1 ] && [ "$USE_CUSTCLANG" -eq 1 ] && [ ! "$CLANG_BASE_PATH" = "/usr" ]
+  if [ -f ${MYCLANG_PATH}/ld ]; then
+   rm ${MYCLANG_PATH}/ld
+  fi
+fi
 
 echo "-- Generating ninja build files."
 out/Release/gn gen out/Release -v --args="${_chromium_conf[*]}" \
@@ -1230,13 +1272,16 @@ out/Release/gn gen out/Release -v --args="${_chromium_conf[*]}" \
 # Compile everything:
 echo "-- Compiling the lot."
 
-if [ "$USE_CLANG" = "1" ]; then
+if [ "$USE_CLANG" -eq 1 ] && [ "$USE_CUSTCLANG" -eq 0 ]; then
   # Use the clang that we build in-tree instead of using the system version:
   export CC="$MYCLANG_PATH/clang"
   export CXX="$MYCLANG_PATH/clang++"
   export LD="$MYCLANG_PATH/lld"
-  #unset CC
-  #unset CXX
+elif [ "$USE_CLANG" -eq 1 ] && [ "$USE_CUSTCLANG" -eq 1 ]; then
+  # Use the clang that we build in-tree instead of using the system version:
+  export CC="$MYCLANG_PATH/clang"
+  export CXX="$MYCLANG_PATH/clang++"
+  export LD="$MYCLANG_PATH/lld"
 else
   # Be careful not to override CC and CXX (may have been set by gcc5):
   export CC=${CC:-"gcc"}
