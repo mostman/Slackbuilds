@@ -825,7 +825,8 @@ if [ ${USE_SYSROOT} -eq 1 ]; then
   ln -s libsqlite3.so.0 \
     build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}/libsqlite3.so
 
-  # The platform-specific alias for the ARM readelf binary is missing
+  # The platform-specific readelf binary/alias in debian does not exist
+  # in slackware, so we will have to softlink this to systems readelf
   if [ ! -f /usr/bin/${SYSROOT_TARGET}-readelf ]; then
     ln -s /usr/bin/readelf /usr/bin/${SYSROOT_TARGET}-readelf
   fi
