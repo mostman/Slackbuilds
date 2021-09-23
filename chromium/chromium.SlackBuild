@@ -810,8 +810,11 @@ if [ ${USE_SYSROOT} -eq 1 ]; then
     build/linux/${SYSROOTDIR}/usr/include/graphene-1.0/graphene-config.h
 
   # Take care of Debian/Ubuntu related linker issues:
-  echo "/usr/lib/${SYSROOT_TARGET}/nss" >> \
-    build/linux/${SYSROOTDIR}/etc/ld.so.conf.d/${SYSROOT_TARGET}.conf
+  for SOFILE in build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}/nss/*.so ;
+  do
+    ln -sf nss/$(basename $SOFILE) \
+      build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}/
+  done
   ln -s libsqlite3.so.0 \
     build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}/libsqlite3.so
 
