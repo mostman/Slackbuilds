@@ -7,7 +7,7 @@ I have not tried to build this on any other device nore architecture other than 
 
 Might also want to download/copy the patches from the patch directory to Alien BOB´s patch directory of the chromium slackbuild directory.
 
-# What i have done and what the diff/patch does is:
+# What i have done and what the slackbuild/diff/patch does is:
 * Added lates patchset "93.0.4577.8"
 * Repatched clang.toolchains.arm_i586.triple for ARM.
 * Fixed chromium_conf for ARM
@@ -16,7 +16,7 @@ Might also want to download/copy the patches from the patch directory to Alien B
 dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * Fixed link for debians arm-linux-gnueabihf-readelf to slackwares readelf
 * Fixed compiling google's internal clang for ARM.
-* Also made it possible to use eithers systems llvm/clang version or my slackbuild llvm/clang version.
+* Also made it possible to use eithers systems llvm/clang version or my slackbuild llvm/clang version instead of chromiums llvm/clang build.
 * Patched chromium for arm to support Widevine. (Using my patched glibc will also make Widevine 4.10.2252.0 working)
 
 # Dependencies needed to build:
