@@ -112,7 +112,7 @@ case "$ARCH" in
              DO_VAAPI=OFF # Does not support Intel, AMD and Nvidia. (Pi uses Broadcom chips)
              DO_VDPAU=OFF # Does not support NVIDIA GPU. (Pi uses Broadcom chips)
              ;;
-  armv6*)    SLKCFLAGS="-O2 -march=armv6 -mfpu=vfp -mfloat-abi=hard"
+  armv6*)    SLKCFLAGS="-O2 -march=armv6 -mfpu=vfp
              SARCH=arm
              SLKLDFLAGS=""; LIBDIRSUFFIX=""
              CORE_PLATFORM="x11" #Change this to "gbm" if you want to use gbm instead of x11
