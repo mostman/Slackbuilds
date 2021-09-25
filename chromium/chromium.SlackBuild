@@ -198,7 +198,8 @@ USE_CUSTCLANG=${USE_CUSTCLANG:-1}
 # If set custom clang (USE_CUSTCLANG "1")
 # Make sure you to set correct clang base path.
 # Path where you installed clang, default is set to "/usr" (The system).
-# If you chose to use the buildscript i made then set CLANG_BASE_PATH="/opt/llvm".
+# If you installed my llvm/clang package then set CLANG_BASE_PATH="/opt/llvm".
+#CLANG_BASE_PATH="/opt/llvm"
 CLANG_BASE_PATH="/usr"
 
 # If you don't want to enable support for Widevine CDM
