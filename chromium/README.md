@@ -29,7 +29,7 @@ dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * java runtime (Is avalible throught [SARPi Project](https://sarpi.penthux.net/index.php?p=rpiarmcurrentpkgs))
 * Internet access (for downloading toolchain bins)
 
-# Optional Dependencies to build:
+# Optional dependencies to build:
 * llvm >= 12.0.0 (Is avalible throught slack package or my [llvm](https://github.com/mostman/Slackbuilds/tree/main/llvm) buildscript or prebuilt [llvm slackware ARM](https://github.com/mostman/Slackbuilds/releases/tag/13.0.0-rc3) package)
 
 Some last notes.
