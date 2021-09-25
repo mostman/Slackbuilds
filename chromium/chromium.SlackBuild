@@ -38,6 +38,7 @@
 #                  - python3 >= 3.7, python3-setuptools;
 #                  - java runtime
 #                  - Internet access (for downloading toolchain bins)
+# Optional:        - llvm >= 12.0.0 (Is avalible throught slack package or my llvm buildscript or prebuilt llvm slackware ARM package)
 # Needs:       
 # Changelog:
 # 87.0.4280.141-1: 07/jan/2021 by Eric Hameleers <alien@slackware.com>
