@@ -29,6 +29,9 @@ dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * java runtime (Is avalible throught [SARPi Project](https://sarpi.penthux.net/index.php?p=rpiarmcurrentpkgs))
 * Internet access (for downloading toolchain bins)
 
+# Optional Dependencies to build:
+* llvm >= 12.0.0 (Is avalible throught slack package or my [llvm](https://github.com/mostman/Slackbuilds/tree/main/llvm) buildscript or prebuilt [llvm slackware ARM](https://github.com/mostman/Slackbuilds/releases/tag/13.0.0-rc3) package)
+
 Some last notes.
 Make sure you have at least 10-20 GB free space on your memory card, drive or USBstick (Or where ever you store the source code and tmp folder) and at least 1 GB swap space.
 Recommended to set "gpu_mem" to 32 or 64 and then run system in runlevel 3 when compiling.
