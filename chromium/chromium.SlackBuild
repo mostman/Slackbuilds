@@ -21,12 +21,14 @@
 #   OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 #   SUCH DAMAGE.
 #
+# Modified by Martin Östman (Minime) for slackware ARM (SARPI).
+#
 # -----------------------------------------------------------------------------
 #
 # Slackware SlackBuild script 
 # ===========================
 # By:              Eric Hameleers <alien@slackware.com>
-# Fixed ARM by:    Minime <slackware[at]slackwarelinux[dot]se>
+# Modified by      Martin Östman (Minime) <slackware[at]slackwarelinux[dot]se>
 # For:             chromium
 # Descr:           Open Source version of Chrome Web Browser
 # URL:             http://www.chromium.org/
