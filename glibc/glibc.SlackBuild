@@ -23,6 +23,7 @@ ulimit -s unlimited
 #
 #
 # Modified by Stuart Winter for Slackware ARM.
+# Modified by Martin Östman (Minime) to make widevine working on slackware ARM.
 #
 
 # Record toolchain & other info for the build log:
