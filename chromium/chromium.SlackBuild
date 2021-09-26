@@ -341,8 +341,8 @@ case "$ARCH" in
              # VAAPI not supported:
              USE_VAAPI=0
              FFMPEG_ARCH="arm"
+             SYSROOT_ARCH="arm"
              SYSROOT_TARGET="arm-linux-gnueabihf"
-             SYSROOT_TARGET="arm"
              PKGARCH="$ARCH"
              ;;
   *)         SLKCFLAGS=${SLKCFLAGS:-"O2"}
@@ -360,8 +360,8 @@ case "$ARCH" in
 esac
 
 case "$ARCH" in
-    arm*)    TARGET=$SYSROOT_ARCH-slackware-linux-gnueabihf ;;
-    *)       TARGET=$ARCH-slackware-linux ;;
+    arm*)    TARGET=${SYSROOT_ARCH}-slackware-linux-gnueabihf ;;
+    *)       TARGET=${ARCH}-slackware-linux ;;
 esac
 
 # Exit the script on errors:
