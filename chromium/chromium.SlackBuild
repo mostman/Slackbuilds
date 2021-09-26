@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: chromium.SlackBuild,v 1.255 2021/08/17 15:16:01 root Exp root $
+# $Id: chromium.SlackBuild,v 1.259 2021/09/14 21:57:04 root Exp root $
 # Copyright 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021  Eric Hameleers, Eindhoven, NL
 # All rights reserved.
 #
@@ -25,7 +25,7 @@
 #
 # -----------------------------------------------------------------------------
 #
-# Slackware SlackBuild script 
+# Slackware SlackBuild script
 # ===========================
 # By:              Eric Hameleers <alien@slackware.com>
 # Modified by      Martin Östman (Minime) <slackware[at]slackwarelinux[dot]se>
@@ -40,10 +40,340 @@
 #                  - python3 >= 3.7, python3-setuptools;
 #                  - java runtime
 #                  - Internet access (for downloading toolchain bins)
-# Optional:        - llvm >= 12.0.0 (Is avalible throught slack package or my llvm buildscript or prebuilt llvm slackware ARM package)
-#
-# Needs:       
+# Needs:
 # Changelog:
+# 31.0.1650.57-1:  18/nov/2013 by Eric Hameleers <alien@slackware.com>
+#                  * Initial build.
+# 31.0.1650.63-1:  18/Nov/2013 by Eric Hameleers <alien@slackware.com>
+# 31.0.1650.67-1:  19/dec/2013 by Eric Hameleers <alien@slackware.com>
+#                  * Update comes with several security fixes.
+# 32.0.1700.77-1:  14/jan/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update comes with several security fixes.
+# 32.0.1700.102-1: 29/jan/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update comes with several security fixes.
+# 32.0.1700.107-1: 04/feb/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 33.0.1750.117-1: 21/feb/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update comes with several security fixes.
+# 33.0.1750.146-1: 04/mar/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update comes with several security fixes.
+# 33.0.1750.149-1: 11/mar/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update comes with several security fixes.
+# 33.0.1750.152-1: 18/mar/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update comes with several security fixes.
+# 34.0.1847.116-1: 09/apr/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update comes with several security fixes.
+# 34.0.1847.132-1: 25/apr/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 34.0.1847.137-1: 14/may/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 35.0.1916.114-1: 20/may/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update comes with several security fixes.
+# 35.0.1916.153-1: 10/jun/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update comes with several security fixes.
+# 36.0.1985.125-1: 16/jun/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update comes with several security fixes.
+#                    We can no longer download toolchain binaries in advance,
+#                    so the build will now require internet connectivity.
+# 36.0.1985.143-1: 12/aug/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update comes with security fixes, Chrome also comes with an
+#                    updated Flash plugin: 14.0.0.177.
+# 37.0.2062.94-1:  27/aug/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update comes with security fixes.
+#                    New: an embedded PDF viewer.
+# 37.0.2062.120-1: 09/sep/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update comes with security fixes, Chrome also comes with an
+#                    updated Flash plugin: 15.0.0.152.
+# 38.0.2125.101-1: 08/oct/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update comes with security fixes.
+# 38.0.2125.104-1: 18/oct/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update comes with security fixes. Chrome also updates its
+#                    Flash plugin to 15.0.0.189.
+# 38.0.2125.111-1: 28/oct/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 38.0.2125.122-1: 11/nov/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update comes with security fixes. Chrome also updates its
+#                    Flash plugin to 15.0.0.223.
+# 39.0.2171.65-1:  17/nov/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update comes with security fixes.  See
+#                    http://googlechromereleases.blogspot.nl/2014/11/stable-channel-update_18.html
+# 39.0.2171.71-1:  26/nov/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update comes with security fixes. Chrome also updates its
+#                    Flash plugin to 15.0.0.239.
+# 39.0.2171.95-1:  09/dec/2014 by Eric Hameleers <alien@slackware.com>
+#                  * Update comes with security fixes. Chrome also updates its
+#                    Flash plugin to 16.0.0.235.
+# 39.0.2171.95-2:  01/jan/2015 by Eric Hameleers <alien@slackware.com>
+#                  * Add support for the WIdevine CDM plugin (i.e. Netflix playback)
+# 39.0.2171.99-1:  14/jan/2015 by Eric Hameleers <alien@slackware.com>
+#                  * New release accompanied by pepperflash 16.0.0.257.
+# 40.0.2214.91-1:  21/jan/2015 by Eric Hameleers <alien@slackware.com>
+#                  * New release.
+# 40.0.2214.111-1: 06/feb/2015 by Eric Hameleers <alien@slackware.com>
+#                  * New release.
+# 41.0.2272.76-1:  05/mar/2015 by Eric Hameleers <alien@slackware.com>
+#                  * First release of Chromium 41 stable.
+# 41.0.2272.118-1: 02/apr/2015 by Eric Hameleers <alien@slackware.com>
+#                  * Security update.
+# 42.0.2311.90-1:  15/apr/2015 by Eric Hameleers <alien@slackware.com>
+#                  * First release of Chromium 42 stable.
+# 42.0.2311.135-1: 30/apr/2015 by Eric Hameleers <alien@slackware.com>
+#                  * Security update.
+# 43.0.2357.65-1:  20/may/2015 by Eric Hameleers <alien@slackware.com>
+#                  * Security update, first 43 version.
+# 43.0.2357.81-1:  29/may/2015 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 43.0.2357.124-1: 09/jun/2015 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 43.0.2357.125-1: 12/jun/2015 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 43.0.2357.125-2: 19/jun/2015 by Eric Hameleers <alien@slackware.com>
+#                  * Disable "OK Google" hotwording completely.
+# 43.0.2357.130-1: 22/jun/2015 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 43.0.2357.130-2: 25/jun/2015 by Eric Hameleers <alien@slackware.com>
+#                  * Fix broken password manager in KDE.
+# 43.0.2357.132-1: 08/jul/2015 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 43.0.2357.134-1: 15/jul/2015 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 44.0.2403.89-1:  22/jul/2015 by Eric Hameleers <alien@slackware.com>
+#                  * Update - first 44 release.
+# 44.0.2403.107-1: 25/jul/2015 by Eric Hameleers <alien@slackware.com>
+#                  * Update - emergency bugfix release.
+# 44.0.2403.155-1: 11/aug/2015 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 44.0.2403.157-1: 21/aug/2015 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 45.0.2454.85-1:  02/sep/2015 by Eric Hameleers <alien@slackware.com>
+#                  * Update - first 45 release.
+# 45.0.2454.93-1:  16/sep/2015 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 45.0.2454.101-1: 25/sep/2015 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 46.0.2490.71-1:  14/oct/2015 by Eric Hameleers <alien@slackware.com>
+#                  * First 46 release.
+# 46.0.2490.86-1:  22/nov/2015 by Eric Hameleers <alien@slackware.com>
+#                  * Security update.
+# 47.0.2526.73-1:  03/dec/2015 by Eric Hameleers <alien@slackware.com>
+#                  * First 47 release.
+# 48.0.2564.82-1:  24/jan/2016 by Eric Hameleers <alien@slackware.com>
+#                  * First 48 release.
+# 48.0.2564.97-1:  31/jan/2016 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 48.0.2564.109-1: 13/feb/2016 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 49.0.2623.75-1:  05/mar/2016 by Eric Hameleers <alien@slackware.com>
+#                  * First 49 release.  Binary plugins such as widevine and
+#                    pepperflash are no longer available for 32-bit since
+#                    Google stopped providing binaries for 32-bit Chrome.
+# 49.0.2623.108-1: 25/feb/2016 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 49.0.2623.112-1: 08/apr/2016 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 50.0.2661.75-1:  14/apr/2016 by Eric Hameleers <alien@slackware.com>
+#                  * First 50 release.
+# 50.0.2661.94-1:  29/apr/2016 by Eric Hameleers <alien@slackware.com>
+#                  * Security update.
+# 50.0.2661.102-1: 12/may/2016 by Eric Hameleers <alien@slackware.com>
+#                  * Security update.
+# 51.0.2704.63-1:  26/may/2016 by Eric Hameleers <alien@slackware.com>
+#                  * First 51 release.
+# 51.0.2704.84-1:  07/jun/2016 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 51.0.2704.103-1: 17/jun/2016 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 52.0.2743.82-1:  24/jul/2016 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 52.0.2743.116-1: 04/aug/2016 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 53.0.2785.92-1:  06/sep/2016 by Eric Hameleers <alien@slackware.com>
+#                  * First 53 release.
+# 53.0.2785.92-2:  12/sep/2016 by Eric Hameleers <alien@slackware.com>
+#                  * Apply patch required for Slackware 14.1.
+# 54.0.2840.90-1:  03/nov/2016 by Eric Hameleers <alien@slackware.com>
+#                  * First 54 release. Build system changed from gyp to gn.
+# 54.0.2840.100-1: 17/nov/2016 by Eric Hameleers <alien@slackware.com>
+#                  * Updated. Security fix. Removed the VAAPI patch because
+#                    several people have issues with it.
+# 55.0.2883.75-1:  12/dec/2016 by Eric Hameleers <alien@slackware.com>
+#                  * First 55 release.
+# 56.0.2924.76-1:  30/jan/2017 by Eric Hameleers <alien@slackware.com>
+#                  * First 56 release.
+# 56.0.2924.76-2:  25/feb/2017 by Eric Hameleers <alien@slackware.com>
+#                  * Built for Slackware 14.1 with some additional patches.
+# 57.0.2987.98-1:  14/mar/2017 by Eric Hameleers <alien@slackware.com>
+#                  * First 57 release.
+# 58.0.3029.96-1:  04/may/2017 by Eric Hameleers <alien@slackware.com>
+#                  * Update to 58.
+# 59.0.3071.86-1:  06/jun/2017 by Eric Hameleers <alien@slackware.com>
+#                  * Update to 59.
+# 60.0.3112.78-1:  25/jun/2017 by Eric Hameleers <alien@slackware.com>
+#                  * Update to 60.
+# 61.0.3163.79-1:  11/sep/2017 by Eric Hameleers <alien@slackware.com>
+#                  * Update to 61.
+# 61.0.3163.100-1: 25/sep/2017 by Eric Hameleers <alien@slackware.com>
+#                  * Security update.
+# 62.0.3202.62-1:  18/oct/2017 by Eric Hameleers <alien@slackware.com>
+#                  * Update to 62.
+# 62.0.3202.75-1:  27/oct/2017 by Eric Hameleers <alien@slackware.com>
+#                  * Update, switch compiler to clang instead of gcc.
+# 62.0.3202.94-1:  25/nov/2017 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 63.0.3239.108-1: 17/dec/2017 by Eric Hameleers <alien@slackware.com>
+#                  * Update to 63.
+# 63.0.3239.132-1: 07/jan/2018 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 64.0.3282.119-1: 26/jan/2018 by Eric Hameleers <alien@slackware.com>
+#                  * Update to 64.
+# 64.0.3282.119-2: 29/jan/2018 by Eric Hameleers <alien@slackware.com>
+#                  * Enable HEVC support.
+# 64.0.3282.140-1: 05/feb/2018 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 64.0.3282.186-1: 06/mar/2018 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 65.0.3325.146-1: 09/mar/2018 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M65.
+# 65.0.3325.162-1: 16/mar/2018 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 65.0.3325.181-1: 31/mar/2018 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 66.0.3359.117-1: 25/apr/2018 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M66.
+# 66.0.3359.139-1: 25/apr/2018 by Eric Hameleers <alien@slackware.com>
+#                  * Security update (CVE-2018-6118).
+# 66.0.3359.181-1: 18/may/2018 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 67.0.3396.62-1:  31/may/2018 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M67.
+# 67.0.3396.79-1:  08/jun/2018 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 67.0.3396.99-1:  02/jul/2018 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 68.0.3440.84-1:  01/aug/2018 by Eric Hameleers <alien@slackware.com>
+#                  * Update to 68.
+# 69.0.3497.81-1:  05/sep/2018 by Eric Hameleers <alien@slackware.com>
+#                  * Update to 69.
+# 69.0.3497.100-1: 28/sep/2018 by Eric Hameleers <alien@slackware.com>
+#                  * Update, trying to fix pulseaudio.
+# 70.0.3538.67-1:  24/oct/2018 by Eric Hameleers <alien@slackware.com>
+#                  * Update to 70.
+# 70.0.3538.102-1: 11/nov/2018 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 71.0.3578.80-1:  05/dec/2018 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M71.
+# 72.0.3626.81-1:  31/jan/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M72.
+# 72.0.3626.121-1: 03/mar/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Update to 72.0.3626.121.
+# 73.0.3683.75-1:  15/mar/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M73.
+# 73.0.3683.75-2:  17/mar/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Fix 32bit build.
+# 73.0.3683.86-1:  31/mar/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 73.0.3683.103-1: 14/apr/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 74.0.3729.108-1: 24/apr/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M74.
+# 74.0.3729.169-1: 22/may/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 75.0.3770.80-1:  08/jun/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M75.
+# 75.0.3770.90-1:  13/jun/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 75.0.3770.100-1: 20/jun/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 75.0.3770.100-2: 20/jun/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Fix HEVC support.
+# 75.0.3770.142-1: 15/jul/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 76.0.3809.87-1:  31/jul/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M76.
+# 76.0.3809.132-1: 30/aug/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 77.0.3865.75-1:  11/sep/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M77.
+# 77.0.3865.90-1:  11/sep/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Security update.
+# 77.0.3865.120-1: 10/oct/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Security update.
+# 78.0.3904.70-1:  10/oct/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M78.
+# 78.0.3904.87-1:  01/nov/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Critical security update.
+# 78.0.3904.97-1:  11/nov/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Security update.
+# 78.0.3904.108-1: 19/nov/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Security update.
+# 79.0.3945.79-1:  11/dec/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Security update.
+# 79.0.3945.88-1:  18/dec/2019 by Eric Hameleers <alien@slackware.com>
+#                  * Security update.
+# 79.0.3945.117-1: 08/jan/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Security update.
+# 79.0.3945.130-1: 19/jan/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Security update.
+# 80.0.3987.87-1:  05/feb/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M80.
+# 80.0.3987.106-1: 14/feb/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Updated.
+# 80.0.3987.122-1: 27/feb/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Updated.
+# 80.0.3987.132-1: 04/mar/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Updated.
+# 80.0.3987.149-1: 18/mar/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Updated.
+# 81.0.4044.92-1:  08/apr/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M81.
+# 81.0.4044.113-1: 16/apr/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Updated.
+# 81.0.4044.122-1: 25/apr/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Updated.
+# 81.0.4044.129-1: 29/apr/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Updated.
+# 81.0.4044.138-1: 06/may/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Updated.
+# 83.0.4103.61-1:  20/may/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M83.
+# 83.0.4103.97-1:  07/jun/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Updated.
+# 83.0.4103.106-1: 16/jun/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Updated.
+# 83.0.4103.116-1: 23/jun/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Updated.
+#                    Add support for VAAPI. This is off by default but
+#                    can be enabled by adding '--ignore-gpu-blacklist' and
+#                    then one of '--use-gl=desktop' or '--use-gl=egl'.
+#                    See https://chromium.googlesource.com/chromium/src/+/master/docs/gpu/vaapi.md#VaAPI-on-Linux
+#                    for the intended usage (Intel VAAPI and MESA VAAPI).
+#                    To support Nvidia and other GPUs, patches would be needed.
+# 84.0.4147.89-1:  20/jul/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M84.
+# 84.0.4147.94-1:  23/jul/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Updated. Use a newer nodejs to make the sources compile
+#                    on 32bit Slackware 14, plus this also fixes the
+#                    broken development tools.
+# 84.0.4147.105-1: 01/aug/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Updated.
+# 85.0.4183.83-1:  28/aug/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M85.
+# 85.0.4183.102-1: 09/sep/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Updated.
+# 85.0.4183.121-1: 22/sep/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Updated.
+# 86.0.4240.75-1:  07/oct/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M86.
+# 86.0.4240.111-1: 22/oct/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Updated.
+# 86.0.4240.183-1: 03/nov/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Updated.
+# 86.0.4240.198-1: 13/nov/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Updated.
+# 87.0.4280.66-1:  23/nov/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M87.
+# 87.0.4280.88-1:  03/dec/2020 by Eric Hameleers <alien@slackware.com>
+#                  * Updated.
 # 87.0.4280.141-1: 07/jan/2021 by Eric Hameleers <alien@slackware.com>
 #                  * Updated.
 # 88.0.4324.96-1:  21/jan/2021 by Eric Hameleers <alien@slackware.com>
@@ -91,14 +421,19 @@
 #                    dbus-arch-deps.h, graphene-config.h and incorrect
 #                    conf file "(arch)-linux-gnu.conf" in ARM system.
 #                  * Fixed compiling google's internal clang for ARM.
-#                  31/aug/2021 by Minime <slackware[at]slackwarelinux[dot]se
+#                  31/aug/2021 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Fixed missing link to debias readelf for ARM.
-#                  2/sep/2021 by Minime <slackware[at]slackwarelinux[dot]se
+#                  2/sep/2021 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Alienbob thought the code is messy, and i agree.
 #                    Started on some code cleanup.
 #                  * Removed eu-strip patch and rebuild of eu-strip as this
 #                    not needed.
 #                  * Cleaned up duplicate entries in chromium config array.
+# 93.0.4577.63-1:  01/sep/2021 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M93. Add some mods that hopefully make building
+#                    on ARM platforms easier.
+# 93.0.4577.82-1:  13/sep/2021 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
 # 93.0.4577.82-1:  20/sep/2021 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Update to M93.
 #                  * Added latest patchsets for chromium-93.0.4577.8
@@ -106,17 +441,23 @@
 #                  * Added softlink cleanup
 #                  * Fixed Widevine support patch for ARM
 #                    https://www.linuxquestions.org/questions/slackware-arm-108/how-to-get-widevine-4-10-2252-0-working-on-slackware-arm-4175700846/
-#                  22/sep/2021 by Minime <slackware[at]slackwarelinux[dot]se
+#                  22/sep/2021 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Fixed custom clang option, set default
 #                    to systems clang version
-# 
+#                  27/sep/2021 by Minime <slackware[at]slackwarelinux[dot]se>
+#                  * Merged script with AlienBOB´s slackbuild
+#                  * Fixed and adjusted script to my llvm build.
+#                  * Note: There will be an issue with Slackware ARMs
+#                          llvm/clang version as its missing lld.
+#                          This is one reason i make a custom llvm/clang package.
+#
 # -----------------------------------------------------------------------------
-# 
+#
 # -----------------------------------------------------------------------------
-# 
+#
 # Run 'sh chromium.SlackBuild' to build a Slackware package.
 # The package (.txz) and .txt file as well as build logs are created in /tmp .
-# Install it using 'installpkg'. 
+# Install it using 'installpkg'.
 #
 # -----------------------------------------------------------------------------
 
@@ -191,8 +532,10 @@ FFMPEG_HEVC=${FFMPEG_HEVC:-0}
 # Use the clang compiler. Results in faster build and smaller binaries.
 # This default to "1" (on) because gcc support is getting stale
 # and the gcc of Slackware 14.2 is already too old.
-# This script will compile google's modified clang from source, so that 32bit
-# can be supported (Google offers only 64bit pre-built clang for download0:
+# You will have to download and apply lots of patches when using gcc anyway.
+# This script can compile google's modified clang from source, so that 32bit
+# can be supported on older Slackware (Google offers only 64bit pre-built
+# clang for download0:
 USE_CLANG=${USE_CLANG:-1}
 
 # Use custom clang the systems clang version or if you installed the build i made
@@ -238,7 +581,7 @@ OUTPUT=${OUTPUT:-/tmp}
 # If you rebuild this package, you can use your own API keys. See:
 #   http://www.chromium.org/developers/how-tos/api-keys
 # This browser is now compiled without API keys. This will disable stuff like
-# browser sync and other functionality which accesses Google APIs. 
+# browser sync and other functionality which accesses Google APIs.
 # The following variables must be set to access Google's public APIs:
 #   _google_api_key
 #   _google_default_client_id
@@ -460,15 +803,11 @@ sed -e 's/OFFICIAL_BUILD/GOOGLE_CHROME_BUILD/' \
   -i tools/generate_shim_headers/generate_shim_headers.py
 # Patches and bug fixes:
 touch $OUTPUT/patch-${PRGNAM}.log
-# Fix 32bit builds on glibc >= 2.33 - thanks Matt Denton:
+# Try to fix 32bit builds on glibc >= 2.33 - thanks Matt Denton:
 cat $SRCDIR/patches/linux-sandbox-syscall-broker-use-struct-kernel_stat.patch \
   | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 cat $SRCDIR/patches/linux-sandbox-fix-fstatat-crash.patch \
   | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-# Don't retire 'enable-accelerated-video-decode' flag in Chromium 91 just yet,
-# See https://crbug.com/1207478 :
-cat $SRCDIR/patches/chromium_unexpire-accelerated-video-decode-flag.patch \
-   | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # Be compatible with gcc 10:
 cat $SRCDIR/patches/chromium_gcc10.patch | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
@@ -510,6 +849,9 @@ cat $SRCDIR/patches/widevine_support_for_arm.patch \
 sed -e '/ldflags /s/-m32/&", "-Wl,-z,notext/' \
   -i build/config/compiler/BUILD.gn
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+## Fix a compilation error because we enable HEVC but are not ChromeOS:
+#cat $SRCDIR/patches/chromium_hevc_non_chromeos.patch | patch -p1 --verbose \
+#  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # Slackware specific:
 # When compiling google's clang on 32bit Slackware or on ARM, add our triplets.
 # I am a python noob so this is clumsy, better implementation is welcome :-)
@@ -559,19 +901,18 @@ sed -i tools/clang/scripts/build.py -e "s/ldflags = \[\]/ldflags = \['-latomic'\
 # If ARM, then try to force the build script to build clang for arm instead of x86
 if [[ "$ARCH" =~ arm.* ]]; then
   # We are compiling bootstrap for ARM and not X86.
-  sed -i tools/clang/scripts/build.py -e "s/bootstrap_targets = \x27X86\x27/bootstrap_targets = \x27ARM\x27/"
+  sed -i tools/clang/scripts/build.py \
+    -e "s/bootstrap_targets = \x27X86\x27/bootstrap_targets = \x27ARM\x27/"
   # We are using ARM, so to speed things up we only build the relevant back-ends
   # (ARM,AArch64 and x86), since it’s very unlikely that we will cross-compile to other arches.
   # x86 is also needed for Compiler-RT tests.
-  sed -i tools/clang/scripts/build.py -e "s/targets = \x27AArch64;ARM;Mips;PowerPC;SystemZ;WebAssembly;X86\x27/targets = \x27ARM;X86;AArch64\x27/"
+  sed -i tools/clang/scripts/build.py \
+    -e "s/targets = \x27AArch64;ARM;Mips;PowerPC;SystemZ;WebAssembly;X86\x27/targets = \x27ARM;X86;AArch64\x27/"
 fi
 
 # When compiling google's clang, use the system cmake
 # (prebuilt binary from google is only available as 64bit):
 sed -i tools/clang/scripts/build.py -e 's/^ *AddCMakeToPath/#&/'
-
-# Force script incompatible with Python 3 to use /usr/bin/python2:
-sed -i '1s|python$|&2|' third_party/dom_distiller_js/protoc_plugins/*.py
 
 # Prevent a build failure (yes, 'x64' even on 32bit Slackware):
 mkdir -p third_party/node/linux/node-linux-x64/bin
@@ -603,19 +944,20 @@ if [ "$PRGNAM" != "$SRCNAM" ]; then
 fi
 
 chown -R root:root .
-chmod -R u+w,go+r-w,a+X-s .
+#chmod -R u+w,go+r-w,a+X-s .
+chmod -R u+w,go+r-w,a+rX-st .
 
-echo "Building ..."
+echo Building ...
 
 [ ${USE_CLANG} -eq 1 ] && do_clang=true || do_clang=false
 [ ${USE_CUSTCLANG} -eq 1 ] && do_clang_plug=false || do_clang_plug=true
 [ ${USE_CDM} -eq 1 ] && do_cdm=true || do_cdm=false
-[ ${USE_VAAPI} -eq 1 ] && do_vaapi=true || do_vaapi=false
 [ ${USE_HOTWORD} -eq 1 ] && do_hotword=true || do_hotword=false
 [ ${USE_PA} -eq 1 ] && do_pa=true || do_pa=false
 [ ${USE_SYSROOT} -eq 1 ] && do_sysroot=true || do_sysroot=false
+[ ${USE_VAAPI} -eq 1 ] && do_vaapi=true || do_vaapi=false
 [ ${USE_WAYLAND} -eq 1 ] && do_wayland=true || do_wayland=false
-[ ${FFMPEG_HEVC} -eq 1 ] && do_hevc=true || do_hevc=false 
+[ ${FFMPEG_HEVC} -eq 1 ] && do_hevc=true || do_hevc=false
 
 export LDFLAGS="$SLKLDFLAGS"
 export CXXFLAGS="$SLKCFLAGS -Wno-unknown-warning-option"
@@ -643,7 +985,7 @@ _chromium_conf=(
     "link_pulseaudio=${do_pa}"
     #"rtc_use_pipewire=${do_wayland}"
     #"rtc_link_pipewire=${do_wayland}"
-    #'rtc_pipewire_version="0.3"' # Otherwise chromium tries to link absent 0.2 
+    #'rtc_pipewire_version="0.3"' # Otherwise chromium tries to link absent 0.2
     "ozone_platform_wayland=${do_wayland}"
     'proprietary_codecs=true'
     'symbol_level=0'
@@ -811,6 +1153,8 @@ if [ ${USE_SYSROOT} -eq 1 ]; then
     build/linux/${SYSROOTDIR}/usr/include/graphene-1.0/graphene-config.h
 
   # Take care of Debian/Ubuntu related linker issues:
+  #echo "/usr/lib/${SYSROOT_TARGET}/nss" >> \
+  #  build/linux/${SYSROOTDIR}/etc/ld.so.conf.d/${SYSROOT_TARGET}.conf
   for SOFILE in build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}/nss/*.so ;
   do
     ln -sf nss/$(basename $SOFILE) \
@@ -842,11 +1186,8 @@ ulimit -n 2048
 if [ ${USE_CLANG} -eq 1 ] && [ ${USE_CUSTCLANG} -eq 0 ]; then
   # Build clang from source instead of downloading:
   echo "-- Building google's clang toolchain."
-  # Actually 32bit compilation fails by not finding 'bits/c++config.h'.
-  # I could only work around this using a kludge:
-  # cp -ia /usr/include/c++/$(gcc -dumpversion)/${TARGET}/bits/* /usr/include/c++/$(gcc -dumpversion)/bits/
   LDFLAGS="$LDFLAGS" \
-  python2 tools/clang/scripts/build.py \
+  python3 tools/clang/scripts/build.py \
     --bootstrap \
     --disable-asserts \
     --gcc-toolchain /usr \
@@ -859,14 +1200,15 @@ if [ ${USE_CLANG} -eq 1 ] && [ ${USE_CUSTCLANG} -eq 0 ]; then
 
   # Ensure that only this new clang is used, ignoring the system version:
   MYCLANG_PATH="$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/third_party/llvm-build/Release+Asserts/bin"
-  export PATH="$MYCLANG_PATH:$PATH"
+  export PATH="${MYCLANG_PATH}:$PATH"
 elif [ ${USE_CLANG} -eq 1 ] && [ ${USE_CUSTCLANG} -eq 1 ]; then
   # Ensure correct path for custom clang version:
   MYCLANG_PATH="${CLANG_BASE_PATH}/bin"
-  export PATH="$MYCLANG_PATH:$PATH"
+  export PATH="${MYCLANG_PATH}:$PATH"
 fi
 
-# For Chromium 92, disable ffmpeg re-configuration on 32bit OS to avoid linking errors like:
+# For Chromium 92, disable ffmpeg re-configuration on 32bit OS,
+# to avoid linking errors like:
 # "FAILED: v8_context_snapshot_generator - ld.lld: error: undefined symbol: ff_psdsp_init_x86"
 if [ ${FFMPEG_HEVC} -eq 1 ] && [ "${FFMPEG_ARCH}" != "ia32" ]; then
   echo "-- Re-configuring bundled ffmpeg..."
@@ -883,16 +1225,15 @@ if [ ${FFMPEG_HEVC} -eq 1 ] && [ "${FFMPEG_ARCH}" != "ia32" ]; then
   fi
   cd third_party/ffmpeg
     ## To prevent error on x86_64:
-    ## "clang-5.0: error: invalid linker name in argument '-fuse-ld=lld'" 
+    ## "clang-5.0: error: invalid linker name in argument '-fuse-ld=lld'"
     ## in third_party/ffmpeg/build.x64.linux/ChromeOS/ffbuild/config.log
     #sed -e "s/--extra-ldflags=-fuse-ld=lld/--extra-ldflags=''/" \
     #    -i chromium/scripts/build_ffmpeg.py
     # Actual reconfigure steps:
-    PATH="$MYCLANG_PATH:${PATH}" \
-    python2 chromium/scripts/build_ffmpeg.py linux ${FFMPEG_ARCH} \
+    python3 chromium/scripts/build_ffmpeg.py linux ${FFMPEG_ARCH} \
       --branding ${FFMPEG_BRANDING} -- ${FFMPEG_CUSTOM_ARGS} \
       2>&1 | tee $OUTPUT/ffmpeg_configure-${PRGNAM}.log
-    python2 chromium/scripts/copy_config.sh \
+    python3 chromium/scripts/copy_config.sh \
       2>&1 | tee -a $OUTPUT/ffmpeg_configure-${PRGNAM}.log
     # Runs into 'SyntaxError: invalid syntax' with Python2:
     python3 chromium/scripts/generate_gn.py \
@@ -904,11 +1245,7 @@ fi
 echo "-- Bootstrapping 'gn'."
 
 # Symlink ld to lld to make gn linking stage succeed:
-if [ "$USE_CLANG" -eq 1 ] && [ "$USE_CUSTCLANG" -eq 0 ]; then
-  if [ ! -f ${MYCLANG_PATH}/ld ]; then
-    cd ${MYCLANG_PATH} ; ln -s lld ld ; cd - 1>/dev/null
-  fi
-elif [ "$USE_CLANG" -eq 1 ] && [ "$USE_CUSTCLANG" -eq 1 ] && [ ! "$CLANG_BASE_PATH" = "/usr" ]; then
+if [ "$USE_CLANG" -eq 1 ] && [ ! "$CLANG_BASE_PATH" = "/usr" ]; then
   if [ ! -f ${MYCLANG_PATH}/ld ]; then
     cd ${MYCLANG_PATH} ; ln -s lld ld ; cd - 1>/dev/null
   fi
@@ -916,15 +1253,12 @@ fi
 
 LDFLAGS="$LDFLAGS" python3 tools/gn/bootstrap/bootstrap.py \
   2>&1 | tee $OUTPUT/gyp-${PRGNAM}.log
+  #--use-custom-libcxx \
 
 # Remove symlink again:
-if [ "$USE_CLANG" -eq 1 ] && [ "$USE_CUSTCLANG" -eq 0 ]; then
+if [ "$USE_CLANG" -eq 1 ] && [ ! "$CLANG_BASE_PATH" = "/usr" ]; then
   if  [ -f ${MYCLANG_PATH}/ld ]; then
     rm ${MYCLANG_PATH}/ld
-  fi
-elif [ "$USE_CLANG" -eq 1 ] && [ "$USE_CUSTCLANG" -eq 1 ] && [ ! "$CLANG_BASE_PATH" = "/usr" ]; then
-  if [ -f ${MYCLANG_PATH}/ld ]; then
-   rm ${MYCLANG_PATH}/ld
   fi
 fi
 
@@ -1075,14 +1409,14 @@ install -D -m0644 out/Release/${PRGNAM}.1 $PKG/usr/man/man1/${PRGNAM}.1
 # Add a desktop file:
 process_template chrome/installer/linux/common/desktop.template \
   out/Release/${PRGNAM}.desktop
+install -D -m0644 out/Release/${PRGNAM}.desktop \
+  $PKG/usr/share/applications/${PRGNAM}.desktop
 
 # Fix user-agent for ARM
 if [[ "$ARCH" =~ arm.* ]]; then
-  sed -i out/Release/${PRGNAM}.desktop -e "s/\/${PRGNAM}/\/${PRGNAM} \-\-user-agent=\"Mozilla\/5.0 \(X11; CrOS armv7l 10895.56.0\) AppleWebKit\/537.36 \(KHTML, like Gecko\) Chrome\/${VERSION} Safari\/537.36\"/"
+  sed -i out/Release/${PRGNAM}.desktop \
+    -e "s/\/${PRGNAM}/\/${PRGNAM} \-\-user-agent=\"Mozilla\/5.0 \(X11; CrOS armv7l 10895.56.0\) AppleWebKit\/537.36 \(KHTML, like Gecko\) Chrome\/${VERSION} Safari\/537.36\"/"
 fi
-
-install -D -m0644 out/Release/${PRGNAM}.desktop \
-  $PKG/usr/share/applications/${PRGNAM}.desktop
 
 # Install desktop icons:
 for size in 16 32; do
