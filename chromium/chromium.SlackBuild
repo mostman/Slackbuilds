@@ -121,7 +121,7 @@
 # -----------------------------------------------------------------------------
 
 # Build an ungoogled chromium package (default no):
-USE_UNGOOGLED=${USE_UNGOOGLED:-1}
+USE_UNGOOGLED=${USE_UNGOOGLED:-0}
 
 # Build a development version of chromium (default no):
 USE_DEV=${USE_DEV:-0}
@@ -203,8 +203,8 @@ USE_CUSTCLANG=${USE_CUSTCLANG:-1}
 # Make sure you to set correct clang base path.
 # Path where you installed clang, default is set to "/usr" (The system).
 # If you installed my llvm/clang package then set CLANG_BASE_PATH="/opt/llvm".
-#CLANG_BASE_PATH="/usr"
-CLANG_BASE_PATH="/opt/llvm"
+#CLANG_BASE_PATH="/opt/llvm"
+CLANG_BASE_PATH="/usr"
 
 # If you don't want to enable support for Widevine CDM
 # (content decryption module) say "0" here.
