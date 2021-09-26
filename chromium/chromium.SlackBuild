@@ -41,6 +41,7 @@
 #                  - java runtime
 #                  - Internet access (for downloading toolchain bins)
 # Optional:        - llvm >= 12.0.0 (Is avalible throught slack package or my llvm buildscript or prebuilt llvm slackware ARM package)
+#
 # Needs:       
 # Changelog:
 # 87.0.4280.141-1: 07/jan/2021 by Eric Hameleers <alien@slackware.com>
@@ -120,7 +121,7 @@
 # -----------------------------------------------------------------------------
 
 # Build an ungoogled chromium package (default no):
-USE_UNGOOGLED=${USE_UNGOOGLED:-0}
+USE_UNGOOGLED=${USE_UNGOOGLED:-1}
 
 # Build a development version of chromium (default no):
 USE_DEV=${USE_DEV:-0}
@@ -202,8 +203,8 @@ USE_CUSTCLANG=${USE_CUSTCLANG:-1}
 # Make sure you to set correct clang base path.
 # Path where you installed clang, default is set to "/usr" (The system).
 # If you installed my llvm/clang package then set CLANG_BASE_PATH="/opt/llvm".
-#CLANG_BASE_PATH="/opt/llvm"
-CLANG_BASE_PATH="/usr"
+#CLANG_BASE_PATH="/usr"
+CLANG_BASE_PATH="/opt/llvm"
 
 # If you don't want to enable support for Widevine CDM
 # (content decryption module) say "0" here.
@@ -822,8 +823,7 @@ if [ ${USE_SYSROOT} -eq 1 ]; then
   ln -s libsqlite3.so.0 \
     build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}/libsqlite3.so
 
-  # The platform-specific readelf binary/alias in debian does not exist
-  # in slackware, so we will have to softlink this to systems readelf
+  # The platform-specific alias for the ARM readelf binary is missing
   if [ ! -f /usr/bin/${SYSROOT_TARGET}-readelf ]; then
     ln -s /usr/bin/readelf /usr/bin/${SYSROOT_TARGET}-readelf
   fi
