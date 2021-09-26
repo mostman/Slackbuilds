@@ -516,9 +516,8 @@ sed -e '/ldflags /s/-m32/&", "-Wl,-z,notext/' \
 # Slackware specific:
 # When compiling google's clang on 32bit Slackware use 'i586' in the triplet.
 # I am a python noob so this is clumsy, better implementation is welcome :-)
-#cp $SRCDIR/patches/clang.toolchains.i586.triple.diff .
-cp $SRCDIR/patches/clang.toolchains.arm_i586.triple.diff .
-cat $SRCDIR/patches/chromium_32bit_triplet.patch | patch -p1 --verbose \
+cp $SRCDIR/patches/clang.toolchains.slackware.triple.diff .
+cat $SRCDIR/patches/chromium_slackware_triplet.patch | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # Don't crap out when gzip does not support '--rsyncable' (Slackware < 14.2):
 if ! gzip --help |grep -q rsyncable ; then
