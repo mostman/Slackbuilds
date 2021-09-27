@@ -114,7 +114,7 @@ case "$ARCH" in
              ;;
   armv6*)    SLKCFLAGS="-O2 -march=armv6 -mfpu=vfp"
              SARCH=arm
-             SLKLDFLAGS=""; LIBDIRSUFFIX=""
+             LIBDIRSUFFIX=""
              CORE_PLATFORM="x11" #Change this to "gbm" if you want to use gbm instead of x11
              RENDER_SYSTEM="gles"
              DO_VAAPI=OFF # Does not support Intel, AMD and Nvidia. (Pi uses Broadcom chips)
