@@ -911,7 +911,7 @@ if [ "$USE_CLANG" -eq 1 ] && [ ! "$CLANG_BASE_PATH" = "/usr" ]; then
   export CC="$MYCLANG_PATH/clang"
   export CXX="$MYCLANG_PATH/clang++"
   export LD="$MYCLANG_PATH/lld"
-elif [ "$USE_CLANG" -eq 1 ] && [ "$CLANG_BASE_PATH" = "/usr" ]; then
+elif [ "$USE_CLANG" -eq 1 ] && [ "$USE_CUSTCLANG" -eq 1 ] && [ "$CLANG_BASE_PATH" = "/usr" ]; then
   # Use the clang that we build in-tree instead of using the system version:
   export CC="clang"
   export CXX="clang++"
