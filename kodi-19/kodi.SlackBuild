@@ -180,9 +180,8 @@ else
   OPT_WII="OFF"
 fi
 
-cd $KODIBUILD
-
 for PLATFORMS in $CORE_PLATFORM ; do
+  cd $KODIBUILD
   # Compile and create pkg
   CFLAGS="$SLKCFLAGS" \
   CXXFLAGS="$SLKCFLAGS" \
