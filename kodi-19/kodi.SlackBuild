@@ -58,7 +58,7 @@
 PRGNAM=kodi
 SRCNAM=xbmc
 CODNAM=Matrix
-VERSION=${VERSION:-19.1}
+VERSION=${VERSION:-19.2}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SLse}
 
@@ -99,7 +99,7 @@ case "$ARCH" in
   armv8*)    SLKCFLAGS="-O2 -march=armv8-a -mtune=cortex-a72 mfpu=neon-fp-armv8 -mfloat-abi=hard"
              SARCH=arm64
              LIBDIRSUFFIX=""
-             CORE_PLATFORM="x11" #Change this to "gbm" if you want to use gbm instead of x11
+             CORE_PLATFORM="x11 gbm" #Change this to "gbm" if you want to use gbm instead of x11
              RENDER_SYSTEM="gles"
              DO_VAAPI=OFF # Does not support Intel, AMD and Nvidia. (Pi uses Broadcom chips)
              DO_VDPAU=OFF # Does not support NVIDIA GPU. (Pi uses Broadcom chips)
@@ -107,7 +107,8 @@ case "$ARCH" in
   armv7*)    SLKCFLAGS="-O2 -march=armv7-a -mtune=cortex-a72 -mfpu=vfpv3-d16 -mfloat-abi=hard"
              SARCH=arm
              LIBDIRSUFFIX=""
-             CORE_PLATFORM="x11" #Change this to "gbm" if you want to use gbm instead of x11
+             CORE_PLATFORM="x11 gbm" # Will compile x11 and gbm, change this to "gbm" if you only want to use gbm or to x11.
+                                     # if you want to compile wayland just add this or all three: CORE_PLATFORM="x11 wayland gbm"
              RENDER_SYSTEM="gles"
              DO_VAAPI=OFF # Does not support Intel, AMD and Nvidia. (Pi uses Broadcom chips)
              DO_VDPAU=OFF # Does not support NVIDIA GPU. (Pi uses Broadcom chips)
@@ -181,41 +182,43 @@ fi
 
 cd $KODIBUILD
 
-# Compile and create pkg
-CFLAGS="$SLKCFLAGS" \
-CXXFLAGS="$SLKCFLAGS" \
+for PLATFORMS in $CORE_PLATFORM ; do
+  # Compile and create pkg
+  CFLAGS="$SLKCFLAGS" \
+  CXXFLAGS="$SLKCFLAGS" \
 
-cmake ../$SRCNAM-$VERSION-$CODNAM \
-   -DCMAKE_INSTALL_PREFIX=/usr \
-   -DCMAKE_INSTALL_LIBDIR=/usr/lib$LIBDIRSUFFIX \
-   -DCORE_PLATFORM_NAME=$CORE_PLATFORM \
-   -DAPP_RENDER_SYSTEM=$RENDER_SYSTEM \
-   -DENABLE_EVENTCLIENTS=$OPT_WII \
-   -DENABLE_INTERNAL_FFMPEG=$OPT_FFMPEG \
-   -DENABLE_INTERNAL_FSTRCMP=ON \
-   -DENABLE_INTERNAL_CROSSGUID=ON \
-   -DENABLE_INTERNAL_FLATBUFFERS=ON \
-   -DENABLE_INTERNAL_FMT=ON \
-   -DENABLE_INTERNAL_UDFREAD=ON \
-   -DENABLE_INTERNAL_GTEST=ON \
-   -DENABLE_INTERNAL_SPDLOG=ON \
-   -DENABLE_INTERNAL_DAV1D=OFF \
-   -DENABLE_INTERNAL_RapidJSON=OFF \
-   -DENABLE_MICROHTTPD=$OPT_WEB \
-   -DENABLE_AVAHI=OFF \
-   -DENABLE_AIRTUNES=OFF \
-   -DENABLE_VAAPI=$DO_VAAPI \
-   -DENABLE_VDPAU=$DO_VDPAU \
-   2>&1 | tee $OUTPUT/$PRGNAM-configure.log
+  cmake ../$SRCNAM-$VERSION-$CODNAM \
+     -DCMAKE_INSTALL_PREFIX=/usr \
+     -DCMAKE_INSTALL_LIBDIR=/usr/lib$LIBDIRSUFFIX \
+     -DCORE_PLATFORM_NAME=$PLATFORMS \
+     -DAPP_RENDER_SYSTEM=$RENDER_SYSTEM \
+     -DENABLE_EVENTCLIENTS=$OPT_WII \
+     -DENABLE_INTERNAL_FFMPEG=$OPT_FFMPEG \
+     -DENABLE_INTERNAL_FSTRCMP=ON \
+     -DENABLE_INTERNAL_CROSSGUID=ON \
+     -DENABLE_INTERNAL_FLATBUFFERS=ON \
+     -DENABLE_INTERNAL_FMT=ON \
+     -DENABLE_INTERNAL_UDFREAD=ON \
+     -DENABLE_INTERNAL_GTEST=ON \
+     -DENABLE_INTERNAL_SPDLOG=ON \
+     -DENABLE_INTERNAL_DAV1D=OFF \
+     -DENABLE_INTERNAL_RapidJSON=OFF \
+     -DENABLE_MICROHTTPD=$OPT_WEB \
+     -DENABLE_AVAHI=OFF \
+     -DENABLE_AIRTUNES=OFF \
+     -DENABLE_VAAPI=$DO_VAAPI \
+     -DENABLE_VDPAU=$DO_VDPAU \
+     2>&1 | tee $OUTPUT/$PRGNAM-configure.log
 
-# Start compile
-cmake --build . -- VERBOSE=1 -j$(getconf _NPROCESSORS_ONLN) \
-   2>&1 | tee $OUTPUT/$PRGNAM-build.log
-cd $KODIBUILD
+  # Start compile
+  cmake --build . -- VERBOSE=1 -j$(getconf _NPROCESSORS_ONLN) \
+     2>&1 | tee $OUTPUT/$PRGNAM-build.log
+  cd $KODIBUILD
 
-# Install compiled files to $PKG directory
-make install DESTDIR=$PKG \
-   2>&1 | tee $OUTPUT/$PRGNAM-pkg_install.log
+  # Install compiled files to $PKG directory
+  make install DESTDIR=$PKG \
+    2>&1 | tee $OUTPUT/$PRGNAM-pkg_install.log
+done
 
 # Compile and install the addons
 cd ../$SRCNAM-$VERSION-$CODNAM
