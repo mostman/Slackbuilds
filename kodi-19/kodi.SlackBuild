@@ -109,7 +109,7 @@ case "$ARCH" in
   armv8*)    SLKCFLAGS="-O2 -march=armv8-a -mtune=cortex-a72 mfpu=neon-fp-armv8 -mfloat-abi=hard"
              SARCH=arm64
              LIBDIRSUFFIX=""
-             CORE_PLATFORM="x11" #Change this to "gbm" if you want to use gbm instead of x11
+             CORE_PLATFORM="x11 gbm" #Change this to "gbm" if you want to use gbm instead of x11
              RENDER_SYSTEM="gles"
              DO_VAAPI=OFF # Does not support Intel, AMD and Nvidia. (Pi uses Broadcom chips)
              DO_VDPAU=OFF # Does not support NVIDIA GPU. (Pi uses Broadcom chips)
@@ -118,6 +118,7 @@ case "$ARCH" in
              SARCH=arm
              LIBDIRSUFFIX=""
              CORE_PLATFORM="x11 gbm" #Change this to "gbm" if you want to use gbm instead of x11
+                                     # if you want to compile wayland just add this or all three: CORE_PLATFORM="x11 wayland gbm"
              RENDER_SYSTEM="gles"
              DO_VAAPI=OFF # Does not support Intel, AMD and Nvidia. (Pi uses Broadcom chips)
              DO_VDPAU=OFF # Does not support NVIDIA GPU. (Pi uses Broadcom chips)
