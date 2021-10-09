@@ -141,7 +141,7 @@ case "$ARCH" in
              ;;
 esac
 
-# Building clang with clang
+# Building with llvm/clang or gcc/c++
 if [ ${USE_CLANG} -eq 1 ] && [ ${SYS_CLANG} -eq 0 ]; then
   export PATH="$CUST_CLANG_PATH:$PATH"
   CCOMPILER=$CUST_CLANG_PATH/clang
