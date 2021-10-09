@@ -240,7 +240,6 @@ for PLATFORMS in $CORE_PLATFORM ; do
   # Start compile
   cmake --build . -- VERBOSE=1 -j$(getconf _NPROCESSORS_ONLN) \
      2>&1 | tee $OUTPUT/$PRGNAM-$PLATFORMS-build.log
-  #cd $KODIBUILD
 
   # Install compiled files to $PKG directory
   make install DESTDIR=$PKG \
