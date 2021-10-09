@@ -67,7 +67,7 @@ TAG=${TAG:-_SLse}
 USE_CLANG=${USE_CLANG:-1}
 
 # Use systems llvm/clang
-USE_CLANG=${SYS_CLANG:-1}
+SYS_CLANG=${SYS_CLANG:-1}
 
 # Path to custom llvm/clang
 CUST_CLANG_PATH="/opt/llvm/bin"
