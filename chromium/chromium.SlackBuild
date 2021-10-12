@@ -214,13 +214,13 @@ TMP=${TMP:-/tmp/build}
 PKG=$TMP/package-$PRGNAM
 OUTPUT=${OUTPUT:-/tmp}
 
-if [ ! -f ${CLANG_BASE_PATH} ]; then
+if [ ! -f "${CLANG_BASE_PATH}/bin/clang" ]; then
   echo "You have not installed llvm/clang"
   echo "Build will fail"
   exit 1
 else
   CLANG_MIN=13
-  if [ ! $(clang --version |grep '^clang' |cut -d' ' -f3 |cut -d. -f1) -ge ${CLANG_MIN} ]; then
+  if [ ! $(${CLANG_BASE_PATH}/bin/clang --version |grep '^clang' |cut -d' ' -f3 |cut -d. -f1) -ge ${CLANG_MIN} ]; then
     echo "Need newer version of llvm/clang"
     exit 1
   fi
