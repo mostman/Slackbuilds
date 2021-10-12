@@ -36,6 +36,7 @@
 #                  - nodejs >= 15.6.0;
 #                  - gcc >= 8 for bootstrapping gn;
 #                  - nasm >= 2.14 (yasm no longer being used);
+#                    or llvm/clang 13 >=;
 #                  - cmake >= 3.13.4;
 #                  - python3 >= 3.7, python3-setuptools;
 #                  - java runtime
@@ -89,6 +90,9 @@
 #                  * cleared changelog history as its kind of irrelevant and old...
 # 94.0.4606.81-1:  12/oct/2021 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Update to M94.
+#                  * Needs llvm/clang 13, so system clang is no longer an option.
+#                  * Will build with python 3.9, but if upgraded to python 3.10
+#                    there will be issues, will try to revert some parts to python2
 #
 # -----------------------------------------------------------------------------
 #
@@ -552,6 +556,9 @@ fi
 # When compiling google's clang, use the system cmake
 # (prebuilt binary from google is only available as 64bit):
 sed -i tools/clang/scripts/build.py -e 's/^ *AddCMakeToPath/#&/'
+
+# Force script incompatible with Python 3.10 to use /usr/bin/python2:
+sed -i '1s|python$|&2|' third_party/dom_distiller_js/protoc_plugins/*.py
 
 # Prevent a build failure (yes, 'x64' even on 32bit Slackware):
 mkdir -p third_party/node/linux/node-linux-x64/bin
