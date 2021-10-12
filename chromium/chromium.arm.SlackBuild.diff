@@ -1,5 +1,5 @@
---- chromium.SlackBuild.orgi	2021-09-14 23:57:16.000000000 +0200
-+++ chromium.SlackBuild	2021-09-27 01:23:37.388232197 +0200
+--- chromium.SlackBuild.orig	2021-09-14 23:57:16.000000000 +0200
++++ chromium.SlackBuild	2021-10-12 14:37:17.903371086 +0200
 @@ -21,11 +21,14 @@
  #   OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  #   SUCH DAMAGE.
@@ -16,7 +16,7 @@
  # For:             chromium
  # Descr:           Open Source version of Chrome Web Browser
  # URL:             http://www.chromium.org/
-@@ -37,391 +40,61 @@
+@@ -37,391 +40,63 @@
  #                  - python3 >= 3.7, python3-setuptools;
  #                  - java runtime
  #                  - Internet access (for downloading toolchain bins)
@@ -434,6 +434,8 @@
 +#                          llvm/clang version as its missing lld.
 +#                          This is one reason i make a custom llvm/clang package.
 +#                  * cleared changelog history as its kind of irrelevant and old...
++# 94.0.4606.81-1:  12/oct/2021 by Minime <slackware[at]slackwarelinux[dot]se>
++#                  * Update to M94.
 +#
  # -----------------------------------------------------------------------------
 -# 
@@ -448,16 +450,21 @@
  #
  # -----------------------------------------------------------------------------
  
-@@ -439,7 +112,7 @@
+@@ -438,10 +113,10 @@
+ 
  SRCNAM=chromium
  PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
- VERSION=${VERSION:-93.0.4577.82}
+-VERSION=${VERSION:-93.0.4577.82}
 -UNGOOGLED=${UNGOOGLED:-92.0.4515.159-1}
-+UNGOOGLED=${UNGOOGLED:-93.0.4577.82-1}
++VERSION=${VERSION:-94.0.4606.81}
++UNGOOGLED=${UNGOOGLED:-94.0.4606.81-1}
  BUILD=${BUILD:-1}
- TAG=${TAG:-alien}
+-TAG=${TAG:-alien}
++TAG=${TAG:-SLse}
  
-@@ -502,14 +175,16 @@
+ # Cross-compiling 32bit binaries on 64bit Slackware; set to "YES":
+ CROSS32=${CROSS32:-"NO"}
+@@ -502,14 +177,16 @@
  # clang for download0:
  USE_CLANG=${USE_CLANG:-1}
  
@@ -482,7 +489,7 @@
  
  # If you don't want to enable support for Widevine CDM
  # (content decryption module) say "0" here.
-@@ -543,7 +218,7 @@
+@@ -543,7 +220,7 @@
  # If you rebuild this package, you can use your own API keys. See:
  #   http://www.chromium.org/developers/how-tos/api-keys
  # This browser is now compiled without API keys. This will disable stuff like
@@ -491,7 +498,7 @@
  # The following variables must be set to access Google's public APIs:
  #   _google_api_key
  #   _google_default_client_id
-@@ -587,7 +262,8 @@
+@@ -587,7 +264,8 @@
  if [ -z "$ARCH" ]; then
    case "$MARCH" in
      i?86)    export ARCH=i586 ;;
@@ -501,7 +508,7 @@
      arm*)    export ARCH=arm ;;
      # Unless $ARCH is already set, use uname -m for all other archs:
      *)       export ARCH=$MARCH ;;
-@@ -623,7 +299,21 @@
+@@ -623,7 +301,21 @@
               #DSSE="0"
               DSSE="1"
               ;;
@@ -524,7 +531,7 @@
               SLKLDFLAGS="-Wl,-z,notext"; LIBDIRSUFFIX=""
               DSSE="1"
               # Widevine not supported (no binary library available):
-@@ -650,9 +340,8 @@
+@@ -650,9 +342,8 @@
  esac
  
  case "$ARCH" in
@@ -535,7 +542,7 @@
  esac
  
  # Exit the script on errors:
-@@ -759,6 +448,40 @@
+@@ -759,6 +450,40 @@
  # Be compatible with gcc 10:
  cat $SRCDIR/patches/chromium_gcc10.patch | patch -p1 --verbose \
    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
@@ -576,7 +583,7 @@
  # Fix the link on 32bit:
  sed -e '/ldflags /s/-m32/&", "-Wl,-z,notext/' \
    -i build/config/compiler/BUILD.gn
-@@ -812,15 +535,16 @@
+@@ -812,15 +537,16 @@
  # And fix the 32bit compilation while we are at it:
  sed -i tools/clang/scripts/build.py -e "s/ldflags = \[\]/ldflags = \['-latomic'\]/"
  
@@ -599,7 +606,7 @@
  fi
  
  # When compiling google's clang, use the system cmake
-@@ -857,19 +581,20 @@
+@@ -857,19 +583,20 @@
  fi
  
  chown -R root:root .
@@ -623,7 +630,7 @@
  
  export LDFLAGS="$SLKLDFLAGS"
  export CXXFLAGS="$SLKCFLAGS -Wno-unknown-warning-option"
-@@ -887,32 +612,26 @@
+@@ -887,32 +614,26 @@
      'enable_mse_mpeg2ts_stream_parser=true'
      'enable_precompiled_headers=false'
      'enable_swiftshader=true'
@@ -659,7 +666,7 @@
      'use_kerberos=false'
      'use_lld=true'
      'use_ozone=true'
-@@ -923,32 +642,50 @@
+@@ -923,32 +644,50 @@
      "extra_cxxflags=\"${CXXFLAGS}\""
      "extra_ldflags=\"${LDFLAGS}\""
  )
@@ -668,16 +675,16 @@
 +
 +# Set base path custom clang
 +if [ ${USE_CUSTCLANG} -eq 1 ]; then
-+  _chromium_conf+=(
-+    'clang_use_default_sample_profile=false'
-+    "clang_base_path=\"${CLANG_BASE_PATH}\""
-+  )
-+fi
-+
-+if [[ ! "$ARCH" =~ arm.* ]]; then
    _chromium_conf+=(
 -    'custom_toolchain="//build/toolchain/linux/unbundle:default"'
 -    'host_toolchain="//build/toolchain/linux/unbundle:default"'
++    'clang_use_default_sample_profile=false'
++    "clang_base_path=\"${CLANG_BASE_PATH}\""
+   )
+ fi
++
++if [[ ! "$ARCH" =~ arm.* ]]; then
++  _chromium_conf+=(
 +    'enable_hidpi=true'
 +    'enable_webrtc=true'
 +    "linux_sandbox_path=\"/usr/lib${LIBDIRSUFFIX}/${PRGNAM}/chrome_sandbox\""
@@ -686,8 +693,8 @@
 +    'remove_webcore_debug_symbols=true'
 +    "usb_ids_path=\"/usr/share/hwdata/usb.ids\""
 +    'use_gconf=false'
-   )
- fi
++  )
++fi
 +
  if [ ${USE_UNGOOGLED} -ne 0 ]; then
    # Add ungoogled flags if requested:
@@ -726,7 +733,7 @@
  # Add Google API key if defined:
  if [ -n "$_google_api_key" ]; then
    _chromium_conf+=(
-@@ -1064,10 +801,8 @@
+@@ -1064,10 +803,8 @@
      build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}/libsqlite3.so
  
    # The platform-specific alias for the ARM readelf binary is missing
@@ -739,7 +746,7 @@
    fi
  fi
  
-@@ -1085,23 +820,9 @@
+@@ -1085,23 +822,9 @@
  ulimit -n 2048
  
  # Compile google's internal clang sources if needed
@@ -764,7 +771,7 @@
    LDFLAGS="$LDFLAGS" \
    python3 tools/clang/scripts/build.py \
      --bootstrap \
-@@ -1116,7 +837,11 @@
+@@ -1116,7 +839,11 @@
  
    # Ensure that only this new clang is used, ignoring the system version:
    MYCLANG_PATH="$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/third_party/llvm-build/Release+Asserts/bin"
@@ -777,7 +784,7 @@
  fi
  
  # For Chromium 92, disable ffmpeg re-configuration on 32bit OS,
-@@ -1137,7 +862,7 @@
+@@ -1137,7 +864,7 @@
    fi
    cd third_party/ffmpeg
      ## To prevent error on x86_64:
@@ -786,7 +793,7 @@
      ## in third_party/ffmpeg/build.x64.linux/ChromeOS/ffbuild/config.log
      #sed -e "s/--extra-ldflags=-fuse-ld=lld/--extra-ldflags=''/" \
      #    -i chromium/scripts/build_ffmpeg.py
-@@ -1156,24 +881,21 @@
+@@ -1156,24 +883,21 @@
  # Generate the ninja build files:
  echo "-- Bootstrapping 'gn'."
  
@@ -820,12 +827,12 @@
    fi
  fi
  
-@@ -1184,20 +906,20 @@
+@@ -1184,20 +908,20 @@
  # Compile everything:
  echo "-- Compiling the lot."
  
 -if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 1 ]; then
-+if [ "$USE_CLANG" -eq 1 ] && [ ! "$CLANG_BASE_PATH" = "/usr" ]; then
++if [ "$USE_CLANG" -eq 1 ] && [ ! "$MYCLANG_PATH" = "/usr/bin" ]; then
    # Use the clang that we build in-tree instead of using the system version:
    export CC="$MYCLANG_PATH/clang"
    export CXX="$MYCLANG_PATH/clang++"
@@ -836,7 +843,7 @@
 -  export CXX=${CXX:-"g++"}
 -else
 -  # Use the system clang:
-+elif [ "$USE_CLANG" -eq 1 ] && [ "$CLANG_BASE_PATH" = "/usr" ]; then
++elif [ "$USE_CLANG" -eq 1 ] && [ "$MYCLANG_PATH" = "/usr/bin" ]; then
 +  # Use the clang that we build in-tree instead of using the system version:
    export CC="clang"
    export CXX="clang++"
@@ -848,20 +855,21 @@
  fi
  export AS=as
  export AR=ar
-@@ -1327,6 +1049,12 @@
- install -D -m0644 out/Release/${PRGNAM}.desktop \
-   $PKG/usr/share/applications/${PRGNAM}.desktop
- 
+@@ -1324,6 +1048,13 @@
+ # Add a desktop file:
+ process_template chrome/installer/linux/common/desktop.template \
+   out/Release/${PRGNAM}.desktop
++
 +# Fix user-agent for ARM
 +if [[ "$ARCH" =~ arm.* ]]; then
 +  sed -i out/Release/${PRGNAM}.desktop \
 +    -e "s/\/${PRGNAM}/\/${PRGNAM} \-\-user-agent=\"Mozilla\/5.0 \(X11; CrOS armv7l 10895.56.0\) AppleWebKit\/537.36 \(KHTML, like Gecko\) Chrome\/${VERSION} Safari\/537.36\"/"
 +fi
 +
- # Install desktop icons:
- for size in 16 32; do
-   install -D -m0644 \
-@@ -1466,5 +1194,10 @@
+ install -D -m0644 out/Release/${PRGNAM}.desktop \
+   $PKG/usr/share/applications/${PRGNAM}.desktop
+ 
+@@ -1466,5 +1197,10 @@
  cd -
  cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
  
