@@ -1,5 +1,5 @@
 --- chromium.SlackBuild.orig	2021-09-14 23:57:16.000000000 +0200
-+++ chromium.SlackBuild	2021-10-12 20:42:37.545324476 +0200
++++ chromium.SlackBuild	2021-10-12 22:51:09.489448844 +0200
 @@ -21,11 +21,14 @@
  #   OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  #   SUCH DAMAGE.
@@ -564,7 +564,7 @@
  esac
  
  # Exit the script on errors:
-@@ -759,6 +465,40 @@
+@@ -759,6 +465,21 @@
  # Be compatible with gcc 10:
  cat $SRCDIR/patches/chromium_gcc10.patch | patch -p1 --verbose \
    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
@@ -579,25 +579,6 @@
 +cat $SRCDIR/patches/chromium-91-libyuv-aarch64.patch \
 +  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 +
-+# Latest patchsets for chromium-93.0.4577.8
-+# https://github.com/stha09/chromium-patches/releases
-+cat $SRCDIR/patches/chromium-93-BluetoothLowEnergyScanFilter-include.patch \
-+  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-+cat $SRCDIR/patches/chromium-93-ClassProperty-include.patch \
-+  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-+cat $SRCDIR/patches/chromium-93-ContextSet-permissive.patch \
-+  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-+cat $SRCDIR/patches/chromium-93-DevToolsEmbedderMessageDispatcher-include.patch \
-+  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-+cat $SRCDIR/patches/chromium-93-FormForest-constexpr.patch \
-+  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-+cat $SRCDIR/patches/chromium-93-HashPasswordManager-include.patch \
-+  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-+cat $SRCDIR/patches/chromium-93-ScopedTestDialogAutoConfirm-include.patch \
-+  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-+cat $SRCDIR/patches/chromium-93-pdfium-include.patch \
-+  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-+
 +# Fixes widevine support for arm
 +cat $SRCDIR/patches/widevine_support_for_arm.patch \
 +  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
@@ -605,7 +586,7 @@
  # Fix the link on 32bit:
  sed -e '/ldflags /s/-m32/&", "-Wl,-z,notext/' \
    -i build/config/compiler/BUILD.gn
-@@ -812,15 +552,16 @@
+@@ -812,15 +533,16 @@
  # And fix the 32bit compilation while we are at it:
  sed -i tools/clang/scripts/build.py -e "s/ldflags = \[\]/ldflags = \['-latomic'\]/"
  
@@ -628,7 +609,7 @@
  fi
  
  # When compiling google's clang, use the system cmake
-@@ -857,19 +598,20 @@
+@@ -857,19 +579,20 @@
  fi
  
  chown -R root:root .
@@ -652,7 +633,7 @@
  
  export LDFLAGS="$SLKLDFLAGS"
  export CXXFLAGS="$SLKCFLAGS -Wno-unknown-warning-option"
-@@ -887,32 +629,27 @@
+@@ -887,32 +610,27 @@
      'enable_mse_mpeg2ts_stream_parser=true'
      'enable_precompiled_headers=false'
      'enable_swiftshader=true'
@@ -689,7 +670,7 @@
      'use_kerberos=false'
      'use_lld=true'
      'use_ozone=true'
-@@ -923,32 +660,50 @@
+@@ -923,32 +641,50 @@
      "extra_cxxflags=\"${CXXFLAGS}\""
      "extra_ldflags=\"${LDFLAGS}\""
  )
@@ -703,8 +684,8 @@
 -    'host_toolchain="//build/toolchain/linux/unbundle:default"'
 +    'clang_use_default_sample_profile=false'
 +    "clang_base_path=\"${CLANG_BASE_PATH}\""
-   )
- fi
++  )
++fi
 +
 +if [[ ! "$ARCH" =~ arm.* ]]; then
 +  _chromium_conf+=(
@@ -716,8 +697,8 @@
 +    'remove_webcore_debug_symbols=true'
 +    "usb_ids_path=\"/usr/share/hwdata/usb.ids\""
 +    'use_gconf=false'
-+  )
-+fi
+   )
+ fi
 +
  if [ ${USE_UNGOOGLED} -ne 0 ]; then
    # Add ungoogled flags if requested:
@@ -756,7 +737,7 @@
  # Add Google API key if defined:
  if [ -n "$_google_api_key" ]; then
    _chromium_conf+=(
-@@ -1064,10 +819,8 @@
+@@ -1064,10 +800,8 @@
      build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}/libsqlite3.so
  
    # The platform-specific alias for the ARM readelf binary is missing
@@ -769,7 +750,7 @@
    fi
  fi
  
-@@ -1085,23 +838,9 @@
+@@ -1085,23 +819,9 @@
  ulimit -n 2048
  
  # Compile google's internal clang sources if needed
@@ -794,7 +775,7 @@
    LDFLAGS="$LDFLAGS" \
    python3 tools/clang/scripts/build.py \
      --bootstrap \
-@@ -1116,7 +855,11 @@
+@@ -1116,7 +836,11 @@
  
    # Ensure that only this new clang is used, ignoring the system version:
    MYCLANG_PATH="$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/third_party/llvm-build/Release+Asserts/bin"
@@ -807,7 +788,7 @@
  fi
  
  # For Chromium 92, disable ffmpeg re-configuration on 32bit OS,
-@@ -1137,7 +880,7 @@
+@@ -1137,7 +861,7 @@
    fi
    cd third_party/ffmpeg
      ## To prevent error on x86_64:
@@ -816,7 +797,7 @@
      ## in third_party/ffmpeg/build.x64.linux/ChromeOS/ffbuild/config.log
      #sed -e "s/--extra-ldflags=-fuse-ld=lld/--extra-ldflags=''/" \
      #    -i chromium/scripts/build_ffmpeg.py
-@@ -1156,24 +899,21 @@
+@@ -1156,24 +880,21 @@
  # Generate the ninja build files:
  echo "-- Bootstrapping 'gn'."
  
@@ -850,7 +831,7 @@
    fi
  fi
  
-@@ -1184,20 +924,20 @@
+@@ -1184,20 +905,20 @@
  # Compile everything:
  echo "-- Compiling the lot."
  
@@ -878,7 +859,7 @@
  fi
  export AS=as
  export AR=ar
-@@ -1324,6 +1064,13 @@
+@@ -1324,6 +1045,13 @@
  # Add a desktop file:
  process_template chrome/installer/linux/common/desktop.template \
    out/Release/${PRGNAM}.desktop
@@ -892,7 +873,7 @@
  install -D -m0644 out/Release/${PRGNAM}.desktop \
    $PKG/usr/share/applications/${PRGNAM}.desktop
  
-@@ -1466,5 +1213,10 @@
+@@ -1466,5 +1194,10 @@
  cd -
  cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
  
