@@ -477,25 +477,6 @@ cat $SRCDIR/patches/chromium-78-protobuf-RepeatedPtrField-export.patch \
 cat $SRCDIR/patches/chromium-91-libyuv-aarch64.patch \
   | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 
-# Latest patchsets for chromium-93.0.4577.8
-# https://github.com/stha09/chromium-patches/releases
-cat $SRCDIR/patches/chromium-93-BluetoothLowEnergyScanFilter-include.patch \
-  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-cat $SRCDIR/patches/chromium-93-ClassProperty-include.patch \
-  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-cat $SRCDIR/patches/chromium-93-ContextSet-permissive.patch \
-  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-cat $SRCDIR/patches/chromium-93-DevToolsEmbedderMessageDispatcher-include.patch \
-  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-cat $SRCDIR/patches/chromium-93-FormForest-constexpr.patch \
-  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-cat $SRCDIR/patches/chromium-93-HashPasswordManager-include.patch \
-  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-cat $SRCDIR/patches/chromium-93-ScopedTestDialogAutoConfirm-include.patch \
-  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-cat $SRCDIR/patches/chromium-93-pdfium-include.patch \
-  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-
 # Fixes widevine support for arm
 cat $SRCDIR/patches/widevine_support_for_arm.patch \
   | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
