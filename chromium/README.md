@@ -33,8 +33,19 @@ dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * llvm >= 12.0.0 (Is avalible throught slack package or my [llvm](https://github.com/mostman/Slackbuilds/tree/main/llvm) buildscript or prebuilt [llvm slackware ARM](https://github.com/mostman/Slackbuilds/releases/tag/13.0.0-rc3) package).
 Might be a good consideration if you are intending to build chromium/comium-ungoogled your self, as Slackware ARM´s llvm/clang version is missing lld.
 
+# Patch AlienBob´s chromium.Slackbuild
+* Download all aliens chromium slackbuild and as described by him self.
+* Download my additional patches in to the patch directory.
+* Download the chromium.arm.SlackBuild.diff file to build directory and patch the build script "patch -p0 < chromium.arm.SlackBuild.diff".
+
+# Replace the buildscript with AlienBob´s chromium.Slackbuild
+* Download all aliens chromium slackbuild and as described by him self.
+* Download my additional patches in to the patch directory.
+* Rename AlienBob´s chromium.Slackbuild to chromium.Slackbuild.alien
+* Download the chromium.Slackbuild file to build directory.
+
 Some last notes.
-Make sure you have at least 10-20 GB free space on your memory card, drive or USBstick (Or where ever you store the source code and tmp folder) and at least 1 GB swap space.
+Make sure you have at least 15-20 GB free space on your memory card, drive or USBstick (Or where ever you store the source code and tmp folder) and at least 1 GB swap space.
 Recommended to set "gpu_mem" to 32 or 64 and then run system in runlevel 3 when compiling.
 I´am sorry to say, that estimated compiling time will be at least thirty six hours if not even more.
 
