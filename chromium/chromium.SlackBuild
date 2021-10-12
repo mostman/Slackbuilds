@@ -92,7 +92,7 @@
 #                  * Update to M94.
 #                  * Needs llvm/clang 13, so system clang is no longer an option.
 #                  * Will build with python 3.9, but if upgraded to python 3.10
-#                    there will be issues, will try to revert some parts to python2
+#                    there will be issues.
 #
 # -----------------------------------------------------------------------------
 #
@@ -189,8 +189,8 @@ USE_CUSTCLANG=${USE_CUSTCLANG:-1}
 # Make sure you to set correct clang base path.
 # Path where you installed clang, default is set to "/usr" (The system).
 # If you installed my llvm/clang package then set CLANG_BASE_PATH="/opt/llvm".
-#CLANG_BASE_PATH="/opt/llvm"
-CLANG_BASE_PATH="/usr"
+#CLANG_BASE_PATH="/usr"
+CLANG_BASE_PATH="/opt/llvm"
 
 # If you don't want to enable support for Widevine CDM
 # (content decryption module) say "0" here.
@@ -213,6 +213,18 @@ SRCDIR=$(cd $(dirname $0); pwd)
 TMP=${TMP:-/tmp/build}
 PKG=$TMP/package-$PRGNAM
 OUTPUT=${OUTPUT:-/tmp}
+
+if [ ! -f ${CLANG_BASE_PATH} ]; then
+  echo "You have not installed llvm/clang"
+  echo "Build will fail"
+  exit 1
+else
+  CLANG_MIN=13
+  if [ ! $(clang --version |grep '^clang' |cut -d' ' -f3 |cut -d. -f1) -ge ${CLANG_MIN} ]; then
+    echo "Need newer version of llvm/clang"
+    exit 1
+  fi
+fi
 
 # Visible directory listing of anything Chrome related is:
 #   http://gsdview.appspot.com/
@@ -556,9 +568,6 @@ fi
 # When compiling google's clang, use the system cmake
 # (prebuilt binary from google is only available as 64bit):
 sed -i tools/clang/scripts/build.py -e 's/^ *AddCMakeToPath/#&/'
-
-# Force script incompatible with Python 3.10 to use /usr/bin/python2:
-sed -i '1s|python$|&2|' third_party/dom_distiller_js/protoc_plugins/*.py
 
 # Prevent a build failure (yes, 'x64' even on 32bit Slackware):
 mkdir -p third_party/node/linux/node-linux-x64/bin
