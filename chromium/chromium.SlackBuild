@@ -635,6 +635,7 @@ _chromium_conf=(
     "is_clang=${do_clang}"
     "clang_use_chrome_plugins=${do_clang_plug}"
     'is_debug=false'
+    'is_official_build=true'
     "is_component_build=${SHARED_FFMPEG}"
     "is_component_ffmpeg=${SHARED_FFMPEG}"
     "link_pulseaudio=${do_pa}"
