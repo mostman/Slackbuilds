@@ -34,12 +34,12 @@ dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 Might be a good consideration if you are intending to build chromium/comium-ungoogled your self, as Slackware ARM´s llvm/clang version is missing lld.
 
 # Patch AlienBob´s chromium.Slackbuild
-* Download all aliens chromium slackbuild and as described by him self.
+* Download all aliens chromium slackbuild as described by him self.
 * Download my additional patches in to the patch directory.
 * Download the chromium.arm.SlackBuild.diff file to build directory and patch the build script "patch -p0 < chromium.arm.SlackBuild.diff".
 
 # Replace the buildscript with AlienBob´s chromium.Slackbuild
-* Download all aliens chromium slackbuild and as described by him self.
+* Download all aliens chromium slackbuild as described by him self.
 * Download my additional patches in to the patch directory.
 * Rename AlienBob´s chromium.Slackbuild to chromium.Slackbuild.alien
 * Download the chromium.Slackbuild file to build directory.
