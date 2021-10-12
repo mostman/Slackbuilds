@@ -1,5 +1,5 @@
 --- chromium.SlackBuild.orig	2021-09-14 23:57:16.000000000 +0200
-+++ chromium.SlackBuild	2021-10-12 18:31:58.649198061 +0200
++++ chromium.SlackBuild	2021-10-12 20:42:37.545324476 +0200
 @@ -21,11 +21,14 @@
  #   OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  #   SUCH DAMAGE.
@@ -16,12 +16,7 @@
  # For:             chromium
  # Descr:           Open Source version of Chrome Web Browser
  # URL:             http://www.chromium.org/
-@@ -33,395 +36,71 @@
- #                  - nodejs >= 15.6.0;
- #                  - gcc >= 8 for bootstrapping gn;
- #                  - nasm >= 2.14 (yasm no longer being used);
-+#                    or llvm/clang 13 >=;
- #                  - cmake >= 3.13.4;
+@@ -37,391 +40,66 @@
  #                  - python3 >= 3.7, python3-setuptools;
  #                  - java runtime
  #                  - Internet access (for downloading toolchain bins)
@@ -443,7 +438,7 @@
 +#                  * Update to M94.
 +#                  * Needs llvm/clang 13, so system clang is no longer an option.
 +#                  * Will build with python 3.9, but if upgraded to python 3.10
-+#                    there will be issues. Need to revert package python 3.10 to 3.9. 
++#                    there will be issues.
 +#
  # -----------------------------------------------------------------------------
 -# 
@@ -458,7 +453,7 @@
  #
  # -----------------------------------------------------------------------------
  
-@@ -438,10 +117,10 @@
+@@ -438,10 +116,10 @@
  
  SRCNAM=chromium
  PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
@@ -472,7 +467,7 @@
  
  # Cross-compiling 32bit binaries on 64bit Slackware; set to "YES":
  CROSS32=${CROSS32:-"NO"}
-@@ -502,14 +181,16 @@
+@@ -502,14 +180,16 @@
  # clang for download0:
  USE_CLANG=${USE_CLANG:-1}
  
@@ -492,12 +487,12 @@
 +# Make sure you to set correct clang base path.
 +# Path where you installed clang, default is set to "/usr" (The system).
 +# If you installed my llvm/clang package then set CLANG_BASE_PATH="/opt/llvm".
-+#CLANG_BASE_PATH="/usr"
 +CLANG_BASE_PATH="/opt/llvm"
++#CLANG_BASE_PATH="/usr"
  
  # If you don't want to enable support for Widevine CDM
  # (content decryption module) say "0" here.
-@@ -533,6 +214,18 @@
+@@ -533,6 +213,18 @@
  PKG=$TMP/package-$PRGNAM
  OUTPUT=${OUTPUT:-/tmp}
  
@@ -516,7 +511,7 @@
  # Visible directory listing of anything Chrome related is:
  #   http://gsdview.appspot.com/
  # Official location (non-browsable) of the above is:
-@@ -543,7 +236,7 @@
+@@ -543,7 +235,7 @@
  # If you rebuild this package, you can use your own API keys. See:
  #   http://www.chromium.org/developers/how-tos/api-keys
  # This browser is now compiled without API keys. This will disable stuff like
@@ -525,7 +520,7 @@
  # The following variables must be set to access Google's public APIs:
  #   _google_api_key
  #   _google_default_client_id
-@@ -587,7 +280,8 @@
+@@ -587,7 +279,8 @@
  if [ -z "$ARCH" ]; then
    case "$MARCH" in
      i?86)    export ARCH=i586 ;;
@@ -535,7 +530,7 @@
      arm*)    export ARCH=arm ;;
      # Unless $ARCH is already set, use uname -m for all other archs:
      *)       export ARCH=$MARCH ;;
-@@ -623,7 +317,21 @@
+@@ -623,7 +316,21 @@
               #DSSE="0"
               DSSE="1"
               ;;
@@ -558,7 +553,7 @@
               SLKLDFLAGS="-Wl,-z,notext"; LIBDIRSUFFIX=""
               DSSE="1"
               # Widevine not supported (no binary library available):
-@@ -650,9 +358,8 @@
+@@ -650,9 +357,8 @@
  esac
  
  case "$ARCH" in
@@ -569,7 +564,7 @@
  esac
  
  # Exit the script on errors:
-@@ -759,6 +466,40 @@
+@@ -759,6 +465,40 @@
  # Be compatible with gcc 10:
  cat $SRCDIR/patches/chromium_gcc10.patch | patch -p1 --verbose \
    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
@@ -610,7 +605,7 @@
  # Fix the link on 32bit:
  sed -e '/ldflags /s/-m32/&", "-Wl,-z,notext/' \
    -i build/config/compiler/BUILD.gn
-@@ -812,15 +553,16 @@
+@@ -812,15 +552,16 @@
  # And fix the 32bit compilation while we are at it:
  sed -i tools/clang/scripts/build.py -e "s/ldflags = \[\]/ldflags = \['-latomic'\]/"
  
@@ -633,7 +628,7 @@
  fi
  
  # When compiling google's clang, use the system cmake
-@@ -857,19 +599,20 @@
+@@ -857,19 +598,20 @@
  fi
  
  chown -R root:root .
@@ -657,7 +652,7 @@
  
  export LDFLAGS="$SLKLDFLAGS"
  export CXXFLAGS="$SLKCFLAGS -Wno-unknown-warning-option"
-@@ -887,32 +630,26 @@
+@@ -887,32 +629,27 @@
      'enable_mse_mpeg2ts_stream_parser=true'
      'enable_precompiled_headers=false'
      'enable_swiftshader=true'
@@ -667,6 +662,7 @@
      "is_clang=${do_clang}"
 +    "clang_use_chrome_plugins=${do_clang_plug}"
      'is_debug=false'
++    'is_official_build=true'
      "is_component_build=${SHARED_FFMPEG}"
      "is_component_ffmpeg=${SHARED_FFMPEG}"
      "link_pulseaudio=${do_pa}"
@@ -753,7 +749,7 @@
 +      'enable_nacl_nonsfi=false'
 +      "enable_widevine=${do_cdm}"
 +      'exclude_unwind_tables=true'
-+      'fieldtrial_testing_like_official_build=true'
++      #'fieldtrial_testing_like_official_build=true'
    )
  fi
 +
