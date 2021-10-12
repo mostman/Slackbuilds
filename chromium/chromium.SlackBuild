@@ -92,7 +92,7 @@
 #                  * Update to M94.
 #                  * Needs llvm/clang 13, so system clang is no longer an option.
 #                  * Will build with python 3.9, but if upgraded to python 3.10
-#                    there will be issues.
+#                    there will be issues. Need to revert package python 3.10 to 3.9. 
 #
 # -----------------------------------------------------------------------------
 #
