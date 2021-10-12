@@ -87,6 +87,8 @@
 #                          llvm/clang version as its missing lld.
 #                          This is one reason i make a custom llvm/clang package.
 #                  * cleared changelog history as its kind of irrelevant and old...
+# 94.0.4606.81-1:  12/oct/2021 by Minime <slackware[at]slackwarelinux[dot]se>
+#                  * Update to M94.
 #
 # -----------------------------------------------------------------------------
 #
@@ -111,10 +113,10 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-93.0.4577.82}
-UNGOOGLED=${UNGOOGLED:-93.0.4577.82-1}
+VERSION=${VERSION:-94.0.4606.81}
+UNGOOGLED=${UNGOOGLED:-94.0.4606.81-1}
 BUILD=${BUILD:-1}
-TAG=${TAG:-alien}
+TAG=${TAG:-SLse}
 
 # Cross-compiling 32bit binaries on 64bit Slackware; set to "YES":
 CROSS32=${CROSS32:-"NO"}
