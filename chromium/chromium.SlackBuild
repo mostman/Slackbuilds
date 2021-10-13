@@ -214,7 +214,7 @@ TMP=${TMP:-/tmp/build}
 PKG=$TMP/package-$PRGNAM
 OUTPUT=${OUTPUT:-/tmp}
 
-if [ ! -f "${CLANG_BASE_PATH}/bin/clang" ]; then
+if [ ${USE_CUSTCLANG} -eq 1 ] && [ ! -f "${CLANG_BASE_PATH}/bin/clang" ]; then
   echo "You have not installed llvm/clang"
   echo "Build will fail"
   exit 1
@@ -222,9 +222,20 @@ else
   CLANG_MIN=13
   if [ ! $(${CLANG_BASE_PATH}/bin/clang --version |grep '^clang' |cut -d' ' -f3 |cut -d. -f1) -ge ${CLANG_MIN} ]; then
     echo "Need newer version of llvm/clang"
-    exit 1
+    echo "Will proceed in 10 seconds and build internal llvm/clang"
+    echo "If you rather wish to install prebuilt llvm/clang, then abort by pressing Ctrl-C"
+    USE_CUSTCLANG=${USE_CUSTCLANG:-0}
+    sleep 10
   fi
 fi
+
+PY_MIN=9
+if [ $(python3 --version | grep '^Python' | cut -d ' ' -f2 | cut -d. -f2) -gt ${PY_MIN} ]; then
+  echo "Build will fail with python 3.10"
+  echo "You need to revert python3 to 3.9.x"
+  exit 1
+fi
+
 
 # Visible directory listing of anything Chrome related is:
 #   http://gsdview.appspot.com/
