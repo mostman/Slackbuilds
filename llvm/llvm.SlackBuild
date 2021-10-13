@@ -136,12 +136,7 @@ echo "++"
 
 cd $LLVMSRC
 
-# Support GCC built for arm-slackware-linux and  i586-slackware-linux:
-#if [ $GIT_REV = "llvmorg-12.0.1" ]; then
-#  zcat $CWD/clang.toolchains.arm_i586.triple_12.diff.gz | patch -p1 --verbose || exit 1
-#elif [ $GIT_REV = "llvmorg-13.0.0-rc1" ]; then
-#  zcat $CWD/clang.toolchains.arm_i586.triple_13.diff.gz | patch -p1 --verbose || exit 1
-#fi
+# Support GCC built for arm-slackware-linux and i586-slackware-linux:
 zcat $CWD/clang.toolchains.arm_i586.triple_13.diff.gz | patch -p1 --verbose || exit 1
 
 cd ../${PRGNAM}-build
