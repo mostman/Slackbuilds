@@ -882,7 +882,7 @@ fi
 echo "-- Bootstrapping 'gn'."
 
 # Symlink ld to lld to make gn linking stage succeed:
-if [ "$USE_CLANG" -eq 1 ] && [ ! "$CLANG_BASE_PATH" = "/usr" ]; then
+if [ "$USE_CLANG" -eq 1 ] && [ ! "$MYCLANG_PATH" = "/usr/bin" ]; then
   if [ ! -f ${MYCLANG_PATH}/ld ]; then
     cd ${MYCLANG_PATH} ; ln -s lld ld ; cd - 1>/dev/null
   fi
@@ -893,7 +893,7 @@ LDFLAGS="$LDFLAGS" python3 tools/gn/bootstrap/bootstrap.py \
   #--use-custom-libcxx \
 
 # Remove symlink again:
-if [ "$USE_CLANG" -eq 1 ] && [ ! "$CLANG_BASE_PATH" = "/usr" ]; then
+if [ "$USE_CLANG" -eq 1 ] && [ ! "$MYCLANG_PATH" = "/usr/bin" ]; then
   if  [ -f ${MYCLANG_PATH}/ld ]; then
     rm ${MYCLANG_PATH}/ld
   fi
