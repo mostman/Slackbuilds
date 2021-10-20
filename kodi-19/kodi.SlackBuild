@@ -64,7 +64,7 @@ TAG=${TAG:-_SLse}
 
 # Use llvm/clang, for a faster build
 # and make the binaries smaller.
-USE_CLANG=${USE_CLANG:-1}
+USE_CLANG=${USE_CLANG:-0}
 
 # Use systems llvm/clang
 SYS_CLANG=${SYS_CLANG:-1}
@@ -150,6 +150,7 @@ if [ ${USE_CLANG} -eq 1 ] && [ ${SYS_CLANG} -eq 0 ]; then
 elif [ ${USE_CLANG} -eq 1 ] && [ ${SYS_CLANG} -eq 1 ]; then
   CCOMPILER=clang
   CPPCOMPILER=clang++
+  export LD="lld"
 else
   CCOMPILER=gcc
   CPPCOMPILER=g++
