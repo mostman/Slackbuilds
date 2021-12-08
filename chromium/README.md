@@ -8,7 +8,6 @@ I have not tried to build this on any other device nore architecture other than 
 Might also want to download/copy the patches from the patch directory to Alien BOB´s patch directory of the chromium slackbuild directory.
 
 # What i have done and what the slackbuild/diff/patch does is:
-* Added lates patchset "93.0.4577.8"
 * Repatched clang.toolchains.arm_i586.triple for ARM.
 * Fixed chromium_conf for ARM
 * Fixed target triple for ARM.
@@ -17,7 +16,7 @@ dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * Fixed link for debians arm-linux-gnueabihf-readelf to slackwares readelf
 * Fixed compiling google's internal llvm/clang for ARM.
 * Also made it possible to use eithers systems llvm/clang version or my slackbuild llvm/clang version instead of chromiums llvm/clang build.
-* Patched chromium for arm to support Widevine. (Using my patched glibc will also make Widevine 4.10.2252.0 working on ARM)
+* Patched chromium for arm to support Widevine. (Using my patched glibc will also make Widevine 4.10.2252.X working on ARM)
 
 # Dependencies needed to build:
 * ninja (Is avalible throught slack package)
@@ -33,12 +32,12 @@ dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * llvm >= 13.0.0 (Is avalible throught slack package or my [llvm](https://github.com/mostman/Slackbuilds/tree/main/llvm) buildscript or prebuilt [llvm slackware x86_64 and ARM](https://github.com/mostman/Slackbuilds/releases/tag/13.0.0) package).
 Might be a good consideration if you are intending to build chromium/comium-ungoogled your self, as Slackware ARM´s llvm/clang version is missing lld.
 
-# Patch AlienBob´s chromium.Slackbuild
+# Patch AlienBob´s [chromium.Slackbuild](http://www.slackware.com/~alien/slackbuilds/chromium/build/)
 * Download all aliens chromium slackbuild as described by him self.
 * Download my additional patches in to the patch directory.
 * Download the chromium.arm.SlackBuild.diff file to build directory and patch the build script "patch -p0 < chromium.arm.SlackBuild.diff".
 
-# Replace the buildscript with AlienBob´s chromium.Slackbuild
+# Replace the buildscript with AlienBob´s [chromium.Slackbuild](http://www.slackware.com/~alien/slackbuilds/chromium/build/)
 * Download all aliens chromium slackbuild as described by him self.
 * Download my additional patches in to the patch directory.
 * Rename AlienBob´s chromium.Slackbuild to chromium.Slackbuild.alien
