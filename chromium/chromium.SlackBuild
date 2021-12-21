@@ -103,6 +103,8 @@
 #                  * Update.
 #                  13/dec/2021 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Fixed chromium/ungoogled for ARM
+# 96.0.4664.110-1  21/dec/2021 by Minime <slackware[at]slackwarelinux[dot]se>
+#                  * bump version to 96.0.4664.110.
 # 
 # -----------------------------------------------------------------------------
 # 
@@ -127,8 +129,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-96.0.4664.93}
-UNGOOGLED=${UNGOOGLED:-96.0.4664.93-1}
+VERSION=${VERSION:-96.0.4664.110}
+UNGOOGLED=${UNGOOGLED:-96.0.4664.110-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
