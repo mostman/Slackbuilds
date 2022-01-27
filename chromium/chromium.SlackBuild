@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: chromium.SlackBuild,v 1.266 2022/01/06 07:09:51 root Exp root $
+# $Id: chromium.SlackBuild,v 1.268 2022/01/21 15:03:42 root Exp root $
 # Copyright 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022  Eric Hameleers, Eindhoven, NL
 # All rights reserved.
 #
@@ -109,7 +109,11 @@
 #                  * Update to M97.
 # 97.0.4692.71-1:  09/jan/2022 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * bump version to 97.0.4692.71.
-# 
+# 97.0.4692.99-1:  20/jan/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+#                  27/jan/2022 by Minime <slackware[at]slackwarelinux[dot]se>
+#                  * Bump version fix chromium/ungoogled for ARM
+#
 # -----------------------------------------------------------------------------
 # 
 # -----------------------------------------------------------------------------
@@ -133,8 +137,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-97.0.4692.71}
-UNGOOGLED=${UNGOOGLED:-97.0.4692.71-1}
+VERSION=${VERSION:-97.0.4692.99}
+UNGOOGLED=${UNGOOGLED:-97.0.4692.99-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
