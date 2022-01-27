@@ -23,7 +23,6 @@ ulimit -s unlimited
 #
 #
 # Modified by Stuart Winter for Slackware ARM.
-# Modified by Martin Östman (Minime) to make widevine working on slackware ARM.
 #
 
 # Record toolchain & other info for the build log:
@@ -49,6 +48,31 @@ echo "Building for /patches? $SLACKPATCHING"
 # Use system gcc for a bit rather than our bootstrap version:
 #export PATH=$( echo $PATH | sed 's?/gcc-5/usr/bin:??g' )
 #unset LD_LIBRARY_PATH
+
+# Unneeded. Commented out for aarch64.
+#
+# Version of the Linux Kernel headers that we'll be compiling with:
+# These headers are not found in /usr/src/linux but are explicitley extraced
+# from the d/kernel-headers package and glibc is configured to compile against
+# them.  This was because in days of old, glibc would often not compile against
+# the headers of the newest Kernel we were running and required a previous release.
+# This isn't usually the case in 2012, but it's still far easier to build against an
+# older set of Kernel headers - especially when just rebuilding glibc rather than
+# upgrading (usually an upgrade works with a newer set of Kernel headers).
+# In Slackware ARM, the Kernel headers package version is aligned with the Kernel
+# itself, so we use the version number from the Kernel package.
+#
+#if [ "$SLACKPATCHING" = "yes" ]; then
+#   eval $( sed 's?VERSION?KERNELHEADERS?g' $PORTCWD/../kernel/kernel-pkgs/arm/build | egrep '^export KERNELHEADERS' )
+# else
+#   # Within -current:
+#   eval $( sed 's?VERSION?KERNELHEADERS?g' ../../k/arm/build | egrep '^export KERNELHEADERS' )
+#fi
+#if [ -z "$KERNELHEADERS" ]; then
+#   echo "ERROR: Unable to determine the version of Linux Kernel headers."
+#   exit 1
+#fi
+#echo "Found Kernel headers: $KERNELHEADERS"
 
 # This function fixes a doinst.sh file for x86_64.
 # With thanks to Fred Emmott.
@@ -87,9 +111,6 @@ function extractglibcsource () {
 
   # Apply Slackware-specific patches (taken from glibc.SlackBuild):
   #
-  echo "----------------------------"
-  echo "patcking old patches"
-  echo "----------------------------"
   #
   # Use old-style locale directories rather than a single (and strangely
   # formatted) /usr/lib/locale/locale-archive file:
@@ -103,6 +124,9 @@ function extractglibcsource () {
   # Don't use AM/PM format for date(1). That's just plain crazy.
   zcat $CWD/glibc-2.32.en_US.no.am.pm.date.format.diff.gz | patch -p1 --verbose || exit 1
 
+  #
+  #-------- Patches fixes Widevine (CDM) in ARM -------#
+  #
   # Add support for SHT_RELR 1
   zcat $CWD/glibc-add-support-for-SHT_RELR-sections.patch.gz | patch -p1 --verbose || exit 1
 
@@ -116,6 +140,31 @@ function extractglibcsource () {
   for git_patch in $CWD/patches/*.patch.gz ; do
     zcat $git_patch | patch -p1 --verbose || exit 1
   done
+
+  ###############################################################################################
+  # Slackware ARM patches
+  # This is a mixture of patches taken from Debian/Ubuntu and Gentoo.
+  # For different builds of glibc, we often have to take some patches from a few distributions
+  # in order to get a working build (although usually only if we're using a different version of
+  # glibc than the other distributions), so we leave the code commented out as we'll need to use
+  # it sooner or later!
+  ###############################################################################################
+
+  # Apply Debian/Ubuntu's ARM patches: - no longer.
+  #tar xvvf $PORTCWD/sources/glibc*debian*xz || exit 1
+
+  # Apply:
+  #
+  # NSS issue that appears in the Slackware ARM installer.
+  # https://archlinuxarm.org/packages/arm/glibc/files/bz27343.patch
+#  for pf in \
+#      \
+#    nss-bz27343.patch.xz \
+#      \
+#     ; do
+#     auto_apply_patch $PORTCWD/sources/$pf || failpatch
+##     #auto_apply_patch debian/patches/$pf || exit 1
+#    done
 
   # Determine version of ld-linux.so:
   case $SLKPORTARCH in
@@ -161,6 +210,23 @@ done
 
 # Create an incoming directory structure for glibc to be built into:
 mkdir -vpm755 $PKG/{var/{run/nscd,db/nscd},lib${LIBDIRSUFFIX},sbin,usr/{bin,lib${LIBDIRSUFFIX},sbin,include,doc,man,share}}
+
+# This was 'back in the day' and isn't required (although works fine).
+# Cleaned up for aarch64.
+#
+# Extract our pre-made Linux Kernel include files.
+# All I did for these was extract the source, copy the config file in place and
+# run make oldconfig, then tar up the include dir.
+#
+#mkdir -vpm755 $TMPBUILD/kernelheaders/
+#echo "Extracting Linux Kernel headers into $TMPBUILD"
+## We keep these in the d/ series.
+## For patches it's -- but check that the PKGARCH matches the file name:
+#if [ "$SLACKPATCHING" = "yes" ]; then
+#   tar xf $PORTCWD/../kernel/kernel-headers/sources/${PKGARCH}*-kernel-headers-${KERNELHEADERS}.tar.xz -C $TMPBUILD/kernelheaders/ || exit 1
+# else
+#   tar xf $PORTCWD/../../d/kernel-headers/sources/${PKGARCH}*-kernel-headers-${KERNELHEADERS}.tar.xz -C $TMPBUILD/kernelheaders/ || exit 1
+#fi
 
 ################# Build glibc #############################
 echo "[**] Building NPTL version of glibc [**]"
@@ -219,8 +285,7 @@ CFLAGS="$SLKCFLAGS" \
    --host=${SLK_ARCH_HOST} || failconfig
 
 # Build:
-#make $NUMJOBS || make || exit 1
-make -j$( nproc ) || make || exit 1
+make $NUMJOBS || make || exit 1
 
 # Install into local package:
 #make install install_root=$PKG || failinstall
