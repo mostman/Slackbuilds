@@ -128,11 +128,8 @@ function extractglibcsource () {
   #
   #-------- Patches fixes Widevine (CDM) in ARM -------#
   #
-  # Add support for SHT_RELR 1
+  # Add support for SHT_RELR
   zcat $CWD/glibc-add-support-for-SHT_RELR-sections.patch.gz | patch -p1 --verbose || exit 1
-
-  # Add support for SHT_RELR 2
-  zcat $CWD/elf.patch.gz | patch -p1 --verbose || exit 1
 
   # Fix TLS for Widevine
   zcat $CWD/glibc-tls-libwidevinecdm.so-since-4.10.2252.0-has-TLS-with.patch.gz | patch -p1 --verbose || exit 1
