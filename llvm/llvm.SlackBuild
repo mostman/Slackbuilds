@@ -1,6 +1,6 @@
 
 #!/bin/bash
-# $Id: chromium.SlackBuild,v 1.253 2021/08/05 06:11:25 root Exp root $
+# llvm Verion 1.1-rc3 2022/01/30
 # Copyright 2021  Martin Östman (Minime), SE
 # All rights reserved.
 #
@@ -41,8 +41,8 @@
 #######################################################################
 
 PRGNAM=llvm
-GIT_REV=llvmorg-13.0.1-rc2
-VERSION=${VERSION:-13.0.1.rc2}
+GIT_REV=llvmorg-13.0.1-rc3
+VERSION=${VERSION:-13.0.1.rc3}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SLse}
 
