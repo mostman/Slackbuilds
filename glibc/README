@@ -28,6 +28,6 @@ And now we can compile glibc
  
 Packages will be stored under "/root/tgzstash"
    # cd /root/tgzstash
-   # upgradepkg a/aaa_glibc-solibs-2.33-arm-4.txz l/glibc-2.33-arm-4.txz
+   # upgradepkg a/aaa_glibc-solibs-2.33-arm-5.txz l/glibc-2.33-arm-5.txz
  
  And you are all done.
