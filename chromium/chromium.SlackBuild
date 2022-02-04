@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id: chromium.SlackBuild,v 1.268 2022/01/21 15:03:42 root Exp root $
 # Copyright 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022  Eric Hameleers, Eindhoven, NL
 # All rights reserved.
 #
@@ -29,14 +28,14 @@
 # ===========================
 # By:              Eric Hameleers <alien@slackware.com>
 # Modified by      Martin Östman (Minime) <slackware[at]slackwarelinux[dot]se>
-# For:             chromium
+# For:             chromium/chromium-ungoogled
 # Descr:           Open Source version of Chrome Web Browser
 # URL:             http://www.chromium.org/
 # Build needs:     - ninja;
 #                  - nodejs >= 15.6.0;
 #                  - gcc >= 8 for bootstrapping gn;
 #                  - nasm >= 2.14 (yasm no longer being used);
-#                    or llvm/clang 13 >=;
+#                  - lvm/clang 13 >=;
 #                  - cmake >= 3.13.4;
 #                  - python3 >= 3.7, python3-setuptools;
 #                  - java runtime
@@ -113,6 +112,10 @@
 #                  * Update.
 #                  27/jan/2022 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Bump version fix chromium/ungoogled for ARM
+# 98.0.4758.80-1:  02/feb/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M98.
+#                  04/feb/2022 by Minime <slackware[at]slackwarelinux[dot]se>
+#                  * Bump version fix chromium/ungoogled for ARM
 #
 # -----------------------------------------------------------------------------
 # 
@@ -137,8 +140,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-97.0.4692.99}
-UNGOOGLED=${UNGOOGLED:-97.0.4692.99-1}
+VERSION=${VERSION:-98.0.4758.80}
+UNGOOGLED=${UNGOOGLED:-98.0.4758.80-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
