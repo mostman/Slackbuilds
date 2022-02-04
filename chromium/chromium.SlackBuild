@@ -33,9 +33,8 @@
 # URL:             http://www.chromium.org/
 # Build needs:     - ninja;
 #                  - nodejs >= 15.6.0;
-#                  - gcc >= 8 for bootstrapping gn;
+#                  - gcc >= 8 , llvm >= 13 for bootstrapping gn;
 #                  - nasm >= 2.14 (yasm no longer being used);
-#                  - lvm/clang 13 >=;
 #                  - cmake >= 3.13.4;
 #                  - python3 >= 3.7, python3-setuptools;
 #                  - java runtime
