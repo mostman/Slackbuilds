@@ -1,5 +1,5 @@
 --- chromium.SlackBuild.orig	2022-02-03 20:42:12.000000000 +0100
-+++ chromium.SlackBuild	2022-02-04 19:35:04.817001251 +0100
++++ chromium.SlackBuild	2022-02-12 21:49:28.627100000 +0100
 @@ -1,5 +1,4 @@
  #!/bin/bash
 -# $Id: chromium.SlackBuild,v 1.269 2022/02/03 19:42:00 root Exp root $
@@ -518,8 +518,8 @@
 +# Make sure you to set correct clang base path.
 +# Path where you installed clang, default is set to "/usr" (The system).
 +# If you installed my llvm/clang package then set CLANG_BASE_PATH="/opt/llvm".
-+CLANG_BASE_PATH="/opt/llvm"
-+#CLANG_BASE_PATH="/usr"
++#CLANG_BASE_PATH="/opt/llvm"
++CLANG_BASE_PATH="/usr"
  
  # If you don't want to enable support for Widevine CDM
  # (content decryption module) say "0" here.
@@ -920,13 +920,15 @@
  install -D -m0644 out/Release/${PRGNAM}.desktop \
    $PKG/usr/share/applications/${PRGNAM}.desktop
  
-@@ -1523,5 +1227,13 @@
+@@ -1523,5 +1227,15 @@
  cd -
  cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
  
 +# Cleanup
-+if  [ -f ${MYCLANG_PATH}/ld ]; then
-+  rm ${MYCLANG_PATH}/ld
++if [ "$USE_CLANG" -eq 1 ] && [ ! "$MYCLANG_PATH" = "/usr/bin" ]; then
++  if  [ -f ${MYCLANG_PATH}/ld ]; then
++    rm ${MYCLANG_PATH}/ld
++  fi
 +fi
 +if [ -f /usr/bin/${SYSROOT_TARGET}-readelf ]; then
 +  rm /usr/bin/${SYSROOT_TARGET}-readelf
