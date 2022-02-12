@@ -211,8 +211,8 @@ USE_CUSTCLANG=${USE_CUSTCLANG:-1}
 # Make sure you to set correct clang base path.
 # Path where you installed clang, default is set to "/usr" (The system).
 # If you installed my llvm/clang package then set CLANG_BASE_PATH="/opt/llvm".
-CLANG_BASE_PATH="/opt/llvm"
-#CLANG_BASE_PATH="/usr"
+#CLANG_BASE_PATH="/opt/llvm"
+CLANG_BASE_PATH="/usr"
 
 # If you don't want to enable support for Widevine CDM
 # (content decryption module) say "0" here.
@@ -1228,8 +1228,10 @@ cd -
 cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
 
 # Cleanup
-if  [ -f ${MYCLANG_PATH}/ld ]; then
-  rm ${MYCLANG_PATH}/ld
+if [ "$USE_CLANG" -eq 1 ] && [ ! "$MYCLANG_PATH" = "/usr/bin" ]; then
+  if  [ -f ${MYCLANG_PATH}/ld ]; then
+    rm ${MYCLANG_PATH}/ld
+  fi
 fi
 if [ -f /usr/bin/${SYSROOT_TARGET}-readelf ]; then
   rm /usr/bin/${SYSROOT_TARGET}-readelf
