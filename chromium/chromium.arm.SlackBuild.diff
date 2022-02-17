@@ -1,12 +1,12 @@
 --- chromium.SlackBuild.orig	2022-02-03 20:42:12.000000000 +0100
-+++ chromium.SlackBuild	2022-02-12 21:49:28.627100000 +0100
++++ chromium.SlackBuild	2022-02-17 08:06:21.088203285 +0100
 @@ -1,5 +1,4 @@
  #!/bin/bash
 -# $Id: chromium.SlackBuild,v 1.269 2022/02/03 19:42:00 root Exp root $
  # Copyright 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022  Eric Hameleers, Eindhoven, NL
  # All rights reserved.
  #
-@@ -21,416 +20,102 @@
+@@ -21,416 +20,104 @@
  #   OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  #   SUCH DAMAGE.
  #
@@ -476,11 +476,13 @@
 -# 
 +#                  04/feb/2022 by Minime <slackware[at]slackwarelinux[dot]se>
 +#                  * Bump version fix chromium/ungoogled for ARM
++# 98.0.4758.102-1: 17/feb/2022 by Minime <slackware[at]slackwarelinux[dot]se>
++#                  * Bump version fix chromium/ungoogled for ARM
 +#
  # -----------------------------------------------------------------------------
  # 
  # -----------------------------------------------------------------------------
-@@ -442,7 +127,7 @@
+@@ -442,7 +129,7 @@
  # -----------------------------------------------------------------------------
  
  # Build an ungoogled chromium package (default no):
@@ -489,16 +491,21 @@
  
  # Build a development version of chromium (default no):
  USE_DEV=${USE_DEV:-0}
-@@ -457,7 +142,7 @@
- VERSION=${VERSION:-98.0.4758.80}
- UNGOOGLED=${UNGOOGLED:-98.0.4758.80-1}
+@@ -454,10 +141,10 @@
+ 
+ SRCNAM=chromium
+ PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
+-VERSION=${VERSION:-98.0.4758.80}
+-UNGOOGLED=${UNGOOGLED:-98.0.4758.80-1}
++VERSION=${VERSION:-98.0.4758.102}
++UNGOOGLED=${UNGOOGLED:-98.0.4758.102-1}
  BUILD=${BUILD:-1}
 -TAG=${TAG:-alien}
 +TAG=${TAG:-SLse}
  
  # Cross-compiling 32bit binaries on 64bit Slackware; set to "YES":
  CROSS32=${CROSS32:-"NO"}
-@@ -518,14 +203,16 @@
+@@ -518,14 +205,16 @@
  # clang for download0:
  USE_CLANG=${USE_CLANG:-1}
  
@@ -523,7 +530,7 @@
  
  # If you don't want to enable support for Widevine CDM
  # (content decryption module) say "0" here.
-@@ -549,6 +236,21 @@
+@@ -549,6 +238,21 @@
  PKG=$TMP/package-$PRGNAM
  OUTPUT=${OUTPUT:-/tmp}
  
@@ -545,7 +552,7 @@
  # Visible directory listing of anything Chrome related is:
  #   http://gsdview.appspot.com/
  # Official location (non-browsable) of the above is:
-@@ -639,11 +341,13 @@
+@@ -639,11 +343,13 @@
               #DSSE="0"
               DSSE="1"
               ;;
@@ -561,7 +568,7 @@
               # VAAPI not supported:
               USE_VAAPI=0
               FFMPEG_ARCH="arm"
-@@ -666,9 +370,8 @@
+@@ -666,9 +372,8 @@
  esac
  
  case "$ARCH" in
@@ -572,7 +579,7 @@
  esac
  
  # Exit the script on errors:
-@@ -767,9 +470,19 @@
+@@ -767,9 +472,19 @@
    -i tools/generate_shim_headers/generate_shim_headers.py
  # Patches and bug fixes:
  touch $OUTPUT/patch-${PRGNAM}.log
@@ -592,7 +599,7 @@
  # Fix the link on 32bit:
  sed -e '/ldflags /s/-m32/&", "-Wl,-z,notext/' \
    -i build/config/compiler/BUILD.gn
-@@ -823,15 +536,16 @@
+@@ -823,15 +538,16 @@
  # And fix the 32bit compilation while we are at it:
  sed -i tools/clang/scripts/build.py -e "s/ldflags = \[\]/ldflags = \['-latomic'\]/"
  
@@ -615,7 +622,7 @@
  fi
  
  # When compiling google's clang, use the system cmake
-@@ -873,14 +587,14 @@
+@@ -873,14 +589,14 @@
  echo Building ...
  
  [ ${USE_CLANG} -eq 1 ] && do_clang=true || do_clang=false
@@ -632,7 +639,7 @@
  
  export LDFLAGS="$SLKLDFLAGS"
  export CXXFLAGS="$SLKCFLAGS -Wno-unknown-warning-option"
-@@ -891,42 +605,35 @@
+@@ -891,42 +607,35 @@
  # "./out/Release/gn args out/Release --list"
  # for a list of all variables.
  _chromium_conf=(
@@ -680,7 +687,7 @@
      'use_kerberos=false'
      'use_lld=true'
      'use_ozone=true'
-@@ -937,14 +644,7 @@
+@@ -937,14 +646,7 @@
      "extra_cxxflags=\"${CXXFLAGS}\""
      "extra_ldflags=\"${LDFLAGS}\""
  )
@@ -696,7 +703,7 @@
  # Prevent segfaults with llvm-12.0.1 (Chromium 94), thanks Void Linux:
  _chromium_conf+=(
    'is_cfi=false'
-@@ -952,33 +652,50 @@
+@@ -952,33 +654,50 @@
    'use_cfi_icall=false'
    'chrome_pgo_phase=0'
  )
@@ -764,7 +771,7 @@
  # Add Google API key if defined:
  if [ -n "$_google_api_key" ]; then
    _chromium_conf+=(
-@@ -992,15 +709,9 @@
+@@ -992,15 +711,9 @@
      )
    fi
  fi
@@ -781,7 +788,7 @@
  fi
  
      # Change this back when CRBUG 592268 is fixed (error during final link:
-@@ -1099,10 +810,8 @@
+@@ -1099,10 +812,8 @@
      build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}/libsqlite3.so
  
    # The platform-specific alias for the ARM readelf binary is missing
@@ -794,7 +801,7 @@
    fi
  fi
  
-@@ -1120,23 +829,9 @@
+@@ -1120,23 +831,9 @@
  ulimit -n 2048
  
  # Compile google's internal clang sources if needed
@@ -819,7 +826,7 @@
    LDFLAGS="$LDFLAGS" \
    python3 tools/clang/scripts/build.py \
      --bootstrap \
-@@ -1151,7 +846,11 @@
+@@ -1151,7 +848,11 @@
  
    # Ensure that only this new clang is used, ignoring the system version:
    MYCLANG_PATH="$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/third_party/llvm-build/Release+Asserts/bin"
@@ -832,7 +839,7 @@
  fi
  
  # For Chromium 92, disable ffmpeg re-configuration on 32bit OS,
-@@ -1191,27 +890,24 @@
+@@ -1191,27 +892,24 @@
  # Generate the ninja build files:
  echo "-- Bootstrapping 'gn'."
  
@@ -870,7 +877,7 @@
  echo "-- Generating ninja build files."
  out/Release/gn gen out/Release -v --args="${_chromium_conf[*]}" \
    2>&1 | tee -a $OUTPUT/gyp-${PRGNAM}.log
-@@ -1219,25 +915,26 @@
+@@ -1219,25 +917,26 @@
  # Compile everything:
  echo "-- Compiling the lot."
  
@@ -906,7 +913,7 @@
  
  LDFLAGS="$LDFLAGS" \
  LC_ALL=C \
-@@ -1374,6 +1071,13 @@
+@@ -1374,6 +1073,13 @@
  # Add a desktop file:
  process_template chrome/installer/linux/common/desktop.template \
    out/Release/${PRGNAM}.desktop
@@ -920,7 +927,7 @@
  install -D -m0644 out/Release/${PRGNAM}.desktop \
    $PKG/usr/share/applications/${PRGNAM}.desktop
  
-@@ -1523,5 +1227,15 @@
+@@ -1523,5 +1229,15 @@
  cd -
  cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
  
