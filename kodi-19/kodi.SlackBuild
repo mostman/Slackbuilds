@@ -1,8 +1,8 @@
 #!/bin/sh
 
-# Slackware build script for kodi 19.3
+# Slackware build script for kodi 19.4
 
-# Copyright 2020-2021 Minime <slackware[at]slackwarelinux[dot]se>
+# Copyright 2020-2022 Minime <slackware[at]slackwarelinux[dot]se>
 # All rights reserved.
 #
 # Redistribution and use of this script, with or without modification, is
@@ -126,7 +126,7 @@ case "$ARCH" in
   armv6*)    SLKCFLAGS="-O2 -march=armv6 -mfpu=vfp"
              SARCH=arm
              LIBDIRSUFFIX=""
-             CORE_PLATFORM="x11" #Change this to "gbm" if you want to use gbm instead of x11
+             CORE_PLATFORM="x11 gbm" #Change this to "gbm" if you want to use gbm instead of x11
              RENDER_SYSTEM="gles"
              DO_VAAPI=OFF # Does not support Intel, AMD and Nvidia. (Pi uses Broadcom chips)
              DO_VDPAU=OFF # Does not support NVIDIA GPU. (Pi uses Broadcom chips)
