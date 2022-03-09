@@ -117,6 +117,8 @@
 #                  * Bump version fix chromium/ungoogled for ARM
 # 98.0.4758.102-1: 17/feb/2022 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Bump version fix chromium/ungoogled for ARM
+# 99.0.4844.51-1:  09/mar/2022 by Minime <slackware[at]slackwarelinux[dot]se>
+#                  * Update to M99 fix chromium/ungoogled for ARM
 #
 # -----------------------------------------------------------------------------
 # 
@@ -141,8 +143,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-98.0.4758.102}
-UNGOOGLED=${UNGOOGLED:-98.0.4758.102-1}
+VERSION=${VERSION:-99.0.4844.51}
+UNGOOGLED=${UNGOOGLED:-99.0.4844.51-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
