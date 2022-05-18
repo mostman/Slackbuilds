@@ -125,6 +125,26 @@
 #                  * Update.
 #                  17/mar/2022 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Bump version fix chromium/ungoogled for ARM
+# 99.0.4844.82-1:  24/mar/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 99.0.4844.84-1:  27/mar/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Emergency update.
+# 100.0.4896.60-1: 30/mar/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M100.
+# 100.0.4896.75-1: 05/apr/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 100.0.4896.88-1: 12/apr/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 100.0.4896.127-1:15/apr/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Emergency update.
+# 101.0.4951.41-1: 28/apr/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M101.
+# 101.0.4951.54-1: 02/may/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 101.0.4951.64-1: 11/may/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+#                  18/may/2022 by Minime <slackware[at]slackwarelinux[dot]se>
+#                  * Bump version fix chromium/ungoogled for ARM
 #
 # -----------------------------------------------------------------------------
 # 
@@ -149,8 +169,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-99.0.4844.74}
-UNGOOGLED=${UNGOOGLED:-99.0.4844.74-1}
+VERSION=${VERSION:-101.0.4951.64}
+UNGOOGLED=${UNGOOGLED:-101.0.4951.64-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
