@@ -41,8 +41,8 @@
 #######################################################################
 
 PRGNAM=llvm
-GIT_REV=llvmorg-13.0.1
-VERSION=${VERSION:-13.0.1}
+GIT_REV=llvmorg-14.0.3
+VERSION=${VERSION:-14.0.3}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SLse}
 
