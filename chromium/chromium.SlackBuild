@@ -144,7 +144,11 @@
 # 101.0.4951.64-1: 11/may/2022 by Eric Hameleers <alien@slackware.com>
 #                  * Update.
 #                  18/may/2022 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Bump version fix chromium/ungoogled for ARM
+#                  * Bump version fix chromium/ungoogled for ARM.
+# 102.0.5005.61-1: 25/may/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M102.
+#                  27/may/2022 by Minime <slackware[at]slackwarelinux[dot]se>
+#                  * Bump version fix chromium/ungoogled for ARM.
 #
 # -----------------------------------------------------------------------------
 # 
@@ -169,8 +173,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-101.0.4951.64}
-UNGOOGLED=${UNGOOGLED:-101.0.4951.64-1}
+VERSION=${VERSION:-102.0.5005.61}
+UNGOOGLED=${UNGOOGLED:-102.0.5005.61-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
