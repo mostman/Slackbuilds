@@ -499,6 +499,11 @@ if [ ${USE_SYSROOT} -eq 1 ]; then
   python3 build/linux/sysroot_scripts/install-sysroot.py --arch=${SYSROOT_ARCH}
 fi
 
+# For chromium 102.0.5005.61, download the latest build.py:
+if [ "$VERSION" = "102.0.5005.61" ]; then
+  wget -O - https://raw.githubusercontent.com/chromium/chromium/main/tools/clang/scripts/build.py > tools/clang/scripts/build.py
+fi
+
 # Allow building against system libraries in official builds:
 sed -e 's/OFFICIAL_BUILD/GOOGLE_CHROME_BUILD/' \
   -i tools/generate_shim_headers/generate_shim_headers.py
