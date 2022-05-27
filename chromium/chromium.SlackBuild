@@ -151,12 +151,12 @@
 #                  * Bump version fix chromium/ungoogled for ARM.
 #
 # -----------------------------------------------------------------------------
-# 
+#
 # -----------------------------------------------------------------------------
-# 
+#
 # Run 'sh chromium.SlackBuild' to build a Slackware package.
 # The package (.txz) and .txt file as well as build logs are created in /tmp .
-# Install it using 'installpkg'. 
+# Install it using 'installpkg'.
 #
 # -----------------------------------------------------------------------------
 
@@ -295,7 +295,7 @@ fi
 # If you rebuild this package, you can use your own API keys. See:
 #   http://www.chromium.org/developers/how-tos/api-keys
 # This browser is now compiled without API keys. This will disable stuff like
-# browser sync and other functionality which accesses Google APIs. 
+# browser sync and other functionality which accesses Google APIs.
 # The following variables must be set to access Google's public APIs:
 #   _google_api_key
 #   _google_default_client_id
@@ -882,6 +882,8 @@ if [ ${USE_CLANG} -eq 1 ] && [ ${USE_CUSTCLANG} -eq 0 ]; then
     --bootstrap \
     --disable-asserts \
     --gcc-toolchain /usr \
+    --host-cc /usr/bin/gcc \
+    --host-cxx /usr/bin/g++ \
     --skip-checkout \
     --use-system-cmake \
     --without-android \
@@ -1116,7 +1118,7 @@ process_template chrome/installer/linux/common/desktop.template \
 if [[ "$ARCH" =~ arm.* ]]; then
   sed -i out/Release/${PRGNAM}.desktop \
     -e "s/\/${PRGNAM}/\/${PRGNAM} \-\-user-agent=\"Mozilla\/5.0 \(X11; CrOS armv7l 10895.56.0\) AppleWebKit\/537.36 \(KHTML, like Gecko\) Chrome\/${VERSION} Safari\/537.36\"/"
-fi  
+fi
 
 install -D -m0644 out/Release/${PRGNAM}.desktop \
   $PKG/usr/share/applications/${PRGNAM}.desktop
