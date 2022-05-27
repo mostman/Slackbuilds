@@ -522,6 +522,11 @@ touch $OUTPUT/patch-${PRGNAM}.log
 # Be compatible with gcc 10:
 cat $SRCDIR/patches/chromium_gcc10.patch | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+
+# Fixes widevine support for arm
+cat $SRCDIR/patches/widevine_support_for_arm.patch \
+  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+
 # Fix the link on 32bit:
 sed -e '/ldflags /s/-m32/&", "-Wl,-z,notext/' \
   -i build/config/compiler/BUILD.gn
