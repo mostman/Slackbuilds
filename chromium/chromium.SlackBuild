@@ -696,7 +696,7 @@ _chromium_conf+=(
 if [ ${USE_CUSTCLANG} -eq 1 ]; then
   _chromium_conf+=(
     'clang_use_default_sample_profile=false'
-    "clang_base_path=\"${CLANG_BASE_PATH}\""
+    #"clang_base_path=\"${CLANG_BASE_PATH}\""
   )
 fi
 
