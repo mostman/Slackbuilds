@@ -41,7 +41,7 @@
 #######################################################################
 
 PRGNAM=llvm
-VERSION=${VERSION:-14.0.4}
+VERSION=${VERSION:-13.0.1}
 GIT_REV=llvmorg-${VERSION}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SLse}
@@ -137,8 +137,8 @@ echo "++"
 cd $LLVMSRC
 
 # Support GCC built for arm-slackware-linux and i586-slackware-linux:
-#zcat $CWD/clang.toolchains.arm_i586.triple_13.diff.gz | patch -p1 --verbose || exit 1
-zcat $CWD/clang.toolchains.arm_i586.triple_14.diff.gz | patch -p1 --verbose || exit 1
+zcat $CWD/clang.toolchains.arm_i586.triple_13.diff.gz | patch -p1 --verbose || exit 1
+#zcat $CWD/clang.toolchains.arm_i586.triple_14.diff.gz | patch -p1 --verbose || exit 1
 
 cd ../${PRGNAM}-build
 
@@ -166,7 +166,7 @@ cmake -GNinja -DCMAKE_BUILD_TYPE=Release \
       -DLLVM_ENABLE_DIA_SDK=OFF \
       -DCOMPILER_RT_SANITIZERS_TO_BUILD="asan;dfsan;msan;hwasan;tsan;cfi" \
       -DLLVM_LOCAL_RPATH=/usr/lib${LIBDIRSUFFIX} \
-      -DCOMPILER_RT_TEST_COMPILER_CFLAGS="--gcc-toolchain=/usr/bin -Wl,-rpath,/usr/lib64 -Wl,-rpath,/usr/lib32" \
+      -DCOMPILER_RT_TEST_COMPILER_CFLAGS="--gcc-toolchain=/usr -Wl,-rpath,/usr/lib64 -Wl,-rpath,/usr/lib32" \
       -DLLVM_ENABLE_LIBXML2=FORCE_ON \
       -DLLVM_ENABLE_LLD=OFF \
       -DCMAKE_INSTALL_PREFIX="${PKGPATH}" \
