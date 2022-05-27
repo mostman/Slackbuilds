@@ -144,7 +144,7 @@
 # 101.0.4951.64-1: 11/may/2022 by Eric Hameleers <alien@slackware.com>
 #                  * Update.
 #                  18/may/2022 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Bump version fix chromium/ungoogled for ARM.
+#                  * Bump version fix chromium/ungoogled for ARM
 # 102.0.5005.61-1: 25/may/2022 by Eric Hameleers <alien@slackware.com>
 #                  * Update to M102.
 #                  27/may/2022 by Minime <slackware[at]slackwarelinux[dot]se>
@@ -176,7 +176,7 @@ PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
 VERSION=${VERSION:-102.0.5005.61}
 UNGOOGLED=${UNGOOGLED:-102.0.5005.61-1}
 BUILD=${BUILD:-1}
-TAG=${TAG:-SLse}
+TAG=${TAG:-alien}
 
 # Cross-compiling 32bit binaries on 64bit Slackware; set to "YES":
 CROSS32=${CROSS32:-"NO"}
@@ -486,11 +486,21 @@ if [ ${USE_UNGOOGLED} -ne 0 ]; then
   # Give chromium-ungoogled our own Slackware grey logo:
   for size in 16 32 ; do
     convert ${SRCDIR}/${PRGNAM}.png -resize ${size}x${size} \
+      chrome/app/theme/default_200_percent/chromium/product_logo_$size.png
+    convert ${SRCDIR}/${PRGNAM}.png -resize ${size}x${size} \
       chrome/app/theme/default_100_percent/chromium/product_logo_$size.png
+    convert ${SRCDIR}/${PRGNAM}.png -resize ${size}x${size} \
+      chrome/app/theme/default_100_percent/chromium/linux/product_logo_$size.png
   done
   for size in 24 48 64 128 256; do
     convert ${SRCDIR}/${PRGNAM}.png -resize ${size}x${size} \
       chrome/app/theme/chromium/product_logo_$size.png
+    convert ${SRCDIR}/${PRGNAM}.png -resize ${size}x${size} \
+      chrome/app/theme/chromium/linux/product_logo_$size.png
+  done
+  for size in 32 ; do
+    convert ${SRCDIR}/${PRGNAM}.png -resize ${size}x${size} \
+      chrome/app/theme/chromium/linux/product_logo_$size.xpm
   done
 fi
 
@@ -509,23 +519,22 @@ sed -e 's/OFFICIAL_BUILD/GOOGLE_CHROME_BUILD/' \
   -i tools/generate_shim_headers/generate_shim_headers.py
 # Patches and bug fixes:
 touch $OUTPUT/patch-${PRGNAM}.log
-## Try to fix 32bit builds on glibc >= 2.33 - thanks Matt Denton:
-#cat $SRCDIR/patches/linux-sandbox-syscall-broker-use-struct-kernel_stat.patch \
-#  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-#cat $SRCDIR/patches/linux-sandbox-fix-fstatat-crash.patch \
-#  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # Be compatible with gcc 10:
 cat $SRCDIR/patches/chromium_gcc10.patch | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-
-# Fixes widevine support for arm
-cat $SRCDIR/patches/widevine_support_for_arm.patch \
-  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-
 # Fix the link on 32bit:
 sed -e '/ldflags /s/-m32/&", "-Wl,-z,notext/' \
   -i build/config/compiler/BUILD.gn
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+
+# Prevent an error 'Looking for xmlReadMemory - not found ' building clang:
+sed \
+  -i tools/clang/scripts/build.py \
+  -e "s%'lib', 'libxml2.a'%'lib$LIBDIRSUFFIX', 'libxml2.a'%"
+sed \
+  -i third_party/libxml/src/libxml2-config.cmake.in \
+  -e 's%set(LIBXML2_LIBRARY_DIR *${_libxml2_rootdir}/lib%&'${LIBDIRSUFFIX}'%'
+
 ## Fix a compilation error because we enable HEVC but are not ChromeOS:
 #cat $SRCDIR/patches/chromium_hevc_non_chromeos.patch | patch -p1 --verbose \
 #  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
@@ -556,11 +565,7 @@ if [ ${USE_UNGOOGLED} -ne 0 ]; then
   python3 ${UGDIR}/utils/prune_binaries.py ./ ${UGDIR}/pruning.list
   echo "-- Un-googling sources; apply patches:"
   python3 ${UGDIR}/utils/patches.py apply ./ ${UGDIR}/patches
-  echo "-- Un-googling internally used domain list:"
-  python3 ${UGDIR}/utils/domain_substitution.py apply \
-    -r ${UGDIR}/domain_regex.list \
-    -f ${UGDIR}/domain_substitution.list \
-    -c domainsubcache.tar.gz ./
+  # We will have to un-google internally used domain list later.
 fi
 
 # Also needed for Slackware <= 14.2:
@@ -696,7 +701,7 @@ _chromium_conf+=(
 if [ ${USE_CUSTCLANG} -eq 1 ]; then
   _chromium_conf+=(
     'clang_use_default_sample_profile=false'
-    #"clang_base_path=\"${CLANG_BASE_PATH}\""
+    "clang_base_path=\"${CLANG_BASE_PATH}\""
   )
 fi
 
@@ -750,7 +755,10 @@ if [ -n "$_google_api_key" ]; then
 fi
 
 if [[ "$ARCH" =~ arm.* ]]; then
-  _chromium_conf=("${_chromium_conf[@]}" 'target_cpu="arm"' 'target_os="linux"')
+  _chromium_conf+=(
+      'target_cpu="arm"'
+      'target_os="linux"'
+  )
 fi
 
     # Change this back when CRBUG 592268 is fixed (error during final link:
@@ -838,8 +846,6 @@ if [ ${USE_SYSROOT} -eq 1 ]; then
     build/linux/${SYSROOTDIR}/usr/include/graphene-1.0/graphene-config.h
 
   # Take care of Debian/Ubuntu related linker issues:
-  #echo "/usr/lib/${SYSROOT_TARGET}/nss" >> \
-  #  build/linux/${SYSROOTDIR}/etc/ld.so.conf.d/${SYSROOT_TARGET}.conf
   for SOFILE in build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}/nss/*.so ;
   do
     ln -sf nss/$(basename $SOFILE) \
@@ -909,11 +915,6 @@ if [ ${FFMPEG_HEVC} -eq 1 ] && [ "${FFMPEG_ARCH}" != "ia32" ]; then
     FFMPEG_CUSTOM_ARGS="${FFMPEG_CUSTOM_ARGS} --disable-asm"
   fi
   cd third_party/ffmpeg
-    ## To prevent error on x86_64:
-    ## "clang-5.0: error: invalid linker name in argument '-fuse-ld=lld'" 
-    ## in third_party/ffmpeg/build.x64.linux/ChromeOS/ffbuild/config.log
-    #sed -e "s/--extra-ldflags=-fuse-ld=lld/--extra-ldflags=''/" \
-    #    -i chromium/scripts/build_ffmpeg.py
     # Actual reconfigure steps:
     python3 chromium/scripts/build_ffmpeg.py linux ${FFMPEG_ARCH} \
       --branding ${FFMPEG_BRANDING} -- ${FFMPEG_CUSTOM_ARGS} \
@@ -924,6 +925,14 @@ if [ ${FFMPEG_HEVC} -eq 1 ] && [ "${FFMPEG_ARCH}" != "ia32" ]; then
     python3 chromium/scripts/generate_gn.py \
       2>&1 | tee -a $OUTPUT/ffmpeg_configure-${PRGNAM}.log
   cd - 2>/dev/null
+fi
+
+if [ ${USE_UNGOOGLED} -ne 0 ]; then
+  echo "-- Un-googling internally used domain list:"
+  python3 ${UGDIR}/utils/domain_substitution.py apply \
+    -r ${UGDIR}/domain_regex.list \
+    -f ${UGDIR}/domain_substitution.list \
+    -c domainsubcache.tar.gz ./
 fi
 
 # Generate the ninja build files:
@@ -939,13 +948,6 @@ fi
 LDFLAGS="$LDFLAGS" python3 tools/gn/bootstrap/bootstrap.py \
   2>&1 | tee $OUTPUT/gyp-${PRGNAM}.log
   #--use-custom-libcxx \
-
-# Remove symlink again:
-#if [ "$USE_CLANG" -eq 1 ] && [ ! "$MYCLANG_PATH" = "/usr/bin" ]; then
-#  if  [ -f ${MYCLANG_PATH}/ld ]; then
-#    rm ${MYCLANG_PATH}/ld
-#  fi
-#fi
 
 echo "-- Generating ninja build files."
 out/Release/gn gen out/Release -v --args="${_chromium_conf[*]}" \
@@ -1020,9 +1022,8 @@ install -D -m0755 -o root -g root out/Release/vk_swiftshader_icd.json \
 
 # Copy over the remaining binaries:
 cp -a \
-  out/Release/{swiftshader,angledata} \
+  out/Release/angledata \
   $PKG/usr/lib${LIBDIRSUFFIX}/${PRGNAM}/
-rm -f $PKG/usr/lib${LIBDIRSUFFIX}/${PRGNAM}/swiftshader/*TOC
 # Un-googled chromium disables MEI Preload:
 if [ -d out/Release/MEIPreload ]; then
   cp -a \
@@ -1115,7 +1116,7 @@ process_template chrome/installer/linux/common/desktop.template \
 if [[ "$ARCH" =~ arm.* ]]; then
   sed -i out/Release/${PRGNAM}.desktop \
     -e "s/\/${PRGNAM}/\/${PRGNAM} \-\-user-agent=\"Mozilla\/5.0 \(X11; CrOS armv7l 10895.56.0\) AppleWebKit\/537.36 \(KHTML, like Gecko\) Chrome\/${VERSION} Safari\/537.36\"/"
-fi
+fi  
 
 install -D -m0644 out/Release/${PRGNAM}.desktop \
   $PKG/usr/share/applications/${PRGNAM}.desktop
