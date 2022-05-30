@@ -5,23 +5,23 @@ And we also have to download slackware64-current/source/l/glibc with rsync
 
 As root
    # cd /usr/src
-   # wget ftp://ftp.arm.slackware.com/slackwarearm/slackwarearm-devtools/slackkit/pkgs/slackkit-1.23-arm-1.txz
-   # installpkg slackkit-1.23-arm-1.txz
+   # wget https://slackware.uk/slackwarearm/slackwarearm-devtools/slackkit/pkgs/slackkit-1.27-arm-1.txz
+   # installpkg slackkit-1.27-arm-1.txz
 
    # cd /root
-   # mkdir -p slackware64-current/source/l/glibc/
-   # cd slackware64-current/source/l/glibc/
+   # mkdir -p slackware64-15.0/source/l/glibc/
+   # cd slackware64-15.0/source/l/glibc/
 
 As we only need and want glibc directory
 Sync the Slackware/x86_64 tree for glibc:
-   # rsync -Pavv ftp.slackware.org.uk::slackware/slackware64-current/source/l/glibc/ .
+   # rsync -Pavv ftp.slackware.org.uk::slackware/slackware64-15.0/source/l/glibc/ .
    
 Now go to the directory where you have your downloaded my glibc slackbuild with the parches.
 In this example i have the glibc directory under /usr/src
    # cd /usr/src/glibc/
    
-Copy the patches to "/root/slackware64-current/source/l/glibc/" directory
-   # cp patches/* /root/slackware64-current/source/l/glibc/
+Copy the patches to "/root/slackware64-15.0/source/l/glibc/" directory
+   # cp patches/* /root/slackware64-15.0/source/l/glibc/
 
 And now we can compile glibc
    # ./arm/build
