@@ -1,5 +1,5 @@
 --- chromium.SlackBuild.orig	2022-05-25 15:56:46.000000000 +0200
-+++ chromium.SlackBuild	2022-05-30 08:40:02.494678000 +0200
++++ chromium.SlackBuild	2022-06-01 14:35:17.871916569 +0200
 @@ -1,5 +1,4 @@
  #!/bin/bash
 -# $Id: chromium.SlackBuild,v 1.284 2022/05/24 19:23:54 root Exp root $
@@ -520,6 +520,15 @@
  
  # Build a development version of chromium (default no):
  USE_DEV=${USE_DEV:-0}
+@@ -481,7 +176,7 @@
+ VERSION=${VERSION:-102.0.5005.61}
+ UNGOOGLED=${UNGOOGLED:-102.0.5005.61-1}
+ BUILD=${BUILD:-1}
+-TAG=${TAG:-alien}
++TAG=${TAG:-SLse}
+ 
+ # Cross-compiling 32bit binaries on 64bit Slackware; set to "YES":
+ CROSS32=${CROSS32:-"NO"}
 @@ -542,14 +237,16 @@
  # clang for download0:
  USE_CLANG=${USE_CLANG:-1}
