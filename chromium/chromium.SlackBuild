@@ -176,7 +176,7 @@ PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
 VERSION=${VERSION:-102.0.5005.61}
 UNGOOGLED=${UNGOOGLED:-102.0.5005.61-1}
 BUILD=${BUILD:-1}
-TAG=${TAG:-alien}
+TAG=${TAG:-SLse}
 
 # Cross-compiling 32bit binaries on 64bit Slackware; set to "YES":
 CROSS32=${CROSS32:-"NO"}
