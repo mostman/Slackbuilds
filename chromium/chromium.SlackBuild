@@ -149,6 +149,12 @@
 #                  * Update to M102.
 #                  27/may/2022 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Bump version fix chromium/ungoogled for ARM.
+# 102.0.5005.61-3: 02/jun/2022 by Minime <slackware[at]slackwarelinux[dot]se>
+#                  * Ungoogled update.
+#                  - Fix bypassing ssl errors not being possible anymore (see #1976)
+#                  - Properly bump revision to 3 (see #1980)
+#                  - Fix the browser crashing when adding a search engine entry (see #1970)
+#                  - Add two flags to allow looking more like the tor browser (see #1920)
 #
 # -----------------------------------------------------------------------------
 #
@@ -174,8 +180,8 @@ USE_DEV=${USE_DEV:-0}
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
 VERSION=${VERSION:-102.0.5005.61}
-UNGOOGLED=${UNGOOGLED:-102.0.5005.61-1}
-BUILD=${BUILD:-1}
+UNGOOGLED=${UNGOOGLED:-102.0.5005.61-3}
+BUILD=${BUILD:-3}
 TAG=${TAG:-SLse}
 
 # Cross-compiling 32bit binaries on 64bit Slackware; set to "YES":
