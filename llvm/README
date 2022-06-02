@@ -9,5 +9,3 @@ and not having to compile llvm/clang every time (Saves about six hours of compil
 This script installs the llvm/clang toolchain to /opt/llvm.
 
 Update: As Slackware Arm 15.0 was released, lld was added to system pacakage llvm, so its no need to build llvm any more.
-
-Having issues building latest chromium for arm with systems llvm-13.0.0, and was trying to build llvm-14.0.x that allso failes during build.
