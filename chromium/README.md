@@ -1,9 +1,11 @@
-# Alien BOB´s Chromium slackbuild adopted for Slackware ARM (SARPI Current)
-Adopted Alien BOB´s Chromium Slackbuild for Slackware ARM SARPI-Current.
-so one can compile chromium for your Slackware ARM Rasberry Pi.
+# Alien BOB´s Chromium slackbuild adopted for Slackware ARM (SARPI 15.0)
+Adopted Alien BOB´s Chromium Slackbuild for Slackware ARM SARPI-15.0 so one can compile chromium/chromium-ungoogled for your Slackware ARM Rasberry Pi.
 
-This is only built on SARPI Current Rasberry Pi 4.
+This is only built on SARPI 15.0 Rasberry Pi 4.
 I have not tried to build this on any other device nore architecture other than ARM.
+
+If you are using Slackware ARM Current (Thats Aarch/arm64) you most likely will have to modify this script.
+And as i have not tried this, i do not know what would have to be modifyed/changed in the script.
 
 Might also want to download/copy the patches from the patch directory to Alien BOB´s patch directory of the chromium slackbuild directory.
 
