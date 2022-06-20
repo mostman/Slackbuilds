@@ -5,7 +5,7 @@ Most of the slackbuilds i have written my self, some are rewritten slackbuilds t
 
 chromium-ungoogled package compiled for Slackware ARM (RPI 4)<br />
 [![](https://img.shields.io/github/downloads/mostman/Slackbuilds/102.0.5005.115/chromium-ungoogled-102.0.5005.115-armv7l-1SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/102.0.5005.115/)  
-[![](https://img.shields.io/github/downloads/mostman/Slackbuilds/102.0.5005.61/chromium-ungoogled-102.0.5005.61-armv7l-1SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/102.0.5005.61/)  
+[![](https://img.shields.io/github/downloads/mostman/Slackbuilds/102.0.5005.61/chromium-ungoogled-102.0.5005.61-armv7l-3SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/102.0.5005.61/)  
 [![](https://img.shields.io/github/downloads/mostman/Slackbuilds/101.0.4951.64/chromium-ungoogled-101.0.4951.64-armv7l-1SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/101.0.4951.64/)  
 [![](https://img.shields.io/github/downloads/mostman/Slackbuilds/98.0.4758.102/chromium-ungoogled-98.0.4758.102-armv7l-1SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/98.0.4758.102/)  
 [![](https://img.shields.io/github/downloads/mostman/Slackbuilds/97.0.4692.99/chromium-ungoogled-97.0.4692.99-armv7l-1SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/97.0.4692.99/)  
