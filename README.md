@@ -10,7 +10,6 @@ chromium-ungoogled package compiled for Slackware ARM (RPI 4)<br />
 [![](https://img.shields.io/github/downloads/mostman/Slackbuilds/98.0.4758.102/chromium-ungoogled-98.0.4758.102-armv7l-1SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/98.0.4758.102/)
 [![](https://img.shields.io/github/downloads/mostman/Slackbuilds/97.0.4692.99/chromium-ungoogled-97.0.4692.99-armv7l-1SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/97.0.4692.99/)
 
-<p>
 Kodi package compiled for Slackware ARM (RPI 4)<br />
 [![](https://img.shields.io/github/downloads/mostman/Slackbuilds/19.4/kodi-19.4-armv7-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/19.4/)
 [![](https://img.shields.io/github/downloads/mostman/Slackbuilds/19.4/kodi-addons-19.4-armv7-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/19.4/)
