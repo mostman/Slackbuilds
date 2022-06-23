@@ -172,8 +172,8 @@
 #
 # -----------------------------------------------------------------------------
 
-# Build an ungoogled chromium package (default no):
-USE_UNGOOGLED=${USE_UNGOOGLED:-0}
+# Build an ungoogled chromium package (default yes):
+USE_UNGOOGLED=${USE_UNGOOGLED:-1}
 
 # Build a development version of chromium (default no):
 USE_DEV=${USE_DEV:-0}
