@@ -14,7 +14,10 @@ chromium-ungoogled package compiled for Slackware ARM 15.0 (RPI 4)<br />
 
 Kodi package compiled for Slackware ARM 15.0 (RPI 4)  
 [![](https://img.shields.io/github/downloads/mostman/Slackbuilds/19.4/kodi-19.4-armv7-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/19.4/)  
-[![](https://img.shields.io/github/downloads/mostman/Slackbuilds/19.4/kodi-addons-19.4-armv7-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/19.4/)  
+[![](https://img.shields.io/github/downloads/mostman/Slackbuilds/19.4/kodi-addons-19.4-armv7-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/python3-3.9.13/)  
+
+python3 package compiled for Slackware ARM 15.0 (RPI 4)  
+[![](https://github.com/mostman/Slackbuilds/releases/tag/python3-3.9.13/python3-3.9.13-arm-1_slack15.0.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/19.4/)  
 
 llvm/clang package Compiled for Slackware ARM 15.0 (RPI 4), note: this is not needed anymore as lld was added to Slackware ARM 15.0  
 [![](https://img.shields.io/github/downloads/mostman/Slackbuilds/13.0.1/llvm-13.0.1-arm-1_SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/13.0.1/)  
