@@ -39,7 +39,7 @@
 #                  - libdvdcss >= 1.4.0;
 #                  - platform >= 2.1.0;
 #                  - libcec >= 4.0.4;
-#                  - dav1d >= 0.5.2;
+#                  - dav1d >= 0.5.2 <= 0.9.2; Will not work with 1.0.0
 #                  - gcc >= 8 or llvm/clang >= 12;
 #                  - cmake >= 3.13.4;
 #                  - make >= 4.3;
