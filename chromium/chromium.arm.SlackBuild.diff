@@ -1,5 +1,5 @@
 --- chromium.SlackBuild.orig	2022-08-02 21:04:02.000000000 +0200
-+++ chromium.SlackBuild	2022-08-05 13:17:23.439290486 +0200
++++ chromium.SlackBuild	2022-08-05 13:57:11.455565820 +0200
 @@ -1,5 +1,4 @@
  #!/bin/bash
 -# $Id: chromium.SlackBuild,v 1.291 2022/07/20 14:42:17 root Exp root $
@@ -545,9 +545,12 @@
  
  # Build a development version of chromium (default no):
  USE_DEV=${USE_DEV:-0}
-@@ -489,7 +200,7 @@
+@@ -487,9 +198,9 @@
+ SRCNAM=chromium
+ PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
  VERSION=${VERSION:-104.0.5112.79}
- UNGOOGLED=${UNGOOGLED:-104.0.5112.79-1}
+-UNGOOGLED=${UNGOOGLED:-104.0.5112.79-1}
++UNGOOGLED=${UNGOOGLED:-104.0.5112.81-1}
  BUILD=${BUILD:-1}
 -TAG=${TAG:-alien}
 +TAG=${TAG:-SLse}
@@ -637,7 +640,7 @@
  esac
  
  # Exit the script on errors:
-@@ -804,24 +533,24 @@
+@@ -804,12 +533,6 @@
    python3 build/linux/sysroot_scripts/install-sysroot.py --arch=${SYSROOT_ARCH}
  fi
  
@@ -650,12 +653,7 @@
  # Allow building against system libraries in official builds:
  sed -e 's/OFFICIAL_BUILD/GOOGLE_CHROME_BUILD/' \
    -i tools/generate_shim_headers/generate_shim_headers.py
- # Patches and bug fixes:
- touch $OUTPUT/patch-${PRGNAM}.log
-# Upstream fix:
-cat $SRCDIR/patches/x11-ozone-fix-X11-screensaver-suspension.patch \
-  | patch -p1 --verbose \
-  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+@@ -822,6 +545,16 @@
  # Be compatible with gcc 10:
  cat $SRCDIR/patches/chromium_gcc10.patch | patch -p1 --verbose \
    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
@@ -672,7 +670,7 @@ cat $SRCDIR/patches/x11-ozone-fix-X11-screensaver-suspension.patch \
  # Fix the link on 32bit:
  sed -e '/ldflags /s/-m32/&", "-Wl,-z,notext/' \
    -i build/config/compiler/BUILD.gn
-@@ -880,25 +609,22 @@
+@@ -880,25 +613,22 @@
  # And fix the 32bit compilation while we are at it:
  sed -i tools/clang/scripts/build.py -e "s/ldflags = \[\]/ldflags = \['-latomic'\]/"
  
@@ -705,7 +703,7 @@ cat $SRCDIR/patches/x11-ozone-fix-X11-screensaver-suspension.patch \
  # Prevent a build failure (yes, 'x64' even on 32bit Slackware):
  mkdir -p third_party/node/linux/node-linux-x64/bin
  ln -s /usr/bin/node third_party/node/linux/node-linux-x64/bin/
-@@ -934,14 +660,14 @@
+@@ -934,14 +664,14 @@
  echo Building ...
  
  [ ${USE_CLANG} -eq 1 ] && do_clang=true || do_clang=false
@@ -722,7 +720,7 @@ cat $SRCDIR/patches/x11-ozone-fix-X11-screensaver-suspension.patch \
  
  export LDFLAGS="$SLKLDFLAGS"
  export CXXFLAGS="$SLKCFLAGS -Wno-unknown-warning-option"
-@@ -952,41 +678,35 @@
+@@ -952,41 +682,35 @@
  # "./out/Release/gn args out/Release --list"
  # for a list of all variables.
  _chromium_conf=(
@@ -770,7 +768,7 @@ cat $SRCDIR/patches/x11-ozone-fix-X11-screensaver-suspension.patch \
      'use_kerberos=false'
      'use_lld=true'
      'use_ozone=true'
-@@ -997,14 +717,7 @@
+@@ -997,14 +721,7 @@
      "extra_cxxflags=\"${CXXFLAGS}\""
      "extra_ldflags=\"${LDFLAGS}\""
  )
@@ -786,7 +784,7 @@ cat $SRCDIR/patches/x11-ozone-fix-X11-screensaver-suspension.patch \
  # Prevent segfaults with llvm-12.0.1 (Chromium 94), thanks Void Linux:
  _chromium_conf+=(
    'is_cfi=false'
-@@ -1012,33 +725,50 @@
+@@ -1012,33 +729,50 @@
    'use_cfi_icall=false'
    'chrome_pgo_phase=0'
  )
@@ -854,7 +852,7 @@ cat $SRCDIR/patches/x11-ozone-fix-X11-screensaver-suspension.patch \
  # Add Google API key if defined:
  if [ -n "$_google_api_key" ]; then
    _chromium_conf+=(
-@@ -1052,15 +782,12 @@
+@@ -1052,15 +786,12 @@
      )
    fi
  fi
@@ -875,7 +873,7 @@ cat $SRCDIR/patches/x11-ozone-fix-X11-screensaver-suspension.patch \
  fi
  
      # Change this back when CRBUG 592268 is fixed (error during final link:
-@@ -1148,8 +875,6 @@
+@@ -1148,8 +879,6 @@
      build/linux/${SYSROOTDIR}/usr/include/graphene-1.0/graphene-config.h
  
    # Take care of Debian/Ubuntu related linker issues:
@@ -884,7 +882,7 @@ cat $SRCDIR/patches/x11-ozone-fix-X11-screensaver-suspension.patch \
    for SOFILE in build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}/nss/*.so ;
    do
      ln -sf nss/$(basename $SOFILE) \
-@@ -1159,10 +884,8 @@
+@@ -1159,10 +888,8 @@
      build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}/libsqlite3.so
  
    # The platform-specific alias for the ARM readelf binary is missing
@@ -897,7 +895,7 @@ cat $SRCDIR/patches/x11-ozone-fix-X11-screensaver-suspension.patch \
    fi
  fi
  
-@@ -1180,23 +903,9 @@
+@@ -1180,23 +907,9 @@
  ulimit -n 2048
  
  # Compile google's internal clang sources if needed
@@ -922,7 +920,7 @@ cat $SRCDIR/patches/x11-ozone-fix-X11-screensaver-suspension.patch \
    LDFLAGS="$LDFLAGS" \
    python3 tools/clang/scripts/build.py \
      --bootstrap \
-@@ -1213,7 +922,11 @@
+@@ -1213,7 +926,11 @@
  
    # Ensure that only this new clang is used, ignoring the system version:
    MYCLANG_PATH="$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/third_party/llvm-build/Release+Asserts/bin"
@@ -935,7 +933,7 @@ cat $SRCDIR/patches/x11-ozone-fix-X11-screensaver-suspension.patch \
  fi
  
  # For Chromium 92, disable ffmpeg re-configuration on 32bit OS,
-@@ -1233,11 +946,6 @@
+@@ -1233,11 +950,6 @@
      FFMPEG_CUSTOM_ARGS="${FFMPEG_CUSTOM_ARGS} --disable-asm"
    fi
    cd third_party/ffmpeg
@@ -947,7 +945,7 @@ cat $SRCDIR/patches/x11-ozone-fix-X11-screensaver-suspension.patch \
      # Actual reconfigure steps:
      python3 chromium/scripts/build_ffmpeg.py linux ${FFMPEG_ARCH} \
        --branding ${FFMPEG_BRANDING} -- ${FFMPEG_CUSTOM_ARGS} \
-@@ -1261,27 +969,17 @@
+@@ -1261,27 +973,17 @@
  # Generate the ninja build files:
  echo "-- Bootstrapping 'gn'."
  
@@ -980,7 +978,7 @@ cat $SRCDIR/patches/x11-ozone-fix-X11-screensaver-suspension.patch \
  echo "-- Generating ninja build files."
  out/Release/gn gen out/Release -v --args="${_chromium_conf[*]}" \
    2>&1 | tee -a $OUTPUT/gyp-${PRGNAM}.log
-@@ -1289,29 +987,26 @@
+@@ -1289,29 +991,26 @@
  # Compile everything:
  echo "-- Compiling the lot."
  
@@ -1020,7 +1018,7 @@ cat $SRCDIR/patches/x11-ozone-fix-X11-screensaver-suspension.patch \
  
  LDFLAGS="$LDFLAGS" \
  LC_ALL=C \
-@@ -1447,6 +1142,13 @@
+@@ -1447,6 +1146,13 @@
  # Add a desktop file:
  process_template chrome/installer/linux/common/desktop.template \
    out/Release/${PRGNAM}.desktop
@@ -1034,7 +1032,7 @@ cat $SRCDIR/patches/x11-ozone-fix-X11-screensaver-suspension.patch \
  install -D -m0644 out/Release/${PRGNAM}.desktop \
    $PKG/usr/share/applications/${PRGNAM}.desktop
  
-@@ -1596,5 +1298,15 @@
+@@ -1596,5 +1302,15 @@
  cd -
  cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
  
