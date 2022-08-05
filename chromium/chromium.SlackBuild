@@ -167,6 +167,12 @@
 #                  * Bump version fix chromium/ungoogled for ARM
 # 103.0.5060.134-1 :20/jul/2022 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Bump version fix chromium/ungoogled for ARM
+# 103.0.5060.134-1:20/jul/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 104.0.5112.79-1: 02/aug/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M104.
+#                  05/aug/2022 by Minime <slackware[at]slackwarelinux[dot]se>
+#                  * Update to M104 version fix chromium/ungoogled for ARM.
 #
 # -----------------------------------------------------------------------------
 #
@@ -191,8 +197,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-103.0.5060.134}
-UNGOOGLED=${UNGOOGLED:-103.0.5060.134-1}
+VERSION=${VERSION:-104.0.5112.79}
+UNGOOGLED=${UNGOOGLED:-104.0.5112.79-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
@@ -532,6 +538,10 @@ sed -e 's/OFFICIAL_BUILD/GOOGLE_CHROME_BUILD/' \
   -i tools/generate_shim_headers/generate_shim_headers.py
 # Patches and bug fixes:
 touch $OUTPUT/patch-${PRGNAM}.log
+# Upstream fix:
+cat $SRCDIR/patches/x11-ozone-fix-X11-screensaver-suspension.patch \
+  | patch -p1 --verbose \
+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # Be compatible with gcc 10:
 cat $SRCDIR/patches/chromium_gcc10.patch | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
