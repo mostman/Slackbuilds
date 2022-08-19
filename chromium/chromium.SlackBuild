@@ -173,6 +173,10 @@
 #                  * Update to M104.
 #                  05/aug/2022 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Update to M104 version fix chromium/ungoogled for ARM.
+# 104.0.5112.101-1:17/aug/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+#                  19/aug/2022 by Minime <slackware[at]slackwarelinux[dot]se>
+#                  * Update version fix chromium/ungoogled for ARM.
 #
 # -----------------------------------------------------------------------------
 #
@@ -197,8 +201,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-104.0.5112.79}
-UNGOOGLED=${UNGOOGLED:-104.0.5112.81-1}
+VERSION=${VERSION:-104.0.5112.101}
+UNGOOGLED=${UNGOOGLED:-104.0.5112.102-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
