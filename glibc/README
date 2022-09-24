@@ -16,7 +16,7 @@ As we only need and want glibc directory
 Sync the Slackware/x86_64 tree for glibc:
    # rsync -Pavv ftp.slackware.org.uk::slackware/slackware64-15.0/source/l/glibc/ .
    
-Now go to the directory where you have your downloaded my glibc slackbuild with the parches.
+Now go to the directory where you have your downloaded my glibc slackbuild with the patches.
 In this example i have the glibc directory under /usr/src
    # cd /usr/src/glibc/
    
