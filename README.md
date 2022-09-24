@@ -29,4 +29,6 @@ llvm/clang package Compiled for Slackware ARM 15.0 (RPI 4), note: this is not ne
 
 glibc package patched with SHT_RELR and TLS with 64-byte and compiled for Slackware ARM 15.0 (RPI 4)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/glibc-2.33-5/aaa_glibc-solibs-2.33-arm-5.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/glibc-2.33-5/)  
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/glibc-2.33-5/aaa_glibc-solibs-2.33-arm-5p1_slack15.0.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/glibc-2.33-5/)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/glibc-2.33-5/glibc-2.33-arm-5.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/glibc-2.33-5/)
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/glibc-2.33-5/glibc-2.33-arm-5p1_slack15.0.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/glibc-2.33-5/)
