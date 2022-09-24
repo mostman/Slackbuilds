@@ -6,7 +6,7 @@ And we also have to download slackware64-15.0/source/l/glibc with rsync
 As root
    # cd /usr/src
    # wget https://slackware.uk/slackwarearm/slackwarearm-devtools/slackkit/pkgs/slackkit-1.29-arm-1.txz
-   # installpkg slackkit-1.29-arm-1.txz
+   # installpkg slackkit-1.32-arm-1.txz
 
    # cd /root
    # mkdir -p slackware64-current/source/l/glibc/
