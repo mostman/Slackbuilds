@@ -177,6 +177,24 @@
 #                  * Update.
 #                  19/aug/2022 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Update version fix chromium/ungoogled for ARM.
+# 105.0.5195.52-1: 02/aug/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M105.
+# 105.0.5195.102-1:04/aug/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 105.0.5195.125-1:21/sep/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 106.0.5249.61-1: 28/sep/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M106.
+# 106.0.5249.91-1: 02/oct/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 106.0.5249.103-1:09/oct/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 106.0.5249.119-1:18/oct/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 107.0.5304.68-1: 26/oct/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M107.
+# 107.0.5304.87-1: 28/oct/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
 #
 # -----------------------------------------------------------------------------
 #
@@ -201,8 +219,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-104.0.5112.101}
-UNGOOGLED=${UNGOOGLED:-104.0.5112.102-1}
+VERSION=${VERSION:-107.0.5304.87}
+UNGOOGLED=${UNGOOGLED:-107.0.5304.87-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
@@ -237,6 +255,9 @@ if /usr/bin/pkg-config --exists wayland-client 2>/dev/null ; then
 else
   USE_WAYLAND=${USE_WAYLAND:-0}
 fi
+
+# Do not enable Qt UI yet:
+USE_QT=${USE_QT:-0}
 
 # Build Chromium using a debian sysroot for Slackware 14.2 or older;
 # FYI, this will actually also just work for Slackware > 14.2:
@@ -542,18 +563,22 @@ sed -e 's/OFFICIAL_BUILD/GOOGLE_CHROME_BUILD/' \
   -i tools/generate_shim_headers/generate_shim_headers.py
 # Patches and bug fixes:
 touch $OUTPUT/patch-${PRGNAM}.log
-# Upstream fix:
-cat $SRCDIR/patches/x11-ozone-fix-X11-screensaver-suspension.patch \
-  | patch -p1 --verbose \
+# Upstream fixes:
+# https://crbug.com/angleproject/7582
+cat $SRCDIR/patches/angle-wayland-include-protocol.patch \
+  | patch -p0 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+# https://github.com/protocolbuffers/protobuf/issues/9792
+cat $SRCDIR/patches/chromium_protobuf_32bit.patch \
+  | patch -p0 --verbose \
 # Be compatible with gcc 10:
 cat $SRCDIR/patches/chromium_gcc10.patch | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 
 # Fixes error "unknown argument: '-no-opaque-pointers'" in 102.0.5005.61
 # Thanks to Arch Linux
-cat $SRCDIR/patches/remove-no-opaque-pointers-flag.patch \
-  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+#cat $SRCDIR/patches/remove-no-opaque-pointers-flag.patch \
+#  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 
 # Fixes widevine support for arm
 cat $SRCDIR/patches/widevine_support_for_arm.patch \
@@ -672,6 +697,7 @@ echo Building ...
 [ ${USE_CDM} -eq 1 ] && do_cdm=true || do_cdm=false
 [ ${USE_HOTWORD} -eq 1 ] && do_hotword=true || do_hotword=false
 [ ${USE_PA} -eq 1 ] && do_pa=true || do_pa=false
+[ ${USE_QT} -eq 1 ] && do_qt=true || do_qt=false
 [ ${USE_SYSROOT} -eq 1 ] && do_sysroot=true || do_sysroot=false
 [ ${USE_VAAPI} -eq 1 ] && do_vaapi=true || do_vaapi=false
 [ ${USE_WAYLAND} -eq 1 ] && do_wayland=true || do_wayland=false
@@ -692,7 +718,7 @@ _chromium_conf=(
     'enable_platform_dolby_vision=true'
     'enable_mse_mpeg2ts_stream_parser=true'
     'enable_precompiled_headers=false'
-    'enable_swiftshader=true'
+    'enable_pseudolocales=false'
     'fatal_linker_warnings=false'
     "ffmpeg_branding=\"${FFMPEG_BRANDING}\""
     "is_clang=${do_clang}"
@@ -719,6 +745,7 @@ _chromium_conf=(
     'use_lld=true'
     'use_ozone=true'
     "use_pulseaudio=${do_pa}"
+    "use_qt=${do_qt}"
     "use_sysroot=${do_sysroot}"
     "use_vaapi=${do_vaapi}"
     "use_xkbcommon=${do_wayland}"
