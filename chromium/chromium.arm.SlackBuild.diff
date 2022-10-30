@@ -1,8 +1,8 @@
---- chromium.SlackBuild.orig	2022-08-17 19:53:03.000000000 +0200
-+++ chromium.SlackBuild	2022-08-19 10:11:54.980228518 +0200
+--- chromium.SlackBuild.orig	2022-10-28 19:28:09.000000000 +0200
++++ chromium.SlackBuild	2022-10-30 18:51:01.916843737 +0100
 @@ -1,5 +1,4 @@
  #!/bin/bash
--# $Id: chromium.SlackBuild,v 1.294 2022/08/17 17:52:48 root Exp root $
+-# $Id: chromium.SlackBuild,v 1.306 2022/10/28 05:30:01 root Exp root $
  # Copyright 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022  Eric Hameleers, Eindhoven, NL
  # All rights reserved.
  #
@@ -490,7 +490,7 @@
  # 99.0.4844.82-1:  24/mar/2022 by Eric Hameleers <alien@slackware.com>
  #                  * Update.
  # 99.0.4844.84-1:  27/mar/2022 by Eric Hameleers <alien@slackware.com>
-@@ -454,29 +143,53 @@
+@@ -454,18 +143,40 @@
  #                  * Update.
  # 101.0.4951.64-1: 11/may/2022 by Eric Hameleers <alien@slackware.com>
  #                  * Update.
@@ -526,14 +526,21 @@
 +#                  * Update to M104 version fix chromium/ungoogled for ARM.
  # 104.0.5112.101-1:17/aug/2022 by Eric Hameleers <alien@slackware.com>
  #                  * Update.
--# 
 +#                  19/aug/2022 by Minime <slackware[at]slackwarelinux[dot]se>
 +#                  * Update version fix chromium/ungoogled for ARM.
-+#
-+# -----------------------------------------------------------------------------
+ # 105.0.5195.52-1: 02/aug/2022 by Eric Hameleers <alien@slackware.com>
+ #                  * Update to M105.
+ # 105.0.5195.102-1:04/aug/2022 by Eric Hameleers <alien@slackware.com>
+@@ -484,17 +195,19 @@
+ #                  * Update to M107.
+ # 107.0.5304.87-1: 28/oct/2022 by Eric Hameleers <alien@slackware.com>
+ #                  * Update.
+-# 
 +#
  # -----------------------------------------------------------------------------
 -# 
++#
++# -----------------------------------------------------------------------------
 +#
  # Run 'sh chromium.SlackBuild' to build a Slackware package.
  # The package (.txz) and .txt file as well as build logs are created in /tmp .
@@ -549,16 +556,25 @@
  
  # Build a development version of chromium (default no):
  USE_DEV=${USE_DEV:-0}
-@@ -491,7 +204,7 @@
- VERSION=${VERSION:-104.0.5112.101}
- UNGOOGLED=${UNGOOGLED:-104.0.5112.102-1}
+@@ -509,7 +222,7 @@
+ VERSION=${VERSION:-107.0.5304.87}
+ UNGOOGLED=${UNGOOGLED:-107.0.5304.87-1}
  BUILD=${BUILD:-1}
 -TAG=${TAG:-alien}
 +TAG=${TAG:-SLse}
  
  # Cross-compiling 32bit binaries on 64bit Slackware; set to "YES":
  CROSS32=${CROSS32:-"NO"}
-@@ -552,14 +265,16 @@
+@@ -562,7 +275,7 @@
+ FFMPEG_BRANDING=${FFMPEG_BRANDING:-ChromeOS} # or "Chrome", or "Chromium"
+ 
+ # HEVC support. Set to '0' to disable, '1' to enable:
+-FFMPEG_HEVC=${FFMPEG_HEVC:-1}
++FFMPEG_HEVC=${FFMPEG_HEVC:-0}
+ 
+ # Use the clang compiler. Results in faster build and smaller binaries.
+ # This default to "1" (on) because gcc support is getting stale
+@@ -573,14 +286,16 @@
  # clang for download0:
  USE_CLANG=${USE_CLANG:-1}
  
@@ -583,7 +599,7 @@
  
  # If you don't want to enable support for Widevine CDM
  # (content decryption module) say "0" here.
-@@ -583,6 +298,21 @@
+@@ -604,6 +319,21 @@
  PKG=$TMP/package-$PRGNAM
  OUTPUT=${OUTPUT:-/tmp}
  
@@ -605,7 +621,7 @@
  # Visible directory listing of anything Chrome related is:
  #   http://gsdview.appspot.com/
  # Official location (non-browsable) of the above is:
-@@ -593,7 +323,7 @@
+@@ -614,7 +344,7 @@
  # If you rebuild this package, you can use your own API keys. See:
  #   http://www.chromium.org/developers/how-tos/api-keys
  # This browser is now compiled without API keys. This will disable stuff like
@@ -614,7 +630,7 @@
  # The following variables must be set to access Google's public APIs:
  #   _google_api_key
  #   _google_default_client_id
-@@ -673,11 +403,13 @@
+@@ -694,11 +424,13 @@
               #DSSE="0"
               DSSE="1"
               ;;
@@ -630,7 +646,7 @@
               # VAAPI not supported:
               USE_VAAPI=0
               FFMPEG_ARCH="arm"
-@@ -700,9 +432,8 @@
+@@ -721,9 +453,8 @@
  esac
  
  case "$ARCH" in
@@ -641,7 +657,7 @@
  esac
  
  # Exit the script on errors:
-@@ -806,12 +537,6 @@
+@@ -827,12 +558,6 @@
    python3 build/linux/sysroot_scripts/install-sysroot.py --arch=${SYSROOT_ARCH}
  fi
  
@@ -654,15 +670,19 @@
  # Allow building against system libraries in official builds:
  sed -e 's/OFFICIAL_BUILD/GOOGLE_CHROME_BUILD/' \
    -i tools/generate_shim_headers/generate_shim_headers.py
-@@ -824,6 +549,16 @@
+@@ -846,10 +571,19 @@
+ # https://github.com/protocolbuffers/protobuf/issues/9792
+ cat $SRCDIR/patches/chromium_protobuf_32bit.patch \
+   | patch -p0 --verbose \
+-  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
  # Be compatible with gcc 10:
  cat $SRCDIR/patches/chromium_gcc10.patch | patch -p1 --verbose \
    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 +
 +# Fixes error "unknown argument: '-no-opaque-pointers'" in 102.0.5005.61
 +# Thanks to Arch Linux
-+cat $SRCDIR/patches/remove-no-opaque-pointers-flag.patch \
-+  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
++#cat $SRCDIR/patches/remove-no-opaque-pointers-flag.patch \
++#  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 +
 +# Fixes widevine support for arm
 +cat $SRCDIR/patches/widevine_support_for_arm.patch \
@@ -671,7 +691,17 @@
  # Fix the link on 32bit:
  sed -e '/ldflags /s/-m32/&", "-Wl,-z,notext/' \
    -i build/config/compiler/BUILD.gn
-@@ -882,25 +617,22 @@
+@@ -881,6 +615,9 @@
+   # Add essential proprietary codecs to the "chrome" branding of ffmpeg:
+   cat $SRCDIR/patches/chromium_ffmpeg_prop.patch | patch -p1 --verbose \
+     2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
++  ## Advertize HEVC/X.265 support (won't work at the moment):
++  #cat $SRCDIR/patches/chromium_hevc_supported.patch | patch -p1 --verbose \
++  #  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+ fi
+ 
+ if [ ${USE_UNGOOGLED} -ne 0 ]; then
+@@ -905,25 +642,22 @@
  # And fix the 32bit compilation while we are at it:
  sed -i tools/clang/scripts/build.py -e "s/ldflags = \[\]/ldflags = \['-latomic'\]/"
  
@@ -704,7 +734,7 @@
  # Prevent a build failure (yes, 'x64' even on 32bit Slackware):
  mkdir -p third_party/node/linux/node-linux-x64/bin
  ln -s /usr/bin/node third_party/node/linux/node-linux-x64/bin/
-@@ -936,14 +668,14 @@
+@@ -959,7 +693,7 @@
  echo Building ...
  
  [ ${USE_CLANG} -eq 1 ] && do_clang=true || do_clang=false
@@ -713,6 +743,7 @@
  [ ${USE_CDM} -eq 1 ] && do_cdm=true || do_cdm=false
  [ ${USE_HOTWORD} -eq 1 ] && do_hotword=true || do_hotword=false
  [ ${USE_PA} -eq 1 ] && do_pa=true || do_pa=false
+@@ -967,7 +701,7 @@
  [ ${USE_SYSROOT} -eq 1 ] && do_sysroot=true || do_sysroot=false
  [ ${USE_VAAPI} -eq 1 ] && do_vaapi=true || do_vaapi=false
  [ ${USE_WAYLAND} -eq 1 ] && do_wayland=true || do_wayland=false
@@ -721,21 +752,23 @@
  
  export LDFLAGS="$SLKLDFLAGS"
  export CXXFLAGS="$SLKCFLAGS -Wno-unknown-warning-option"
-@@ -954,41 +686,35 @@
+@@ -978,44 +712,35 @@
  # "./out/Release/gn args out/Release --list"
  # for a list of all variables.
  _chromium_conf=(
 -    'blink_enable_generated_code_formatting=false'
 -    'blink_symbol_level=0'
+-    "enable_hevc_parser_and_hw_decoder=${do_hevc}"
      "enable_platform_hevc=${do_hevc}"
+-    "enable_platform_hevc_decoding=${do_hevc}"
+-    "enable_platform_encrypted_hevc=${do_hevc}"
      'enable_platform_ac3_eac3_audio=true'
      'enable_platform_mpeg_h_audio=true'
      'enable_platform_dolby_vision=true'
      'enable_mse_mpeg2ts_stream_parser=true'
      'enable_precompiled_headers=false'
--    'enable_pseudolocales=false'
+     'enable_pseudolocales=false'
 -    'enable_webrtc=true'
-+    'enable_swiftshader=true'
      'fatal_linker_warnings=false'
      "ffmpeg_branding=\"${FFMPEG_BRANDING}\""
      "is_clang=${do_clang}"
@@ -769,7 +802,7 @@
      'use_kerberos=false'
      'use_lld=true'
      'use_ozone=true'
-@@ -999,14 +725,7 @@
+@@ -1027,14 +752,7 @@
      "extra_cxxflags=\"${CXXFLAGS}\""
      "extra_ldflags=\"${LDFLAGS}\""
  )
@@ -785,7 +818,7 @@
  # Prevent segfaults with llvm-12.0.1 (Chromium 94), thanks Void Linux:
  _chromium_conf+=(
    'is_cfi=false'
-@@ -1014,33 +733,50 @@
+@@ -1042,33 +760,50 @@
    'use_cfi_icall=false'
    'chrome_pgo_phase=0'
  )
@@ -853,7 +886,7 @@
  # Add Google API key if defined:
  if [ -n "$_google_api_key" ]; then
    _chromium_conf+=(
-@@ -1054,15 +790,12 @@
+@@ -1082,15 +817,12 @@
      )
    fi
  fi
@@ -874,7 +907,7 @@
  fi
  
      # Change this back when CRBUG 592268 is fixed (error during final link:
-@@ -1150,8 +883,6 @@
+@@ -1178,8 +910,6 @@
      build/linux/${SYSROOTDIR}/usr/include/graphene-1.0/graphene-config.h
  
    # Take care of Debian/Ubuntu related linker issues:
@@ -883,7 +916,7 @@
    for SOFILE in build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}/nss/*.so ;
    do
      ln -sf nss/$(basename $SOFILE) \
-@@ -1161,10 +892,8 @@
+@@ -1189,10 +919,8 @@
      build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}/libsqlite3.so
  
    # The platform-specific alias for the ARM readelf binary is missing
@@ -896,7 +929,7 @@
    fi
  fi
  
-@@ -1182,23 +911,9 @@
+@@ -1210,23 +938,9 @@
  ulimit -n 2048
  
  # Compile google's internal clang sources if needed
@@ -921,7 +954,7 @@
    LDFLAGS="$LDFLAGS" \
    python3 tools/clang/scripts/build.py \
      --bootstrap \
-@@ -1215,7 +930,11 @@
+@@ -1243,7 +957,11 @@
  
    # Ensure that only this new clang is used, ignoring the system version:
    MYCLANG_PATH="$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/third_party/llvm-build/Release+Asserts/bin"
@@ -934,7 +967,7 @@
  fi
  
  # For Chromium 92, disable ffmpeg re-configuration on 32bit OS,
-@@ -1235,11 +954,6 @@
+@@ -1263,11 +981,6 @@
      FFMPEG_CUSTOM_ARGS="${FFMPEG_CUSTOM_ARGS} --disable-asm"
    fi
    cd third_party/ffmpeg
@@ -946,7 +979,7 @@
      # Actual reconfigure steps:
      python3 chromium/scripts/build_ffmpeg.py linux ${FFMPEG_ARCH} \
        --branding ${FFMPEG_BRANDING} -- ${FFMPEG_CUSTOM_ARGS} \
-@@ -1263,27 +977,17 @@
+@@ -1291,27 +1004,17 @@
  # Generate the ninja build files:
  echo "-- Bootstrapping 'gn'."
  
@@ -979,7 +1012,7 @@
  echo "-- Generating ninja build files."
  out/Release/gn gen out/Release -v --args="${_chromium_conf[*]}" \
    2>&1 | tee -a $OUTPUT/gyp-${PRGNAM}.log
-@@ -1291,29 +995,26 @@
+@@ -1319,29 +1022,26 @@
  # Compile everything:
  echo "-- Compiling the lot."
  
@@ -1019,7 +1052,7 @@
  
  LDFLAGS="$LDFLAGS" \
  LC_ALL=C \
-@@ -1449,6 +1150,13 @@
+@@ -1477,6 +1177,13 @@
  # Add a desktop file:
  process_template chrome/installer/linux/common/desktop.template \
    out/Release/${PRGNAM}.desktop
@@ -1033,7 +1066,7 @@
  install -D -m0644 out/Release/${PRGNAM}.desktop \
    $PKG/usr/share/applications/${PRGNAM}.desktop
  
-@@ -1598,5 +1306,15 @@
+@@ -1626,5 +1333,15 @@
  cd -
  cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
  
