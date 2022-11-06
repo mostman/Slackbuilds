@@ -571,6 +571,7 @@ cat $SRCDIR/patches/angle-wayland-include-protocol.patch \
 # https://github.com/protocolbuffers/protobuf/issues/9792
 cat $SRCDIR/patches/chromium_protobuf_32bit.patch \
   | patch -p0 --verbose \
+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # Be compatible with gcc 10:
 cat $SRCDIR/patches/chromium_gcc10.patch | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
