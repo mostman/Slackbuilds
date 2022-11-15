@@ -195,6 +195,10 @@
 #                  * Update to M107.
 # 107.0.5304.87-1: 28/oct/2022 by Eric Hameleers <alien@slackware.com>
 #                  * Update.
+# 107.0.5304.110-1: 09/nov/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+#                   09/nov/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update version fix chromium/ungoogled for ARM.
 #
 # -----------------------------------------------------------------------------
 #
@@ -219,8 +223,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-107.0.5304.87}
-UNGOOGLED=${UNGOOGLED:-107.0.5304.87-1}
+VERSION=${VERSION:-107.0.5304.110}
+UNGOOGLED=${UNGOOGLED:-107.0.5304.110-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
