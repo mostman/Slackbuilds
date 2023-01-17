@@ -17,8 +17,8 @@ NOTE:
 Kodi can be compiled with openjdk instead of jdk.
 
 Required dependencies:
-dav1d (0.9.2), jdk, libass, libcec, libdvdcss, libmicrohttpd, libnfs (5.0.1), platform, pycryptodomex, rapidjson and tinyxml
-Note: Kodi will not build with dav1d-1.0.0
+dav1d (0.9.2), jdk, libass, libcec, libdvdcss, libmicrohttpd, libnfs (5.0.2), platform, pycryptodomex, rapidjson and tinyxml
+Note: Kodi will not build with dav1d-1.0.0 for kodi 19.4, have not tested for 19.5
 
 Please remove or rename /etc/oss.conf if it exists on your system
 prior to building this package or it will fail to build.
