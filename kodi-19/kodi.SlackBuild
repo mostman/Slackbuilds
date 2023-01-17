@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Slackware build script for kodi 19.4
+# Slackware build script for kodi 19.5
 
 # Copyright 2020-2022 Minime <slackware[at]slackwarelinux[dot]se>
 # All rights reserved.
@@ -58,7 +58,7 @@
 PRGNAM=kodi
 SRCNAM=xbmc
 CODNAM=Matrix
-VERSION=${VERSION:-19.4}
+VERSION=${VERSION:-19.5}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SLse}
 
