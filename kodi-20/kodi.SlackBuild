@@ -59,7 +59,7 @@ PRGNAM=kodi
 SRCNAM=xbmc
 CODNAM=Nexus
 VERSION=${VERSION:-20.0}
-BUILD=${BUILD:-2}
+BUILD=${BUILD:-1}
 TAG=${TAG:-_SLse}
 
 # Use llvm/clang, for a faster build
