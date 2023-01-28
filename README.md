@@ -18,6 +18,10 @@ chromium-ungoogled package compiled for Slackware ARM 15.0 (RPI 4)<br />
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/97.0.4692.99/chromium-ungoogled-97.0.4692.99-armv7l-1SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/97.0.4692.99/)  
 
 Kodi package compiled for Slackware ARM 15.0 (RPI 4)  
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.0/kodi-20.0-armv7-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.0/)  
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.0/kodi-addons-20.0-armv7-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.0/)   
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/19.5/kodi-19.5-armv7-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/19.5/)  
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/19.5/kodi-addons-19.5-armv7-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/19.5/)   
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/19.4/kodi-19.4-armv7-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/19.4/)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/19.4/kodi-addons-19.4-armv7-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/19.4/)   
 
