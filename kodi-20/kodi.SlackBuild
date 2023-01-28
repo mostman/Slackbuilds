@@ -175,7 +175,8 @@ rm -rf $SRCNAM-$VERSION-$CODNAM
 
 # Download source from git directly
 # If you prefure to use the tar file you chan change this here.
-# However there was an issue with the tar.gz file in 19.2 when compiling the addons.
+# However there was an issue with the tar.gz file in 20.x when compiling the addons.
+# If you dont use addons you can use the tar.gz file, but if you decide to use addons i recomend you to download from git (default)
 #tar xvf $CWD/$SRCNAM-$VERSION-$CODNAM.tar.gz
 git clone -b $CODNAM https://github.com/xbmc/xbmc $SRCNAM-$VERSION-$CODNAM
 cd $SRCNAM-$VERSION-$CODNAM
