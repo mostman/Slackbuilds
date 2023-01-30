@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022  Eric Hameleers, Eindhoven, NL
+# Copyright 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023  Eric Hameleers, Eindhoven, NL
 # All rights reserved.
 #
 #   Permission to use, copy, modify, and distribute this software for
@@ -86,6 +86,8 @@
 #                          llvm/clang version as its missing lld.
 #                          This is one reason i make a custom llvm/clang package.
 #                  * cleared changelog history as its kind of irrelevant and old...
+# 94.0.4606.71-1:  02/oct/2021 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M94.
 # 94.0.4606.81-1:  12/oct/2021 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Update to M94.
 #                  * Needs llvm/clang 13, so system clang is no longer an option.
@@ -115,7 +117,9 @@
 #                  * Update to M98.
 #                  04/feb/2022 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Bump version fix chromium/ungoogled for ARM
-# 98.0.4758.102-1: 17/feb/2022 by Minime <slackware[at]slackwarelinux[dot]se>
+# 98.0.4758.102-1: 16/feb/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+#                  17/feb/2022 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Bump version fix chromium/ungoogled for ARM
 # 99.0.4844.51-1:  02/mar/2022 by Eric Hameleers <alien@slackware.com>
 #                  * Update to M99.
@@ -198,6 +202,26 @@
 # 107.0.5304.110-1: 09/nov/2022 by Eric Hameleers <alien@slackware.com>
 #                  * Update.
 #                   15/nov/2022 by Minime <slackware[at]slackwarelinux[dot]se>
+#                  * Update version fix chromium/ungoogled for ARM. (Failed to build)
+# 107.0.5304.121-1: 25/nov/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 108.0.5359.71-1: 02/dec/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M108.
+# 108.0.5359.94-1: 02/dec/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 108.0.5359.94-2: 06/dec/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Fix undefined symbol "gbm_bo_get_modifier" on 14.2.
+# 108.0.5359.98-1: 08/dec/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 108.0.5359.124-1: 17/dec/2022 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+# 109.0.5414.74-1: 15/jan/2023 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M109.
+# 109.0.5414.74-2: 17/jan/2023 by Eric Hameleers <alien@slackware.com>
+#                  * System libdrm on Slackware 14.2 is too old.
+# 109.0.5414.119-1: 25/jan/2023 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+#                  30/jan/2023 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Update version fix chromium/ungoogled for ARM.
 #
 # -----------------------------------------------------------------------------
@@ -223,8 +247,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-107.0.5304.110}
-UNGOOGLED=${UNGOOGLED:-107.0.5304.110-1}
+VERSION=${VERSION:-109.0.5414.119}
+UNGOOGLED=${UNGOOGLED:-109.0.5414.119-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
@@ -593,6 +617,12 @@ cat $SRCDIR/patches/widevine_support_for_arm.patch \
 sed -e '/ldflags /s/-m32/&", "-Wl,-z,notext/' \
   -i build/config/compiler/BUILD.gn
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+if [ "$ARCH" == "i586" ] || [[ "$ARCH" =~ arm.* ]]; then
+  # Don't complain about unsupported flags when we add
+  cat $SRCDIR/patches/chromium_slax_nobadflagsmessage.patch \
+    | patch -p1 --verbose \
+    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+fi
 
 # Prevent an error 'Looking for xmlReadMemory - not found ' building clang:
 sed \
@@ -1090,7 +1120,7 @@ if [ $USE_UNGOOGLED -eq 0 ]; then
 fi
 
 # Copy libraries:
-for CRLIB in {libEGL,libGLESv2,libVkICD_mock_icd,libVkLayer_khronos_validation,libvk_swiftshader}.so libvulkan.so.1
+for CRLIB in {libEGL,libGLESv2,libVkICD_mock_icd,libVkLayer_khronos_validation,libminigbm,libvk_swiftshader}.so libvulkan.so.1
  do
   install -D -m0755 -o root -g root out/Release/$CRLIB \
     $PKG/usr/lib${LIBDIRSUFFIX}/${PRGNAM}/$CRLIB
@@ -1120,6 +1150,11 @@ elif [ -f out/Release/lib/libffmpeg.so ]; then
   cp -a \
     out/Release/lib/libffmpeg.so* \
     $PKG/usr/lib${LIBDIRSUFFIX}/${PRGNAM}/lib/
+fi
+if [ ${USE_QT} -eq 1 ]; then
+  cp -a \
+    out/Release/libqt5_shim.so \
+  $PKG/usr/lib${LIBDIRSUFFIX}/${PRGNAM}/
 fi
 for BLOB in out/Release/{natives_blob.bin,snapshot_blob.bin,v8_context_snapshot.bin};
 do
