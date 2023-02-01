@@ -189,7 +189,7 @@ echo "|| Configure done"
 echo "|| Copying /usr/lib/libstdc++.so.6 to ${PKG}${PKGPATH}/lib"
 echo "++"
 
-mkdir -p ${PKG}${PKGPATH}/lib
+mkdir -p ${PKG}${PKGPATH}/lib${LIBDIRSUFFIX}
 cp /usr/lib${LIBDIRSUFFIX}/libstdc++.so.6 ${PKG}${PKGPATH}/lib${LIBDIRSUFFIX}
 
 echo "++"
