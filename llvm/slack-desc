@@ -5,17 +5,17 @@
 # make exactly 11 lines for the formatting to be correct. It's also
 # customary to leave one space after the ':' except on otherwise blank lines.
 
-    |-----handy-ruler------------------------------------------------------|
-llvm: llvm (LLVM compiler toolkit)
-llvm:
-llvm: LLVM is a toolkit for the construction of highly optimized compilers,
-llvm: optimizers, and runtime environments.
-llvm:
-llvm: This package also includes the clang frontend for the C family of
-llvm: languages: C, C++, Objective-C, and Objective-C++
-llvm:
-llvm: Note, this package will install in /opt/llvm and is compiled for ARM
-llvm: with modules clang, lld, clang-tools-extra and compiler-rt
-llvm:
-llvm: Homepage: http://llvm.org/
-llvm:
+             |-----handy-ruler------------------------------------------------------|
+chromium-llvm: llvm (LLVM compiler toolkit)
+chromium-llvm:
+chromium-llvm: LLVM is a toolkit for the construction of highly optimized compilers,
+chromium-llvm: optimizers, and runtime environments.
+chromium-llvm:
+chromium-llvm: This package also includes the clang frontend for the C family of
+chromium-llvm: languages: C, C++, Objective-C, and Objective-C++
+chromium-llvm:
+chromium-llvm: Note, this package will install in /opt/llvm and is compiled for ARM
+chromium-llvm: with modules clang, lld, clang-tools-extra and compiler-rt
+chromium-llvm:
+chromium-llvm: Homepage: http://llvm.org/
+chromium-llvm:
