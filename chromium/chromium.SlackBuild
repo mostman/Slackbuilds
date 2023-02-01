@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023  Eric Hameleers, Eindhoven, NL
+# Copyright 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022  Eric Hameleers, Eindhoven, NL
 # All rights reserved.
 #
 #   Permission to use, copy, modify, and distribute this software for
@@ -33,7 +33,7 @@
 # URL:             http://www.chromium.org/
 # Build needs:     - ninja;
 #                  - nodejs >= 15.6.0;
-#                  - gcc >= 8 , llvm >= 13 for bootstrapping gn;
+#                  - gcc >= 8 , llvm >= 16 for bootstrapping gn;
 #                  - nasm >= 2.14 (yasm no longer being used);
 #                  - cmake >= 3.13.4;
 #                  - python3 >= 3.7, python3-setuptools;
@@ -86,8 +86,6 @@
 #                          llvm/clang version as its missing lld.
 #                          This is one reason i make a custom llvm/clang package.
 #                  * cleared changelog history as its kind of irrelevant and old...
-# 94.0.4606.71-1:  02/oct/2021 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M94.
 # 94.0.4606.81-1:  12/oct/2021 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Update to M94.
 #                  * Needs llvm/clang 13, so system clang is no longer an option.
@@ -202,7 +200,7 @@
 # 107.0.5304.110-1: 09/nov/2022 by Eric Hameleers <alien@slackware.com>
 #                  * Update.
 #                   15/nov/2022 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Update version fix chromium/ungoogled for ARM. (Failed to build)
+#                  * Update version fix chromium/ungoogled for ARM.
 # 107.0.5304.121-1: 25/nov/2022 by Eric Hameleers <alien@slackware.com>
 #                  * Update.
 # 108.0.5359.71-1: 02/dec/2022 by Eric Hameleers <alien@slackware.com>
@@ -221,10 +219,6 @@
 #                  * System libdrm on Slackware 14.2 is too old.
 # 109.0.5414.119-1: 25/jan/2023 by Eric Hameleers <alien@slackware.com>
 #                  * Update.
-#                  30/jan/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Update version fix chromium/ungoogled for ARM.
-#
-# -----------------------------------------------------------------------------
 #
 # -----------------------------------------------------------------------------
 #
@@ -316,7 +310,7 @@ USE_CLANG=${USE_CLANG:-1}
 
 # Use custom clang the systems clang version or if you installed the build i made
 # to save time rather than trying to compile googles clang build every time.
-USE_CUSTCLANG=${USE_CUSTCLANG:-1}
+USE_CUSTCLANG=${USE_CUSTCLANG:-0}
 
 # If set custom clang (USE_CUSTCLANG "1")
 # Make sure you to set correct clang base path.
@@ -352,7 +346,7 @@ if [ ${USE_CUSTCLANG} -eq 1 ] && [ ! -f "${CLANG_BASE_PATH}/bin/clang" ]; then
   echo "Build will fail"
   exit 1
 else
-  CLANG_MIN=13
+  CLANG_MIN=16
   if [ ! $(${CLANG_BASE_PATH}/bin/clang --version |grep '^clang' |cut -d' ' -f3 |cut -d. -f1) -ge ${CLANG_MIN} ]; then
     echo "Need newer version of llvm/clang"
     echo "Will proceed in 10 seconds and build internal llvm/clang"
@@ -586,6 +580,12 @@ if [ ${USE_SYSROOT} -eq 1 ]; then
   python3 build/linux/sysroot_scripts/install-sysroot.py --arch=${SYSROOT_ARCH}
 fi
 
+# For chromium >= 102, download a specific build.py which allows us to
+# compile our 32bit package successfully:
+if [ ${VERSION%%.*} -ge 102 ]; then
+  wget --no-check-certificate -O - https://raw.githubusercontent.com/chromium/chromium/ad35291af36d609042e1d320adb1568daafef9a8/tools/clang/scripts/build.py > tools/clang/scripts/build.py
+fi
+
 # Allow building against system libraries in official builds:
 sed -e 's/OFFICIAL_BUILD/GOOGLE_CHROME_BUILD/' \
   -i tools/generate_shim_headers/generate_shim_headers.py
@@ -617,12 +617,15 @@ cat $SRCDIR/patches/widevine_support_for_arm.patch \
 sed -e '/ldflags /s/-m32/&", "-Wl,-z,notext/' \
   -i build/config/compiler/BUILD.gn \
    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+#if [ "$ARCH" == "i586" ] || [[ "$ARCH" =~ arm.* ]]; then
 if [ "$ARCH" == "i586" ] ; then
   # Don't complain about unsupported flags when we add
+  # "--disable-seccomp-sandbox" on 32bit OS:
   cat $SRCDIR/patches/chromium_slax_nobadflagsmessage.patch \
     | patch -p1 --verbose \
     2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 fi
+
 
 # Prevent an error 'Looking for xmlReadMemory - not found ' building clang:
 sed \
@@ -651,6 +654,7 @@ if [ $FFMPEG_HEVC -eq 1 ]; then
   cat $SRCDIR/patches/chromium_ffmpeg_prop.patch | patch -p1 --verbose \
     2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 fi
+
 if [ ${USE_UNGOOGLED} -ne 0 ]; then
   # Apply ungoogled-chromium patch kit:
   UGDIR=$TMP/tmp-$PRGNAM/ungoogled-chromium-${UNGOOGLED}
@@ -682,7 +686,7 @@ if [[ "$ARCH" =~ arm.* ]]; then
   # (ARM,AArch64 and x86), since it’s very unlikely that we will cross-compile to other arches.
   # x86 is also needed for Compiler-RT tests.
   sed -i tools/clang/scripts/build.py \
-    -e "s/targets = \x27AArch64;ARM;Mips;PowerPC;SystemZ;WebAssembly;X86\x27/targets = \x27ARM;X86;AArch64\x27/"
+    -e "s/targets = \x27AArch64;ARM;Mips;PowerPC;RISCV;SystemZ;WebAssembly;X86\x27/targets = \x27ARM;X86;AArch64\x27/"
 fi
 
 # When compiling google's clang, use the system cmake
@@ -868,8 +872,8 @@ fi
     # See https://bugs.chromium.org/p/chromium/issues/detail?id=592268
     # icu_use_data_file_flag=false
 
-# The array of possible replacements of embedded with system libraries is
-# found in 'build/linux/unbundle/replace_gn_files.py':
+## The array of possible replacements of embedded with system libraries is
+## found in 'build/linux/unbundle/replace_gn_files.py':
 #gn_system_libraries=(
 #  # 'bzip2'
 #  # 'ffmpeg'
@@ -891,10 +895,10 @@ fi
 #  # 'zlib'
 #  )
 
-# Unbundle the libraries which we use from the system.
-# (taken from Arch Linux:)
-# This *should* do what the remove_bundled_libraries.py script does,
-# with the added benefit of not having to list all the remaining libraries:
+## Unbundle the libraries which we use from the system.
+## (taken from Arch Linux:)
+## This *should* do what the remove_bundled_libraries.py script does,
+## with the added benefit of not having to list all the remaining libraries:
 #echo "-- Unbundling system libraries from $PRGNAM sources."
 #for ULIB in ${gn_system_libraries[@]}; do
 #  find -type f -path "*third_party/$ULIB/*" \
@@ -903,10 +907,11 @@ fi
 #    \! -regex '.*\.\(gn\|gni\|isolate\)' \
 #    -delete
 #done
-
-# Change bundled libraries to system ones:
+#
+## Change bundled libraries to system ones:
 #echo "-- Change bundled to system libraries in $PRGNAM sources."
 #python3 build/linux/unbundle/replace_gn_files.py --system-libraries ${gn_system_libraries[@]}
+#
 
 # Do not make the build fail, see Chromium issue #386097:
 python3 third_party/libaddressinput/chromium/tools/update-strings.py \
@@ -1074,6 +1079,7 @@ elif [ "$USE_CLANG" -eq 1 ] && [ "$MYCLANG_PATH" = "/usr/bin" ]; then
   export CXX="clang++"
   export LD="lld"
   export AR="ar"
+  export NM="llvm-nm"
   export AS="as"
 else
   # Be careful not to override CC and CXX (may have been set by gcc5):
@@ -1087,7 +1093,8 @@ ninja -C out/Release \
   chrome chrome_sandbox chromedriver \
   2>&1 | tee $OUTPUT/ninja-${PRGNAM}.log
 
-if [ $USE_UNGOOGLED -eq 0 ]; then
+if [ $USE_UNGOOGLED -eq 0 ] &&  [ ! -f out/Release/chrome_crashpad_handler ]
+then
   # ungoogled-chromium has crash-reporting disabled:
   LDFLAGS="$LDFLAGS" \
   LC_ALL=C \
