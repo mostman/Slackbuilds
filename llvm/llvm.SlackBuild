@@ -1,7 +1,6 @@
-
-#!/bin/bash
-# llvm Verion 1.1-rc3 2022/01/30
-# Copyright 2021  Martin Östman (Minime), SE
+#!/bin/sh
+# llvm Verion 1.16-rc1 2023/02/01
+# Copyright 2021-2023  Martin Östman (Minime), SE
 # All rights reserved.
 #
 #   Permission to use, copy, modify, and distribute this software for
@@ -41,8 +40,9 @@
 #######################################################################
 
 PRGNAM=llvm
-VERSION=${VERSION:-13.0.1}
-GIT_REV=llvmorg-${VERSION}
+VERSION=${VERSION:-16.0.0}
+VERRC="-rc1"
+GIT_REV=llvmorg-${VERSION}${VERRC}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SLse}
 
@@ -83,13 +83,17 @@ fi
 
 # Building clang with clang
 if [ ${USE_CLANG} -eq 1 ]; then
-  CUST_CLANG_PATH="/usr/bin"
-  export PATH="$CUST_CLANG_PATH:$PATH"
-  CCOMPILER=$CUST_CLANG_PATH/clang
-  CPPCOMPILER=$CUST_CLANG_PATH/clang++
+  #CUST_CLANG_PATH="/usr/bin"
+  #export PATH="$CUST_CLANG_PATH:$PATH"
+  #CCOMPILER=$CUST_CLANG_PATH/clang
+  #CPPCOMPILER=$CUST_CLANG_PATH/clang++
+  CCOMPILER=clang
+  CPPCOMPILER=clang++
+  export LD="lld"
 else
   CCOMPILER=gcc
   CPPCOMPILER=g++
+  export LD="ld"
 fi
 
 if [[ $ARCH =~ arm.* ]]; then
@@ -137,11 +141,7 @@ echo "++"
 cd $LLVMSRC
 
 # Support GCC built for arm-slackware-linux and i586-slackware-linux:
-if [ ${VERSION:0:2} -ge 14 ]; then
-  zcat $CWD/clang.toolchains.arm_i586.triple_14.diff.gz | patch -p1 --verbose || exit 1
-elif [ ${VERSION:0:2} -ge 13 ]; then
-  zcat $CWD/clang.toolchains.arm_i586.triple_13.diff.gz | patch -p1 --verbose || exit 1
-fi
+zcat $CWD/clang.toolchains.arm_i586.triple_14.diff.gz | patch -p1 --verbose || exit 1
 
 cd ../${PRGNAM}-build
 
@@ -151,9 +151,8 @@ echo "||"
 echo "|| Configure"
 echo "++"
 
-if [ ${VERSION:0:2} -ge 14 ]; then
-  LDFLAGS="$LDFLAGS" \
-  cmake -GNinja -DCMAKE_BUILD_TYPE=Release \
+LDFLAGS="$LDFLAGS" \
+cmake -GNinja -DCMAKE_BUILD_TYPE=Release \
       -DLLVM_ENABLE_ASSERTIONS=OFF \
       -DLLVM_ENABLE_PROJECTS="clang;compiler-rt;lld;clang-tools-extra" \
       -DLLVM_TARGETS_TO_BUILD="ARM;X86;AArch64" \
@@ -169,65 +168,21 @@ if [ ${VERSION:0:2} -ge 14 ]; then
       -DENABLE_X86_RELAX_RELOCATIONS=NO \
       -DLLVM_ENABLE_DIA_SDK=OFF \
       -DCOMPILER_RT_SANITIZERS_TO_BUILD="asan;dfsan;msan;hwasan;tsan;cfi" \
-      -DLLVM_LOCAL_RPATH=/usr/lib${LIBDIRSUFFIX} \
-      -DCOMPILER_RT_TEST_COMPILER_CFLAGS="--gcc-toolchain=/usr -Wl,-rpath,/usr/lib64 -Wl,-rpath,/usr/lib32" \
+      -DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF \
+      -DLLVM_ENABLE_CURL=OFF \
+      -DLIBCLANG_BUILD_STATIC=ON \
       -DLLVM_ENABLE_LIBXML2=FORCE_ON \
-      -DLLVM_ENABLE_LLD=OFF \
+      -DLIBXML2_INCLUDE_DIR="/usr/include/libxml2" \
+      -DLIBXML2_LIBRARIES="/usr/lib/libxml2.so" \
       -DCMAKE_INSTALL_PREFIX="${PKGPATH}" \
-      -DCOMPILER_RT_BUILD_CRT=OFF \
-      -DCOMPILER_RT_BUILD_LIBFUZZER=OFF \
-      -DCOMPILER_RT_BUILD_MEMPROF=OFF \
-      -DCOMPILER_RT_BUILD_ORC=OFF \
-      -DCOMPILER_RT_BUILD_PROFILE=ON \
-      -DCOMPILER_RT_BUILD_SANITIZERS=ON \
-      -DCOMPILER_RT_BUILD_XRAY=OFF \
-      -DCOMPILER_RT_BUILD_BUILTINS=OFF \
+      -DCMAKE_C_FLAGS=-DLIBXML_STATIC \
+      -DCMAKE_CXX_FLAGS=-DLIBXML_STATIC \
       -DCMAKE_EXE_LINKER_FLAGS=-latomic \
       -DCMAKE_SHARED_LINKER_FLAGS=-latomic \
       -DCMAKE_MODULE_LINKER_FLAGS=-latomic \
       -DCMAKE_C_COMPILER=${CCOMPILER} \
       -DCMAKE_CXX_COMPILER=${CPPCOMPILER} \
       ../$LLVMSRC/${PRGNAM} 2>&1 | tee -a ${OUTPUT}/cmake-${PRGNAM}.log
-elif [ ${VERSION:0:2} -ge 13 ]; then
-  LDFLAGS="$LDFLAGS" \
-  cmake -GNinja -DCMAKE_BUILD_TYPE=Release \
-      -DLLVM_ENABLE_ASSERTIONS=OFF \
-      -DLLVM_ENABLE_PROJECTS="clang;compiler-rt;lld;clang-tools-extra" \
-      -DLLVM_TARGETS_TO_BUILD="ARM;X86;AArch64" \
-      -DLLVM_DEFAULT_TARGET_TRIPLE="${TARGET}" \
-      -DLLVM_ENABLE_PIC=OFF \
-      -DLLVM_ENABLE_UNWIND_TABLES=OFF \
-      -DLLVM_ENABLE_TERMINFO=OFF \
-      -DLLVM_ENABLE_Z3_SOLVER=OFF \
-      -DCLANG_PLUGIN_SUPPORT=OFF \
-      -DCLANG_ENABLE_STATIC_ANALYZER=OFF \
-      -DCLANG_ENABLE_ARCMT=OFF \
-      -DLLVM_INCLUDE_GO_TESTS=OFF \
-      -DENABLE_X86_RELAX_RELOCATIONS=NO \
-      -DLLVM_ENABLE_DIA_SDK=OFF \
-      -DCOMPILER_RT_SANITIZERS_TO_BUILD="asan;dfsan;msan;hwasan;tsan;cfi" \
-      -DLLVM_LOCAL_RPATH=/usr/lib${LIBDIRSUFFIX} \
-      -DCOMPILER_RT_TEST_COMPILER_CFLAGS="--gcc-toolchain=/usr -Wl,-rpath,/usr/lib64 -Wl,-rpath,/usr/lib32" \
-      -DLLVM_ENABLE_LIBXML2=FORCE_ON \
-      -DLLVM_ENABLE_LLD=OFF \
-      -DCMAKE_INSTALL_PREFIX="${PKGPATH}" \
-      -DCOMPILER_RT_BUILD_CRT=OFF \
-      -DCOMPILER_RT_BUILD_LIBFUZZER=OFF \
-      -DCOMPILER_RT_BUILD_MEMPROF=OFF \
-      -DCOMPILER_RT_BUILD_ORC=OFF \
-      -DCOMPILER_RT_BUILD_PROFILE=ON \
-      -DCOMPILER_RT_BUILD_SANITIZERS=ON \
-      -DCOMPILER_RT_BUILD_XRAY=OFF \
-      -DCOMPILER_RT_BUILD_BUILTINS=OFF \
-      -DCMAKE_C_FLAGS="--gcc-toolchain=/usr" \
-      -DCMAKE_CXX_FLAGS="--gcc-toolchain=/usr" \
-      -DCMAKE_EXE_LINKER_FLAGS=-latomic \
-      -DCMAKE_SHARED_LINKER_FLAGS=-latomic \
-      -DCMAKE_MODULE_LINKER_FLAGS=-latomic \
-      -DCMAKE_C_COMPILER=${CCOMPILER} \
-      -DCMAKE_CXX_COMPILER=${CPPCOMPILER} \
-      ../$LLVMSRC/${PRGNAM} 2>&1 | tee -a ${OUTPUT}/cmake-${PRGNAM}.log
-fi
 
 echo "++"
 echo "|| Configure done"
@@ -293,4 +248,4 @@ mkdir -p $PKG/install
 cat $CWD/slack-desc > $PKG/install/slack-desc
 
 cd $PKG
-/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.txz
+/sbin/makepkg -l y -c n $OUTPUT/chromium-$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.txz
