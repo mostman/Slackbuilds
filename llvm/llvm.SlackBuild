@@ -230,19 +230,19 @@ rm -rf $PKG${PKGPATH}/share/man
 )
 
 cd $TMP/$LLVMSRC
-mkdir -p $PKG${PKGPATH}/doc/$PRGNAM-$VERSION/{llvm,clang,lld,clang-tools-extra,compiler-rt,openmp}
+mkdir -p $PKG${PKGPATH}/doc/$PRGNAM-$VERSION$VERRC/{llvm,clang,lld,clang-tools-extra,compiler-rt,openmp}
 cp -a llvm/{CODE_OWNERS,CREDITS,LICENSE,README,RELEASE_TESTERS}* \
-  $PKG${PKGPATH}/doc/$PRGNAM-$VERSION/llvm
-cp -a clang/{CODE_OWNERS,INSTALL,LICENSE,NOTES,README}* \
-  $PKG${PKGPATH}/doc/$PRGNAM-$VERSION/clang
+  $PKG${PKGPATH}/doc/$PRGNAM-$VERSION$VERRC/llvm
+cp -a clang/{CodeOwners,INSTALL,LICENSE,NOTES,README}* \
+  $PKG${PKGPATH}/doc/$PRGNAM-$VERSION$VERRC/clang
 cp -a clang-tools-extra/{CODE_OWNERS,LICENSE,README}* \
-  $PKG${PKGPATH}/doc/$PRGNAM-$VERSION/clang-tools-extra
+  $PKG${PKGPATH}/doc/$PRGNAM-$VERSION$VERRC/clang-tools-extra
 cp -a compiler-rt/{CODE_OWNERS,LICENSE,README}* \
-  $PKG${PKGPATH}/doc/$PRGNAM-$VERSION/compiler-rt
+  $PKG${PKGPATH}/doc/$PRGNAM-$VERSION$VERRC/compiler-rt
 cp -a lld/{CODE_OWNERS,LICENSE}* \
-  $PKG${PKGPATH}/doc/$PRGNAM-$VERSION/lld
+  $PKG${PKGPATH}/doc/$PRGNAM-$VERSION$VERRC/lld
 cp -a openmp/{CREDITS,LICENSE}* \
-  $PKG/opt/llvm/doc/$PRGNAM-$VERSION/openmp
+  $PKG/opt/llvm/doc/$PRGNAM-$VERSION$VERRC/openmp
 
 mkdir -p $PKG/install
 cat $CWD/slack-desc > $PKG/install/slack-desc
