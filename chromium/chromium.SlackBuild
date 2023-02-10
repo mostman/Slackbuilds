@@ -891,45 +891,47 @@ fi
     # See https://bugs.chromium.org/p/chromium/issues/detail?id=592268
     # icu_use_data_file_flag=false
 
-# The array of possible replacements of embedded with system libraries is
-# found in 'build/linux/unbundle/replace_gn_files.py':
-#gn_system_libraries=(
-#  # 'bzip2'
-#  # 'ffmpeg'
-#  'flac'
-#  # 'freetype2'
-#  # 'harfbuzz'
-#  # 'icu'
-#  # 'libdrm'
-#  # 'libevent'
-#  # 'libjpeg'
-#  # 'libpng'
-#  # 'libvpx'
-#  # 'libwebp'
-#  # 'libxml'
-#  # 'libxslt'
-#  # 'opus'
-#  # 're2'
-#  # 'snappy'
-#  # 'zlib'
-#  )
+if [ ${FFMPEG_HEVC} -eq 0 ]; then
+  # The array of possible replacements of embedded with system libraries is
+  # found in 'build/linux/unbundle/replace_gn_files.py':
+  gn_system_libraries=(
+    # 'bzip2'
+    # 'ffmpeg'
+    'flac'
+    # 'freetype2'
+    # 'harfbuzz'
+    # 'icu'
+    # 'libdrm'
+    # 'libevent'
+    # 'libjpeg'
+    # 'libpng'
+    # 'libvpx'
+    # 'libwebp'
+    # 'libxml'
+    # 'libxslt'
+    # 'opus'
+    # 're2'
+    # 'snappy'
+    # 'zlib'
+    )
 
-# Unbundle the libraries which we use from the system.
-# (taken from Arch Linux:)
-# This *should* do what the remove_bundled_libraries.py script does,
-# with the added benefit of not having to list all the remaining libraries:
-#echo "-- Unbundling system libraries from $PRGNAM sources."
-#for ULIB in ${gn_system_libraries[@]}; do
-#  find -type f -path "*third_party/$ULIB/*" \
-#    \! -path "*third_party/$ULIB/chromium/*" \
-#    \! -path "*third_party/$ULIB/google/*" \
-#    \! -regex '.*\.\(gn\|gni\|isolate\)' \
-#    -delete
-#done
+  # Unbundle the libraries which we use from the system.
+  # (taken from Arch Linux:)
+  # This *should* do what the remove_bundled_libraries.py script does,
+  # with the added benefit of not having to list all the remaining libraries:
+  echo "-- Unbundling system libraries from $PRGNAM sources."
+  for ULIB in ${gn_system_libraries[@]}; do
+    find -type f -path "*third_party/$ULIB/*" \
+      \! -path "*third_party/$ULIB/chromium/*" \
+      \! -path "*third_party/$ULIB/google/*" \
+      \! -regex '.*\.\(gn\|gni\|isolate\)' \
+      -delete
+  done
 
-# Change bundled libraries to system ones:
-#echo "-- Change bundled to system libraries in $PRGNAM sources."
-#python3 build/linux/unbundle/replace_gn_files.py --system-libraries ${gn_system_libraries[@]}
+  # Change bundled libraries to system ones:
+  echo "-- Change bundled to system libraries in $PRGNAM sources."
+  python3 build/linux/unbundle/replace_gn_files.py --system-libraries ${gn_system_libraries[@]}
+fi
 
 # Do not make the build fail, see Chromium issue #386097:
 python3 third_party/libaddressinput/chromium/tools/update-strings.py \
