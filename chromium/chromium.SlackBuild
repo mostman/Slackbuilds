@@ -456,7 +456,7 @@ case "$ARCH" in
              #DSSE="0"
              DSSE="1"
              ;;
-  armv7*)    SLKCFLAGS="-O2 -march=armv7-a -mtune=cortex-a72 -mfpu=vfpv3-d16 -mfloat-abi=hard"
+  armv7*)    SLKCFLAGS="-O2 -march=armv7-a -mtune=cortex-a72 -mfpu=neon -mfloat-abi=hard"
              SLKLDFLAGS="-Wl,-z,notext"; LIBDIRSUFFIX=""
              DSSE="1"
              # Widevine not supported (no binary library available):
