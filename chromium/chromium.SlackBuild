@@ -223,8 +223,10 @@
 #                  * Update.
 #                  30/jan/2023 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Update version fix chromium/ungoogled for ARM.
-# 110.0.5481.77-1: 09/feb/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Update version fix chromium/ungoogled for ARM.
+# 110.0.5481.77-1: 09/feb/2023 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M110.
+#                  09/feb/2023 by Minime <slackware[at]slackwarelinux[dot]se>
+#                  * Update M110, version fix chromium/ungoogled for ARM.
 #
 # -----------------------------------------------------------------------------
 #
@@ -286,8 +288,13 @@ else
   USE_WAYLAND=${USE_WAYLAND:-0}
 fi
 
-# Do not enable Qt UI yet:
-USE_QT=${USE_QT:-0}
+# Enable Qt UI on Slackware 15.0 and newer.
+# Until Chromium 110, enable Qt5 UI using param '--enable-features=AllowQt':
+if pkg-config --exists "Qt5Core >= 5.15.3" ; then
+  USE_QT=${USE_QT:-1}
+else
+  USE_QT=${USE_QT:-0}
+fi
 
 # Build Chromium using a debian sysroot for Slackware 14.2 or older;
 # FYI, this will actually also just work for Slackware > 14.2:
@@ -354,7 +361,6 @@ if [ ${USE_CUSTCLANG} -eq 1 ] && [ ! -f "${CLANG_BASE_PATH}/bin/clang" ]; then
   echo "Build will fail"
   exit 1
 else
-  #CLANG_MIN=13
   CLANG_MIN=16
   if [ ! $(${CLANG_BASE_PATH}/bin/clang --version |grep '^clang' |cut -d' ' -f3 |cut -d. -f1) -ge ${CLANG_MIN} ]; then
     echo "Need newer version of llvm/clang"
@@ -456,7 +462,7 @@ case "$ARCH" in
              #DSSE="0"
              DSSE="1"
              ;;
-  armv7*)    SLKCFLAGS="-O2 -march=armv7-a -mtune=cortex-a72 -mfpu=neon -mfloat-abi=hard"
+  armv7*)    SLKCFLAGS="-O2 -march=armv7-a -mtune=cortex-a72 -mfpu=neon-fp-armv8 -mfloat-abi=hard"
              SLKLDFLAGS="-Wl,-z,notext"; LIBDIRSUFFIX=""
              DSSE="1"
              # Widevine not supported (no binary library available):
@@ -1044,6 +1050,9 @@ if [ ${FFMPEG_HEVC} -eq 1 ] && [ "${FFMPEG_ARCH}" != "ia32" ]; then
     FFMPEG_CUSTOM_ARGS="${FFMPEG_CUSTOM_ARGS} --disable-asm"
   fi
   cd third_party/ffmpeg
+    ## To prevent error on x86_64:
+    ## "clang-5.0: error: invalid linker name in argument '-fuse-ld=lld'"
+    ## in third_party/ffmpeg/build.x64.linux/ChromeOS/ffbuild/config.log
     # Actual reconfigure steps:
     python3 chromium/scripts/build_ffmpeg.py linux ${FFMPEG_ARCH} \
       --branding ${FFMPEG_BRANDING} -- ${FFMPEG_CUSTOM_ARGS} \
@@ -1099,11 +1108,13 @@ elif [ "$USE_CLANG" -eq 1 ] && [ "$MYCLANG_PATH" = "/usr/bin" ]; then
   export CXX="clang++"
   export LD="lld"
   export AR="ar"
+  export NM="nm"
   export AS="as"
 else
   # Be careful not to override CC and CXX (may have been set by gcc5):
   export CC=${CC:-"gcc"}
   export CXX=${CXX:-"g++"}
+  export AS=${AS:-"as"}
 fi
 
 LDFLAGS="$LDFLAGS" \
@@ -1112,7 +1123,8 @@ ninja -C out/Release \
   chrome chrome_sandbox chromedriver \
   2>&1 | tee $OUTPUT/ninja-${PRGNAM}.log
 
-if [ $USE_UNGOOGLED -eq 0 ]; then
+if [ $USE_UNGOOGLED -eq 0 ] &&  [ ! -f out/Release/chrome_crashpad_handler ]
+then
   # ungoogled-chromium has crash-reporting disabled:
   LDFLAGS="$LDFLAGS" \
   LC_ALL=C \
