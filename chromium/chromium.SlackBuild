@@ -227,6 +227,10 @@
 #                  * Update to M110.
 #                  09/feb/2023 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Update M110, version fix chromium/ungoogled for ARM.
+# 110.0.5481.100-1:15/feb/2023 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+#                  19/feb/2023 by Minime <slackware[at]slackwarelinux[dot]se>
+#                  * Update, version fix chromium/ungoogled for ARM.
 #
 # -----------------------------------------------------------------------------
 #
@@ -251,8 +255,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-110.0.5481.77}
-UNGOOGLED=${UNGOOGLED:-110.0.5481.77-1}
+VERSION=${VERSION:-110.0.5481.100}
+UNGOOGLED=${UNGOOGLED:-110.0.5481.100-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
@@ -1023,6 +1027,13 @@ if [ ${USE_CLANG} -eq 1 ] && [ ${USE_CUSTCLANG} -eq 0 ]; then
     --without-fuchsia \
     2>&1 | tee $OUTPUT/clang_build-${PRGNAM}.log
     #--llvm-force-head-revision \
+
+  # Building gn for Chromium 110 fails when this file is not present:
+  if [ ! -f third_party/llvm-build/Release+Asserts/cr_build_revision ]; then
+    CLANG_REVISION=$(grep ^CLANG_REVISION tools/clang/scripts/update.py |cut -d= -f2 |tr -d " '")
+    CLANG_SUB_REVISION=$(grep ^CLANG_SUB_REVISION tools/clang/scripts/update.py |cut -d= -f2 |tr -d " '")
+    echo "${CLANG_REVISION}-${CLANG_SUB_REVISION}" > third_party/llvm-build/Release+Asserts/cr_build_revision
+  fi
 
   # Ensure that only this new clang is used, ignoring the system version:
   MYCLANG_PATH="$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/third_party/llvm-build/Release+Asserts/bin"
