@@ -18,7 +18,7 @@ dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * Fixed link for debians arm-linux-gnueabihf-readelf to slackwares readelf
 * Fixed compiling google's internal llvm/clang for ARM.
 * Also made it possible to use eithers systems llvm/clang version or my slackbuild llvm/clang version instead of chromiums llvm/clang build.
-* Patched chromium for arm to support Widevine. (Using my patched glibc will also make Widevine 4.10.2252.x and latest 4.10.2449.x working on ARM)
+* Patched chromium for arm to support Widevine. (Using my patched glibc will also make Widevine 4.10.2252.x and latest 4.10.2557.x working on ARM)
 
 # Dependencies needed to build:
 * ninja (Is avalible throught slack package)
