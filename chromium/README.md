@@ -31,7 +31,7 @@ dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * Internet access (for downloading toolchain bins)
 
 # Optional dependencies to build:
-* llvm >= 16.0.0 (Is avalible throught slack package or my [llvm](https://github.com/mostman/Slackbuilds/tree/main/llvm) buildscript or prebuilt [llvm slackware x86_64 and ARM](https://github.com/mostman/Slackbuilds/releases/tag/16.0.0-rc2) package).
+* llvm >= 16.0.0 (Is avalible throught slack package or my [llvm](https://github.com/mostman/Slackbuilds/tree/main/llvm) buildscript or prebuilt [llvm slackware x86_64 and ARM](https://github.com/mostman/Slackbuilds/releases/tag/16.0.0-rc3) package).
 As of Slackware Arm 15.0 was released, lld was added to system llvm/clang, so there is no need to build this package any more if you are intending to build chromium/comium-ungoogled your self.
 
 # Patch AlienBob´s [chromium.Slackbuild](http://www.slackware.com/~alien/slackbuilds/chromium/build/)
