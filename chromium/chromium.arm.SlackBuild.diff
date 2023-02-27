@@ -1,5 +1,5 @@
---- chromium.SlackBuild.110.100.orig	2023-02-16 19:08:59.000000000 +0100
-+++ chromium.SlackBuild	2023-02-22 07:35:05.331166002 +0100
+--- chromium.SlackBuild.orig	2023-02-16 19:08:59.000000000 +0100
++++ chromium.SlackBuild	2023-02-27 07:13:23.443677821 +0100
 @@ -1,5 +1,4 @@
  #!/bin/bash
 -# $Id: chromium.SlackBuild,v 1.322 2023/02/16 18:08:47 root Exp root $
@@ -538,7 +538,7 @@
  # 107.0.5304.121-1: 25/nov/2022 by Eric Hameleers <alien@slackware.com>
  #                  * Update.
  # 108.0.5359.71-1: 02/dec/2022 by Eric Hameleers <alien@slackware.com>
-@@ -504,21 +221,29 @@
+@@ -504,21 +221,31 @@
  #                  * System libdrm on Slackware 14.2 is too old.
  # 109.0.5414.119-1: 25/jan/2023 by Eric Hameleers <alien@slackware.com>
  #                  * Update.
@@ -552,6 +552,8 @@
  #                  * Update.
 -# 
 +#                  19/feb/2023 by Minime <slackware[at]slackwarelinux[dot]se>
++#                  * Update, version fix chromium/ungoogled for ARM.
++# 110.0.5481.177-1:26/feb/2023 by Minime <slackware[at]slackwarelinux[dot]se>
 +#                  * Update, version fix chromium/ungoogled for ARM.
 +#
 +# -----------------------------------------------------------------------------
@@ -573,16 +575,21 @@
  
  # Build a development version of chromium (default no):
  USE_DEV=${USE_DEV:-0}
-@@ -533,7 +258,7 @@
- VERSION=${VERSION:-110.0.5481.100}
- UNGOOGLED=${UNGOOGLED:-110.0.5481.100-1}
+@@ -530,10 +257,10 @@
+ 
+ SRCNAM=chromium
+ PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
+-VERSION=${VERSION:-110.0.5481.100}
+-UNGOOGLED=${UNGOOGLED:-110.0.5481.100-1}
++VERSION=${VERSION:-110.0.5481.177}
++UNGOOGLED=${UNGOOGLED:-110.0.5481.177-1}
  BUILD=${BUILD:-1}
 -TAG=${TAG:-alien}
 +TAG=${TAG:-SLse}
  
  # Cross-compiling 32bit binaries on 64bit Slackware; set to "YES":
  CROSS32=${CROSS32:-"NO"}
-@@ -569,11 +294,18 @@
+@@ -569,11 +296,18 @@
  
  # Enable Qt UI on Slackware 15.0 and newer.
  # Until Chromium 110, enable Qt5 UI using param '--enable-features=AllowQt':
@@ -606,7 +613,7 @@
  
  # Build Chromium using a debian sysroot for Slackware 14.2 or older;
  # FYI, this will actually also just work for Slackware > 14.2:
-@@ -602,15 +334,16 @@
+@@ -602,15 +336,16 @@
  # clang for download0:
  USE_CLANG=${USE_CLANG:-1}
  
@@ -632,7 +639,7 @@
  
  # If you don't want to enable support for Widevine CDM
  # (content decryption module) say "0" here.
-@@ -634,6 +367,22 @@
+@@ -634,6 +369,22 @@
  PKG=$TMP/package-$PRGNAM
  OUTPUT=${OUTPUT:-/tmp}
  
@@ -655,7 +662,7 @@
  # Visible directory listing of anything Chrome related is:
  #   http://gsdview.appspot.com/
  # Official location (non-browsable) of the above is:
-@@ -644,7 +393,7 @@
+@@ -644,7 +395,7 @@
  # If you rebuild this package, you can use your own API keys. See:
  #   http://www.chromium.org/developers/how-tos/api-keys
  # This browser is now compiled without API keys. This will disable stuff like
@@ -664,7 +671,7 @@
  # The following variables must be set to access Google's public APIs:
  #   _google_api_key
  #   _google_default_client_id
-@@ -724,14 +473,16 @@
+@@ -724,14 +475,16 @@
               #DSSE="0"
               DSSE="1"
               ;;
@@ -684,7 +691,7 @@
               SYSROOT_ARCH="arm"
               SYSROOT_TARGET="arm-linux-gnueabihf"
               PKGARCH="$ARCH"
-@@ -751,9 +502,8 @@
+@@ -751,9 +504,8 @@
  esac
  
  case "$ARCH" in
@@ -695,7 +702,7 @@
  esac
  
  # Exit the script on errors:
-@@ -868,21 +618,35 @@
+@@ -868,21 +620,35 @@
    -i tools/generate_shim_headers/generate_shim_headers.py
  # Patches and bug fixes:
  touch $OUTPUT/patch-${PRGNAM}.log
@@ -733,7 +740,7 @@
    cat $SRCDIR/patches/chromium_slax_nobadflagsmessage.patch \
      | patch -p1 --verbose \
      2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-@@ -915,7 +679,6 @@
+@@ -915,7 +681,6 @@
    cat $SRCDIR/patches/chromium_ffmpeg_prop.patch | patch -p1 --verbose \
      2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
  fi
@@ -741,7 +748,7 @@
  if [ ${USE_UNGOOGLED} -ne 0 ]; then
    # Apply ungoogled-chromium patch kit:
    UGDIR=$TMP/tmp-$PRGNAM/ungoogled-chromium-${UNGOOGLED}
-@@ -938,18 +701,22 @@
+@@ -938,18 +703,22 @@
  # And fix the 32bit compilation while we are at it:
  sed -i tools/clang/scripts/build.py -e "s/ldflags = \[\]/ldflags = \['-latomic'\]/"
  
@@ -771,7 +778,7 @@
  fi
  
  # When compiling google's clang, use the system cmake
-@@ -995,7 +762,7 @@
+@@ -995,7 +764,7 @@
  echo Building ...
  
  [ ${USE_CLANG} -eq 1 ] && do_clang=true || do_clang=false
@@ -780,7 +787,7 @@
  [ ${USE_CDM} -eq 1 ] && do_cdm=true || do_cdm=false
  [ ${USE_HOTWORD} -eq 1 ] && do_hotword=true || do_hotword=false
  [ ${USE_PA} -eq 1 ] && do_pa=true || do_pa=false
-@@ -1003,7 +770,7 @@
+@@ -1003,7 +772,7 @@
  [ ${USE_SYSROOT} -eq 1 ] && do_sysroot=true || do_sysroot=false
  [ ${USE_VAAPI} -eq 1 ] && do_vaapi=true || do_vaapi=false
  [ ${USE_WAYLAND} -eq 1 ] && do_wayland=true || do_wayland=false
@@ -789,7 +796,7 @@
  
  export LDFLAGS="$SLKLDFLAGS"
  export CXXFLAGS="$SLKCFLAGS -Wno-unknown-warning-option"
-@@ -1018,46 +785,39 @@
+@@ -1018,46 +787,39 @@
      'blink_symbol_level=0'
      "enable_hevc_parser_and_hw_decoder=${do_hevc}"
      "enable_platform_hevc=${do_hevc}"
@@ -842,7 +849,7 @@
      'use_system_minigbm=false'
      "use_qt=${do_qt}"
      "use_sysroot=${do_sysroot}"
-@@ -1066,14 +826,7 @@
+@@ -1066,14 +828,7 @@
      "extra_cxxflags=\"${CXXFLAGS}\""
      "extra_ldflags=\"${LDFLAGS}\""
  )
@@ -858,7 +865,7 @@
  # Prevent segfaults with llvm-12.0.1 (Chromium 94), thanks Void Linux:
  _chromium_conf+=(
    'is_cfi=false'
-@@ -1081,33 +834,54 @@
+@@ -1081,33 +836,54 @@
    'use_cfi_icall=false'
    'chrome_pgo_phase=0'
  )
@@ -930,7 +937,7 @@
  # Add Google API key if defined:
  if [ -n "$_google_api_key" ]; then
    _chromium_conf+=(
-@@ -1122,16 +896,11 @@
+@@ -1122,16 +898,11 @@
    fi
  fi
  
@@ -951,7 +958,7 @@
  fi
  
      # Change this back when CRBUG 592268 is fixed (error during final link:
-@@ -1139,46 +908,47 @@
+@@ -1139,46 +910,47 @@
      # See https://bugs.chromium.org/p/chromium/issues/detail?id=592268
      # icu_use_data_file_flag=false
  
@@ -1039,7 +1046,7 @@
  
  # Do not make the build fail, see Chromium issue #386097:
  python3 third_party/libaddressinput/chromium/tools/update-strings.py \
-@@ -1220,8 +990,6 @@
+@@ -1220,8 +992,6 @@
      build/linux/${SYSROOTDIR}/usr/include/graphene-1.0/graphene-config.h
  
    # Take care of Debian/Ubuntu related linker issues:
@@ -1048,7 +1055,7 @@
    for SOFILE in build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}/nss/*.so ;
    do
      ln -sf nss/$(basename $SOFILE) \
-@@ -1231,10 +999,8 @@
+@@ -1231,10 +1001,8 @@
      build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}/libsqlite3.so
  
    # The platform-specific alias for the ARM readelf binary is missing
@@ -1061,7 +1068,7 @@
    fi
  fi
  
-@@ -1252,23 +1018,9 @@
+@@ -1252,23 +1020,9 @@
  ulimit -n 2048
  
  # Compile google's internal clang sources if needed
@@ -1086,7 +1093,7 @@
    LDFLAGS="$LDFLAGS" \
    python3 tools/clang/scripts/build.py \
      --bootstrap \
-@@ -1292,7 +1044,11 @@
+@@ -1292,7 +1046,11 @@
  
    # Ensure that only this new clang is used, ignoring the system version:
    MYCLANG_PATH="$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/third_party/llvm-build/Release+Asserts/bin"
@@ -1099,7 +1106,7 @@
  fi
  
  # For Chromium 92, disable ffmpeg re-configuration on 32bit OS,
-@@ -1313,10 +1069,8 @@
+@@ -1313,10 +1071,8 @@
    fi
    cd third_party/ffmpeg
      ## To prevent error on x86_64:
@@ -1111,7 +1118,7 @@
      # Actual reconfigure steps:
      python3 chromium/scripts/build_ffmpeg.py linux ${FFMPEG_ARCH} \
        --branding ${FFMPEG_BRANDING} -- ${FFMPEG_CUSTOM_ARGS} \
-@@ -1340,27 +1094,17 @@
+@@ -1340,27 +1096,17 @@
  # Generate the ninja build files:
  echo "-- Bootstrapping 'gn'."
  
@@ -1144,7 +1151,7 @@
  echo "-- Generating ninja build files."
  out/Release/gn gen out/Release -v --args="${_chromium_conf[*]}" \
    2>&1 | tee -a $OUTPUT/gyp-${PRGNAM}.log
-@@ -1368,29 +1112,28 @@
+@@ -1368,29 +1114,28 @@
  # Compile everything:
  echo "-- Compiling the lot."
  
@@ -1186,7 +1193,7 @@
  
  LDFLAGS="$LDFLAGS" \
  LC_ALL=C \
-@@ -1532,6 +1275,13 @@
+@@ -1532,6 +1277,13 @@
  # Add a desktop file:
  process_template chrome/installer/linux/common/desktop.template \
    out/Release/${PRGNAM}.desktop
@@ -1200,7 +1207,7 @@
  install -D -m0644 out/Release/${PRGNAM}.desktop \
    $PKG/usr/share/applications/${PRGNAM}.desktop
  
-@@ -1681,5 +1431,15 @@
+@@ -1681,5 +1433,15 @@
  cd -
  cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
  
