@@ -231,7 +231,9 @@
 #                  * Update.
 #                  19/feb/2023 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Update, version fix chromium/ungoogled for ARM.
-# 110.0.5481.177-1:26/feb/2023 by Minime <slackware[at]slackwarelinux[dot]se>
+# 110.0.5481.177-1:26/feb/2023 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+#                  26/feb/2023 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Update, version fix chromium/ungoogled for ARM.
 #
 # -----------------------------------------------------------------------------
@@ -294,24 +296,29 @@ else
   USE_WAYLAND=${USE_WAYLAND:-0}
 fi
 
-# Enable Qt UI on Slackware 15.0 and newer.
+# Build Chromium using a debian sysroot for Slackware 14.2 or older;
+# FYI, this will actually also just work for Slackware > 14.2:
+USE_SYSROOT=${USE_SYSROOT:-1}
+
+# Enable Qt UI on Slackware 15.0 & newer where we do not need a debian sysroot.
 # Until Chromium 110, enable Qt5 UI using param '--enable-features=AllowQt':
 #if pkg-config --exists "Qt5Core >= 5.15.3" ; then
-#  USE_QT=${USE_QT:-1}
+#  if [ ${USE_SYSROOT} -eq 0 ]; then
+#    USE_QT=${USE_QT:-1}
+#  else
+#    USE_QT=${USE_QT:-0}
+#  fi
 #else
 #  USE_QT=${USE_QT:-0}
 #fi
 # Do not enable Qt UI yet:
+# Will have to try this as AlienBob did some changes. 26th of Feb 2023
 # Because it gives error:
 # FAILED: obj/ui/qt/qt5_shim/qt_shim.o
 # In file included from ../../ui/qt/qt_shim.cc:8:
 # ../../ui/qt/qt_shim.h:8:10: fatal error: 'QApplication' file not found
 #include <QApplication>
 USE_QT=${USE_QT:-0}
-
-# Build Chromium using a debian sysroot for Slackware 14.2 or older;
-# FYI, this will actually also just work for Slackware > 14.2:
-USE_SYSROOT=${USE_SYSROOT:-1}
 
 # By default the ffmpeg and other component libraries are built statically
 # into the chromium binary.  This takes more time at the linking stage but
@@ -704,21 +711,19 @@ sed -i tools/clang/scripts/build.py -e "s/x86_64-unknown-linux-gnu/$TARGET/g"
 sed -i tools/clang/scripts/build.py -e "s/ldflags = \[\]/ldflags = \['-latomic'\]/"
 
 # If ARM, then try to force the build script to build clang for arm instead of x86
+# Note: This will most likly fail as itdoesnotdetectthe correct target architecture.
+# One of many reasons i built chromium's llvm package separately.
 if [[ "$ARCH" =~ arm.* ]]; then
   # We are compiling bootstrap for ARM and not X86.
   sed -i tools/clang/scripts/build.py \
-    -e "s/bootstrap_targets = 'X86'/bootstrap_targets = 'ARM'/"
-  #sed -i tools/clang/scripts/build.py \
-  #  -e "s/bootstrap_targets = \x27X86\x27/bootstrap_targets = \x27ARM\x27/"
+    -e "s/bootstrap_targets = \x27X86\x27/bootstrap_targets = \x27ARM\x27/"
   # We are using ARM, so to speed things up we only build the relevant back-ends
   # (ARM,AArch64 and x86), since it’s very unlikely that we will cross-compile to other arches.
   # x86 is also needed for Compiler-RT tests.
+  # Old outdated chromium >= 102?
+  #-e "s/targets = \x27AArch64;ARM;Mips;PowerPC;SystemZ;WebAssembly;X86\x27/targets = \x27ARM;X86;AArch64\x27/"
   sed -i tools/clang/scripts/build.py \
-    -e "s/\(^ *targets = \).*$/&1'ARM;X86;AArch64'/"
-    # Old outdated chromium >= 102?
-    #-e "s/targets = \x27AArch64;ARM;Mips;PowerPC;SystemZ;WebAssembly;X86\x27/targets = \x27ARM;X86;AArch64\x27/"
-    #sed -i tools/clang/scripts/build.py \
-    #  -e "s/targets = \x27AArch64;ARM;Mips;PowerPC;RISCV;SystemZ;WebAssembly;X86\x27/targets = \x27ARM;X86;AArch64\x27/"
+    -e "s/targets = \x27AArch64;ARM;Mips;PowerPC;RISCV;SystemZ;WebAssembly;X86\x27/targets = \x27ARM;X86;AArch64\x27/"
 fi
 
 # When compiling google's clang, use the system cmake
@@ -778,6 +783,11 @@ export LDFLAGS="$SLKLDFLAGS"
 export CXXFLAGS="$SLKCFLAGS -Wno-unknown-warning-option"
 export CFLAGS="$SLKCFLAGS -Wno-unused-local-typedefs -Wno-unknown-warning-option"
 export PATH="$TMP/tmp-$PRGNAM/privatebin:$PATH"
+
+if [ ${USE_QT} -eq 1 ]; then
+  export CFLAGS="$CFLAGS -I/usr/include/qt5"
+  export CXXFLAGS="$CXXFLAGS -I/usr/include/qt5"
+fi
 
 # After building gn, run:
 # "./out/Release/gn args out/Release --list"
@@ -896,6 +906,11 @@ if [ -n "$_google_api_key" ]; then
       "google_default_client_secret=\"$_google_default_client_secret\""
     )
   fi
+fi
+
+if [ $(cat /etc/slackware-version |cut -d' ' -f2- |cut -d. -f1) -lt 15 ]; then
+  # For older Slackware:
+  _chromium_conf+=( 'use_system_libdrm=false' )
 fi
 
 if [[ "$ARCH" =~ arm.* ]]; then
