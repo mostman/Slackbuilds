@@ -1,5 +1,5 @@
 --- chromium.SlackBuild.orig	2023-02-28 22:52:06.000000000 +0100
-+++ chromium.SlackBuild	2023-03-02 08:23:27.226850109 +0100
++++ chromium.SlackBuild	2023-03-02 08:33:53.829977624 +0100
 @@ -1,5 +1,4 @@
  #!/bin/bash
 -# $Id: chromium.SlackBuild,v 1.323 2023/02/28 21:51:52 root Exp root $
@@ -763,7 +763,7 @@
 -
 -# ARM platform specifics:
 +# If ARM, then try to force the build script to build clang for arm instead of x86
-+# Note: This will most likly fail as itdoesnotdetectthe correct target architecture.
++# Note: This will most likely fail as it does not detect the correct target architecture.
 +# One of many reasons i built chromium's llvm package separately.
  if [[ "$ARCH" =~ arm.* ]]; then
 -  # Fix the hard-coded bootstrap target 'X86':
