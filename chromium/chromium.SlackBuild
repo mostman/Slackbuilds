@@ -711,7 +711,7 @@ sed -i tools/clang/scripts/build.py -e "s/x86_64-unknown-linux-gnu/$TARGET/g"
 sed -i tools/clang/scripts/build.py -e "s/ldflags = \[\]/ldflags = \['-latomic'\]/"
 
 # If ARM, then try to force the build script to build clang for arm instead of x86
-# Note: This will most likly fail as itdoesnotdetectthe correct target architecture.
+# Note: This will most likely fail as it does not detect the correct target architecture.
 # One of many reasons i built chromium's llvm package separately.
 if [[ "$ARCH" =~ arm.* ]]; then
   # We are compiling bootstrap for ARM and not X86.
