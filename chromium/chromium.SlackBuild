@@ -631,9 +631,9 @@ sed -e 's/OFFICIAL_BUILD/GOOGLE_CHROME_BUILD/' \
 touch $OUTPUT/patch-${PRGNAM}.log
 # Upstream fixes:
 # https://crbug.com/angleproject/7582
-cat $SRCDIR/patches/angle-wayland-include-protocol.patch \
-  | patch -p0 --verbose \
-  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+#cat $SRCDIR/patches/angle-wayland-include-protocol.patch \
+#  | patch -p0 --verbose \
+#  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # https://github.com/protocolbuffers/protobuf/issues/9792
 cat $SRCDIR/patches/chromium_protobuf_32bit.patch \
   | patch -p0 --verbose \
