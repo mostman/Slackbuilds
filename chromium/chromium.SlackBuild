@@ -235,6 +235,8 @@
 #                  * Update.
 #                  26/feb/2023 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Update, version fix chromium/ungoogled for ARM.
+# 111.0.5563.64-1: 08/mar/2023 by Minime <slackware[at]slackwarelinux[dot]se>
+#                  * Update to M111, version fix chromium/ungoogled for ARM.
 #
 # -----------------------------------------------------------------------------
 #
@@ -259,8 +261,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-110.0.5481.177}
-UNGOOGLED=${UNGOOGLED:-110.0.5481.177-1}
+VERSION=${VERSION:-111.0.5563.64}
+UNGOOGLED=${UNGOOGLED:-111.0.5563.64-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
@@ -302,15 +304,15 @@ USE_SYSROOT=${USE_SYSROOT:-1}
 
 # Enable Qt UI on Slackware 15.0 & newer where we do not need a debian sysroot.
 # Until Chromium 110, enable Qt5 UI using param '--enable-features=AllowQt':
-#if pkg-config --exists "Qt5Core >= 5.15.3" ; then
-#  if [ ${USE_SYSROOT} -eq 0 ]; then
-#    USE_QT=${USE_QT:-1}
-#  else
-#    USE_QT=${USE_QT:-0}
-#  fi
-#else
-#  USE_QT=${USE_QT:-0}
-#fi
+if pkg-config --exists "Qt5Core >= 5.15.3" ; then
+  if [ ${USE_SYSROOT} -eq 0 ]; then
+    USE_QT=${USE_QT:-1}
+  else
+    USE_QT=${USE_QT:-0}
+  fi
+else
+  USE_QT=${USE_QT:-0}
+fi
 # Do not enable Qt UI yet:
 # Will have to try this as AlienBob did some changes. 26th of Feb 2023
 # Because it gives error:
@@ -318,7 +320,7 @@ USE_SYSROOT=${USE_SYSROOT:-1}
 # In file included from ../../ui/qt/qt_shim.cc:8:
 # ../../ui/qt/qt_shim.h:8:10: fatal error: 'QApplication' file not found
 #include <QApplication>
-USE_QT=${USE_QT:-0}
+#USE_QT=${USE_QT:-0}
 
 # By default the ffmpeg and other component libraries are built statically
 # into the chromium binary.  This takes more time at the linking stage but
