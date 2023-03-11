@@ -41,9 +41,9 @@
 
 PRGNAM=llvm
 VERSION=${VERSION:-16.0.0}
-VERRC="-rc3"
+VERRC="-rc4"
 GIT_REV=llvmorg-${VERSION}${VERRC}
-BUILD=${BUILD:-3}
+BUILD=${BUILD:-4}
 TAG=${TAG:-_SLse}
 
 if [ -z "$ARCH" ]; then
