@@ -235,8 +235,10 @@
 #                  * Update.
 #                  26/feb/2023 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Update, version fix chromium/ungoogled for ARM.
-# 111.0.5563.64-1: 08/mar/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Update to M111, version fix chromium/ungoogled for ARM.
+# 111.0.5563.64-1: 09/mar/2023 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M111.
+#                  09/mar/2023 by Minime <slackware[at]slackwarelinux[dot]se>
+#                  * version fix chromium/ungoogled for ARM.
 #
 # -----------------------------------------------------------------------------
 #
@@ -831,6 +833,7 @@ _chromium_conf=(
     'use_lld=true'
     'use_ozone=true'
     "use_pulseaudio=${do_pa}"
+    'use_system_libffi=false'
     "use_system_libwayland=${do_wayland}"
     'use_system_minigbm=false'
     "use_qt=${do_qt}"
