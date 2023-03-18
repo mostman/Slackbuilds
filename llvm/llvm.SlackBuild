@@ -1,5 +1,5 @@
 #!/bin/sh
-# llvm Verion 1.16-rc1 2023/02/01
+# llvm Verion 1.16 2023/02/01
 # Copyright 2021-2023  Martin Östman (Minime), SE
 # All rights reserved.
 #
@@ -41,9 +41,10 @@
 
 PRGNAM=llvm
 VERSION=${VERSION:-16.0.0}
-VERRC="-rc4"
+#VERRC="-rc4"
+VERRC=""
 GIT_REV=llvmorg-${VERSION}${VERRC}
-BUILD=${BUILD:-4}
+BUILD=${BUILD:-5}
 TAG=${TAG:-_SLse}
 
 if [ -z "$ARCH" ]; then
