@@ -16,7 +16,7 @@ Might also want to download/copy the patches from the patch directory to Alien B
 * Fixed ARM sysroot path/link for libsqlite3.so, glibconfig.h,
 dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * Fixed link for debians arm-linux-gnueabihf-readelf to slackwares readelf
-* Fixed compiling google's internal llvm/clang for ARM.
+* <del>Fixed compiling google's internal llvm/clang for ARM</del> (Broken sins M104).
 * Also made it possible to use eithers systems llvm/clang version or my slackbuild llvm/clang version instead of chromiums llvm/clang build.
 * Patched chromium for arm to support Widevine. (Using my patched glibc will also make Widevine 4.10.2252.x and latest 4.10.2557.x working on ARM)
 
