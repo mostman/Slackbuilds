@@ -243,6 +243,10 @@
 #                  * Update.
 #                  23/mar/2023 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * version fix chromium/ungoogled for ARM.
+# 111.0.5563.147-1:29/mar/2023 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
+#                  01/apr/2023 by Minime <slackware[at]slackwarelinux[dot]se>
+#                  * version fix chromium/ungoogled for ARM.
 #
 # -----------------------------------------------------------------------------
 #
@@ -267,8 +271,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-111.0.5563.110}
-UNGOOGLED=${UNGOOGLED:-111.0.5563.110-1}
+VERSION=${VERSION:-111.0.5563.147}
+UNGOOGLED=${UNGOOGLED:-111.0.5563.147-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
