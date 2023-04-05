@@ -40,11 +40,11 @@
 #######################################################################
 
 PRGNAM=llvm
-VERSION=${VERSION:-16.0.0}
+VERSION=${VERSION:-16.0.1}
 #VERRC="-rc4"
 VERRC=""
 GIT_REV=llvmorg-${VERSION}${VERRC}
-BUILD=${BUILD:-5}
+BUILD=${BUILD:-1}
 TAG=${TAG:-_SLse}
 
 if [ -z "$ARCH" ]; then
