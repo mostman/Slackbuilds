@@ -4,6 +4,7 @@ My Slackbuilds
 Most of the slackbuilds i have written my self, some are rewritten slackbuilds to suite my needs.
 
 chromium-ungoogled package compiled for Slackware ARM 15.0 (RPI 4)<br />
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/111.0.5563.147/chromium-ungoogled-111.0.5563.147-armv7l-1SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/111.0.5563.147/)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/111.0.5563.110/chromium-ungoogled-111.0.5563.110-armv7l-1SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/111.0.5563.110/)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/111.0.5563.64/chromium-ungoogled-111.0.5563.64-armv7l-1SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/111.0.5563.64/)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/110.0.5481.177/chromium-ungoogled-110.0.5481.177-armv7l-1SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/110.0.5481.177/)  
@@ -39,6 +40,7 @@ python3 package compiled for Slackware ARM 15.0 (RPI 4), note: this is not neede
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/python3-3.9.13/python3-3.9.13-arm-1_slack15.0.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/python3-3.9.13/) 
 
 llvm/clang package Compiled for Slackware ARM 15.0 (RPI 4), note: Chromiums internal llvm takes about 6-8 hours to compile, so to speed up the process i built latest llvm-16.0.0 to be able to build chromium/ungoogled > 104.  
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/16.0.1/chromium-llvm-16.0.1-arm-1_SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/16.0.1/)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/16.0.0/chromium-llvm-16.0.0-arm-5_SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/16.0.0/)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/16.0.0-rc4/chromium-llvm-16.0.0-arm-4_SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/16.0.0-rc4/)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/16.0.0-rc3/chromium-llvm-16.0.0-arm-3_SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/16.0.0-rc3/)  
