@@ -259,6 +259,10 @@
 #                  * Update.
 #                  20/apr/2023 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * version fix chromium/ungoogled for ARM.
+# 113.0.5672.63-1: 03/may/2023 by Eric Hameleers <alien@slackware.com>
+#                  * Update to M113.
+#                  03/may/2023 by Minime <slackware[at]slackwarelinux[dot]se>
+#                  * version fix chromium/ungoogled for ARM.
 #
 # -----------------------------------------------------------------------------
 #
@@ -283,8 +287,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-112.0.5615.165}
-UNGOOGLED=${UNGOOGLED:-112.0.5615.165-1}
+VERSION=${VERSION:-113.0.5672.63}
+UNGOOGLED=${UNGOOGLED:-113.0.5672.63-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
@@ -643,11 +647,6 @@ sed -e 's/OFFICIAL_BUILD/GOOGLE_CHROME_BUILD/' \
   -i tools/generate_shim_headers/generate_shim_headers.py
 # Patches and bug fixes:
 touch $OUTPUT/patch-${PRGNAM}.log
-# Upstream fixes:
-# https://crbug.com/angleproject/7582
-#cat $SRCDIR/patches/angle-wayland-include-protocol.patch \
-#  | patch -p0 --verbose \
-#  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # https://github.com/protocolbuffers/protobuf/issues/9792
 cat $SRCDIR/patches/chromium_protobuf_32bit.patch \
   | patch -p0 --verbose \
@@ -667,6 +666,7 @@ sed -e '/ldflags /s/-m32/&", "-Wl,-z,notext/' \
 #if [ "$ARCH" == "i586" ] || [[ "$ARCH" =~ arm.* ]]; then
 if [ "$ARCH" == "i586" ] ; then
   # Don't complain about unsupported flags when we add
+  # "--disable-seccomp-sandbox" on 32bit OS:
   cat $SRCDIR/patches/chromium_slax_nobadflagsmessage.patch \
     | patch -p1 --verbose \
     2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
