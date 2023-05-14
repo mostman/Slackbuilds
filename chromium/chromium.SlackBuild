@@ -291,7 +291,7 @@ USE_DEV=${USE_DEV:-0}
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
 VERSION=${VERSION:-113.0.5672.92}
-UNGOOGLED=${UNGOOGLED:-113.0.5672.92-1}
+UNGOOGLED=${UNGOOGLED:-113.0.5672.93-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
