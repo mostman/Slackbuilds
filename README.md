@@ -46,6 +46,7 @@ python3 package compiled for Slackware ARM 15.0 (RPI 4), note: this is not neede
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/python3-3.9.13/python3-3.9.13-arm-1_slack15.0.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/python3-3.9.13/) 
 
 llvm/clang package Compiled for Slackware ARM 15.0 (RPI 4), note: Chromiums internal llvm takes about 6-8 hours to compile, so to speed up the process i built latest llvm-16.0.x to be able to build chromium/ungoogled > 104.  
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/16.0.5/chromium-llvm-16.0.5-arm-1_SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/16.0.5/)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/16.0.4/chromium-llvm-16.0.4-arm-1_SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/16.0.4/)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/16.0.3/chromium-llvm-16.0.3-arm-1_SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/16.0.3/)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/16.0.2/chromium-llvm-16.0.2-arm-1_SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/16.0.2/)  
