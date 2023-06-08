@@ -31,7 +31,7 @@ dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * Internet access (for downloading toolchain bins)
 
 # <del>Optional dependencies to build:</del>
-* llvm >= 16.0.x (Is avalible throught slack package or my [llvm](https://github.com/mostman/Slackbuilds/tree/main/llvm) buildscript or prebuilt [llvm slackware x86_64 and ARM](https://github.com/mostman/Slackbuilds/releases/tag/16.0.4) package).
+* llvm >= 16.0.x (Is avalible throught slack package or my [llvm](https://github.com/mostman/Slackbuilds/tree/main/llvm) buildscript or prebuilt [llvm slackware x86_64 and ARM](https://github.com/mostman/Slackbuilds/releases/tag/16.0.5) package).
 Chromiums internal llvm/clang does not seam to detect ARM correctly and does not set any target triple, to get around this issue you´ll have to use my llvm/clang package for Slackware Arm 15.0.
 
 # Patch AlienBob´s [chromium.Slackbuild](http://www.slackware.com/~alien/slackbuilds/chromium/build/)
