@@ -1,5 +1,5 @@
 --- chromium.SlackBuild.114.106.orig	2023-06-06 19:05:06.000000000 +0200
-+++ chromium.SlackBuild	2023-06-07 20:58:06.530251121 +0200
++++ chromium.SlackBuild	2023-06-11 15:35:33.628061040 +0200
 @@ -1,5 +1,4 @@
  #!/bin/bash
 -# $Id: chromium.SlackBuild,v 1.340 2023/06/06 17:04:56 root Exp root $
@@ -25,7 +25,7 @@
  # URL:             http://www.chromium.org/
  # Build needs:     - ninja;
 -#                  - nodejs >= 18.7.0
-+#                  - nodejs >= 15.6.0;
++#                  - nodejs >= 18.7.0;
  #                  - gcc >= 8 , llvm >= 16 for bootstrapping gn;
  #                  - nasm >= 2.14 (yasm no longer being used);
 -#                  - cmake >= 3.24.1
