@@ -22,7 +22,7 @@ dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 
 # Dependencies needed to build:
 * ninja (Is avalible throught slack package)
-* nodejs >= 15.6.0 (Is avalible at [Alien's SlackBuilds](http://www.slackware.com/~alien/slackbuilds/nodejs/build/))
+* nodejs >= 18.7.0 (Is avalible at [Alien's SlackBuilds](http://www.slackware.com/~alien/slackbuilds/nodejs/build/))
 * gcc >= 8 for bootstrapping gn (Is avalible throught slack package)
 * nasm >= 2.14 (yasm no longer being used) (Is avalible throught slack package)
 * cmake >= 3.13.4 (Is avalible throught slack package)
