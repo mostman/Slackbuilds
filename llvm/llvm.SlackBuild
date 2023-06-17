@@ -40,7 +40,7 @@
 #######################################################################
 
 PRGNAM=llvm
-VERSION=${VERSION:-16.0.5}
+VERSION=${VERSION:-16.0.6}
 #VERRC="-rc4"
 VERRC=""
 GIT_REV=llvmorg-${VERSION}${VERRC}
