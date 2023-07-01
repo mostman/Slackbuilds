@@ -104,7 +104,7 @@ fi
 if [[ $ARCH =~ arm.* ]]; then
   TARGET=${ARCH}-slackware-linux-gnueabihf
 else
-  TARGET=${ARCH}-slackware-linux-gnu
+  TARGET=${ARCH}-slackware-linux
 fi
 
 export LDFLAGS="$SLKLDFLAGS"
