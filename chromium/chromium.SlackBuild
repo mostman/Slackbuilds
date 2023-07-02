@@ -288,6 +288,9 @@
 #                  * version fix chromium/ungoogled for ARM.
 # 114.0.5735.198-1:27/jun/2023 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Update version fix chromium/ungoogled for ARM.
+#                  01/jul/2023 by Minime <slackware[at]slackwarelinux[dot]se>
+#                  * Fixed build for ARM of google's internal llvm/clang from source.
+#                    Should be possible to build now.
 #
 # -----------------------------------------------------------------------------
 #
@@ -747,19 +750,27 @@ sed -i tools/clang/scripts/build.py -e "s/x86_64-unknown-linux-gnu/$TARGET/g"
 sed -i tools/clang/scripts/build.py -e "s/ldflags = \[\]/ldflags = \['-latomic'\]/"
 
 # If ARM, then try to force the build script to build clang for arm instead of x86
-# Note: This will most likely fail as it does not detect the correct target architecture.
-# One of many reasons i built chromium's llvm package separately.
 if [[ "$ARCH" =~ arm.* ]]; then
-  # We are compiling bootstrap for ARM and not X86.
-  sed -i tools/clang/scripts/build.py \
-    -e "s/bootstrap_targets = \x27X86\x27/bootstrap_targets = \x27ARM\x27/"
   # We are using ARM, so to speed things up we only build the relevant back-ends
   # (ARM,AArch64 and x86), since it’s very unlikely that we will cross-compile to other arches.
   # x86 is also needed for Compiler-RT tests.
-  # Old outdated chromium >= 102?
-  #-e "s/targets = \x27AArch64;ARM;Mips;PowerPC;SystemZ;WebAssembly;X86\x27/targets = \x27ARM;X86;AArch64\x27/"
   sed -i tools/clang/scripts/build.py \
-    -e "s/targets = \x27AArch64;ARM;Mips;PowerPC;RISCV;SystemZ;WebAssembly;X86\x27/targets = \x27ARM;X86;AArch64\x27/"
+    -e "s/targets = 'AArch64;ARM;Mips;PowerPC;RISCV;SystemZ;WebAssembly;X86'/targets = 'ARM;X86;AArch64'/"
+  # When comping clang for ARM its not recomended to use PIC
+  sed -i tools/clang/scripts/build.py \
+    -e "s/-DLLVM_ENABLE_PIC=ON/-DLLVM_ENABLE_PIC=OFF/"
+  # We are compiling bootstrap for ARM and not X86.
+  sed -i tools/clang/scripts/build.py \
+    -e "s/bootstrap_targets = 'X86'/bootstrap_targets = 'ARM'/"
+  # When compiling google's clang, we want ARM 32bit too - don't limit us, devs:
+  sed -i tools/clang/scripts/build.py \
+    -e "s/platform.machine() == 'aarch64':/platform.machine() == 'arm':/"
+  sed -i tools/clang/scripts/build.py \
+    -e "s/aarch64-unknown-linux-gnu/$TARGET/"
+  # One could just remove this line too, more or less the same thing
+  # as above lines...
+  #sed -i tools/clang/scripts/build.py \
+  #  -e "/    cmake_args.append('-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON')/d"
 fi
 
 # When compiling google's clang, use the system cmake
@@ -1074,20 +1085,21 @@ ulimit -n 2048
 # Compile google's internal clang sources if needed
 if [ ${USE_CLANG} -eq 1 ] && [ ${USE_CUSTCLANG} -eq 0 ]; then
   # Build clang from source instead of downloading:
+  # Why use systems llvm/clang for this?
+  # Well, systems gcc will fail otherwise...why i do not know...
   echo "-- Building google's clang toolchain."
   LDFLAGS="$LDFLAGS" \
   python3 tools/clang/scripts/build.py \
     --bootstrap \
     --disable-asserts \
     --gcc-toolchain /usr \
-    --host-cc /usr/bin/gcc \
-    --host-cxx /usr/bin/g++ \
+    --host-cc /usr/bin/clang \
+    --host-cxx /usr/bin/clang++ \
     --skip-checkout \
     --use-system-cmake \
     --without-android \
     --without-fuchsia \
     2>&1 | tee $OUTPUT/clang_build-${PRGNAM}.log
-    #--llvm-force-head-revision \
 
   # Building gn for Chromium 110 fails when this file is not present:
   if [ ! -f third_party/llvm-build/Release+Asserts/cr_build_revision ]; then
