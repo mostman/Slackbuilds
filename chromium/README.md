@@ -16,7 +16,7 @@ Might also want to download/copy the patches from the patch directory to Alien B
 * Fixed ARM sysroot path/link for libsqlite3.so, glibconfig.h,
 dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * Fixed link for debians arm-linux-gnueabihf-readelf to slackwares readelf
-* <del>Fixed compiling google's internal llvm/clang for ARM</del> (Broken sins M104).
+* Fixed compiling google's internal llvm/clang for ARM.
 * Also made it possible to use eithers systems llvm/clang version or my slackbuild llvm/clang version instead of chromiums llvm/clang build.
 * Patched chromium for arm to support Widevine. (Using my patched glibc will also make Widevine 4.10.2252.x and latest 4.10.2557.x working on ARM)
 
@@ -30,9 +30,10 @@ dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * java runtime (Slackware ARM package Is avalible [here](https://github.com/mostman/Slackbuilds/releases/download/20.1/jdk-8u371-arm-1_SLse.tgz))
 * Internet access (for downloading toolchain bins)
 
-# <del>Optional dependencies to build:</del>
+# Optional dependencies to build:
 * llvm >= 16.0.x (Is avalible throught slack package or my [llvm](https://github.com/mostman/Slackbuilds/tree/main/llvm) buildscript or prebuilt [llvm slackware x86_64 and ARM](https://github.com/mostman/Slackbuilds/releases/tag/16.0.6) package).
-Chromiums internal llvm/clang does not seam to detect ARM correctly and does not set any target triple, to get around this issue you´ll have to use my llvm/clang package for Slackware Arm 15.0.
+To speed up the build and not having to build Chromiums internal llvm/clang everytime, to get around this issue you can install my llvm/clang package for Slackware Arm 15.0.
+By doing this you save about a day comping time on a RPI4.
 
 # Patch AlienBob´s [chromium.Slackbuild](http://www.slackware.com/~alien/slackbuilds/chromium/build/)
 * Download all aliens chromium slackbuild as described by him self.
