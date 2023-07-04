@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Slackware build script for kodi 20.1
+# Slackware build script for kodi 20.2
 
 # Copyright 2020-2022 Minime <slackware[at]slackwarelinux[dot]se>
 # All rights reserved.
@@ -58,7 +58,7 @@
 PRGNAM=kodi
 SRCNAM=xbmc
 CODNAM=Nexus
-VERSION=${VERSION:-20.1}
+VERSION=${VERSION:-20.2}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SLse}
 
