@@ -36,7 +36,6 @@
 #                  - libmicrohttpd >= 0.9.70;
 #                  - rapidjson >= 1.1.0;
 #                  - libnfs >= 4.0.0;
-#                  - libdvdcss >= 1.4.0;
 #                  - platform >= 2.1.0;
 #                  - libcec >= 4.0.4;
 #                  - dav1d >= 0.5.2;
