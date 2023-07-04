@@ -288,9 +288,11 @@
 #                  * version fix chromium/ungoogled for ARM.
 # 114.0.5735.198-1:27/jun/2023 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Update version fix chromium/ungoogled for ARM.
+#                  01/jul/2023 by Eric Hameleers <alien@slackware.com>
+#                  * Update.
 #                  01/jul/2023 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Fixed build for ARM of google's internal llvm/clang from source.
-#                    Should be possible to build now.
+#                     Should be possible to build now.
 #
 # -----------------------------------------------------------------------------
 #
@@ -634,6 +636,7 @@ echo "Extracting the source archive(s) for $PRGNAM..."
 tar -xf ${SOURCE[0]}
 if [ ${USE_UNGOOGLED} -ne 0 ]; then
   tar -xf ${SOURCE[2]}
+  UGDIR=$TMP/tmp-$PRGNAM/ungoogled-chromium-${UNGOOGLED}
 fi
 cd ${SRCNAM}-${VERSION}
 
@@ -726,15 +729,6 @@ if [ $FFMPEG_HEVC -eq 1 ]; then
   # Add essential proprietary codecs to the "chrome" branding of ffmpeg:
   cat $SRCDIR/patches/chromium_ffmpeg_prop.patch | patch -p1 --verbose \
     2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-fi
-if [ ${USE_UNGOOGLED} -ne 0 ]; then
-  # Apply ungoogled-chromium patch kit:
-  UGDIR=$TMP/tmp-$PRGNAM/ungoogled-chromium-${UNGOOGLED}
-  echo "-- Un-googling internal binaries:"
-  python3 ${UGDIR}/utils/prune_binaries.py ./ ${UGDIR}/pruning.list
-  echo "-- Un-googling sources; apply patches:"
-  python3 ${UGDIR}/utils/patches.py apply ./ ${UGDIR}/patches
-  # We will have to un-google internally used domain list later.
 fi
 
 # Also needed for Slackware <= 14.2:
@@ -1147,6 +1141,15 @@ if [ ${FFMPEG_HEVC} -eq 1 ] && [ "${FFMPEG_ARCH}" != "ia32" ]; then
     python3 chromium/scripts/generate_gn.py \
       2>&1 | tee -a $OUTPUT/ffmpeg_configure-${PRGNAM}.log
   cd - 2>/dev/null
+fi
+
+if [ ${USE_UNGOOGLED} -ne 0 ]; then
+  # Apply ungoogled-chromium patch kit:
+  echo "-- Un-googling internal binaries:"
+  python3 ${UGDIR}/utils/prune_binaries.py ./ ${UGDIR}/pruning.list
+  echo "-- Un-googling sources; apply patches:"
+  python3 ${UGDIR}/utils/patches.py apply ./ ${UGDIR}/patches
+  # We will have to un-google internally used domain list later.
 fi
 
 if [ ${USE_UNGOOGLED} -ne 0 ]; then
