@@ -1,9 +1,9 @@
 Before we start and to avoid any errors like:
   "parsetexi/Parsetexi.c: loadable library and perl binaries are mismatched (got first handshake key 0xf180080, needed 0xf980080)"
-So in this case it there was some issue with the package "texinfo-7.0.3-x86_64-2.txz".
+So in this case it there was some issue with the package "texinfo-7.0.3-x86_64-1.txz".
 Solution was to uninstall the package and download the package directly from "https://slackware.uk/slackwarearm/slackwareaarch64-current/slackware/ap/".
-Because if trying to reinstall the package i recived a checksum error...Might have courht this package just been updated..i dont know why...
-But apparently something went wrong?
+Because if trying to reinstall the package i recived a "ERROR - Package not installed! md5sum error!"...Might have courht this package just been updated.
+Because the package name was "texinfo-7.0.3-aarch64-2.txz" apparently something went wrong?
 
 We will have to update all perl modules and recompile them.
    # cpan -u
