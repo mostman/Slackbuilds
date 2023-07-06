@@ -4,6 +4,8 @@ So in this case it there was some issue with the package "texinfo-7.0.3-x86_64-1
 Solution was to uninstall the package and download the package directly from "https://slackware.uk/slackwarearm/slackwareaarch64-current/slackware/ap/".
 Because if trying to reinstall the package i recived a "ERROR - Package not installed! md5sum error!"...Might have courht this package just been updated.
 Because the package name was "texinfo-7.0.3-aarch64-2.txz" apparently something went wrong?
+Well there is is a reason this i current as i noticed when checking changelog "ap/texinfo-7.0.3-aarch64-2.txz: Rebuilt. Recompiled against perl-5.38.0."
+Well i guess that asnwers the issue with "mismatched" ;-)
 
 We will have to update all perl modules and recompile them.
    # cpan -u
