@@ -1,0 +1,118 @@
+#!/bin/sh
+
+# Slackware build script for Widevine
+
+# Copyright 2023 Martin Östman (Minime), Sweden
+# All rights reserved.
+#
+# Redistribution and use of this script, with or without modification, is
+# permitted provided that the following conditions are met:
+#
+# 1. Redistributions of this script must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+#
+#  THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED
+#  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+#  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO
+#  EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+#  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+#  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+#  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+#  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+#  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+cd $(dirname $0) ; CWD=$(pwd)
+
+PRGNAM=libwidevinecdm
+VERSION=${VERSION:-4.10.2252.0}
+BUILD=${BUILD:-1}
+TAG=${TAG:-_SLse}
+
+if [ -z "$ARCH" ]; then
+  case "$( uname -m )" in
+    arm*) ARCH=arm;
+          DEBARCH="armhf";
+          PKGARCH="arm";
+       ;;
+       *) ARCH=$( uname -m );
+          DEBARCH="arm64";
+          PKGARCH="arm64";
+       ;;
+  esac
+fi
+
+if [ "$ARCH" == "x86_64" ] || [ "$ARCH" == "i?86" ]; then
+  echo "$ARCH is not supported."
+  exit 1
+fi
+
+TMP=${TMP:-/tmp/SLse}
+PKG=$TMP/package-$PRGNAM
+OUTPUT=${OUTPUT:-/tmp}
+PKGURL="https://archive.raspberrypi.org/debian/pool/main/w/widevine/"
+set -eu
+
+rm -rf $PKG
+mkdir -p $TMP $PKG $OUTPUT
+wget ${PKGURL}${PRGNAM}0_${VERSION}+3_${DEBARCH}.deb
+cd $PKG
+# Extract data.tar.gz from deb package
+ar -p $CWD/${PRGNAM}0_${VERSION}+3_${DEBARCH}.deb data.tar.xz | tar -Jxv
+
+# Get major and minor version numbers from pkgver string
+
+MAJOR_VER="$(echo ${VERSION} | cut -d. -f1)"
+MINOR_VER="$(echo ${VERSION} | cut -d. -f2)"
+
+# Construct necessary metadata file(s)
+echo "{" > manifest.json
+echo "   \"name\": \"WidevineCdm\"," >> manifest.json
+echo "   \"description\": \"Widevine Content Decryption Module\"," >> manifest.json
+echo "   \"version\": \"${VERSION}\"," >> manifest.json
+echo "   \"x-cdm-codecs\": \"vp8,vp9.0,avc1,av01\"," >> manifest.json
+echo "   \"x-cdm-host-versions\": \"${MINOR_VER}\"," >> manifest.json
+echo "   \"x-cdm-interface-versions\": \"${MINOR_VER}\"," >> manifest.json
+echo "   \"x-cdm-module-versions\": \"${MAJOR_VER}\"," >> manifest.json
+echo "   \"x-cdm-persistent-license-support\": true" >> manifest.json
+echo "}" >> manifest.json
+
+# Create firefox preferences file 
+echo "// Set preferences related to widevine loading" > widevine.js
+echo "pref(\"media.gmp-widevinecdm.version\", \"${VERSION}\");" >> widevine.js
+echo "pref(\"media.gmp-widevinecdm.visible\", true);" >> widevine.js
+echo "pref(\"media.gmp-widevinecdm.enabled\", true);" >> widevine.js
+echo "pref(\"media.gmp-widevinecdm.autoupdate\", false);" >> widevine.js
+echo "pref(\"media.eme.enabled\", true);" >> widevine.js
+echo "pref(\"media.eme.encrypted-media-encryption-scheme.enabled\", true);" >> widevine.js
+
+# Patch aarch64 widevine blobs from ChromeOS to work on non-ChromeOS linux, including
+# platforms with 16K page size like Apple Silicon / Asahi Linux
+# https://gist.github.com/DavidBuchanan314/c6b97add51b97e4c3ee95dc890f9e3c8
+if [ "${DEBARCH}" == "arm64" ]; then
+  python3 $CWD/widevine_fixup.py \
+    opt/WidevineCdm/_platform_specific/linux_${PKGARCH}/libwidevinecdm_real.so libwidevinecdm.so;
+else
+  cp opt/WidevineCdm/_platform_specific/linux_${PKGARCH}/libwidevinecdm.so libwidevinecdm.so
+fi
+
+#echo "Kodi installed ${KODI}"
+
+chown -R root:root .
+find -L . \
+ \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 \
+  -o -perm 511 \) -exec chmod 755 {} \; -o \
+ \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \
+  -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
+
+install -D -m755 libwidevinecdm.so -t "${PKG}/opt/google/chrome/WidevineCdm/_platform_specific/linux_${PKGARCH}/"
+install -D -m644 manifest.json -t "${PKG}/opt/google/chrome/WidevineCdm/"
+
+# cleanup
+rm -rf ${PKG}/opt/WidevineCdm/
+rm libwidevinecdm.so manifest.json widevine.js
+
+mkdir -p $PKG/install
+cat $CWD/slack-desc > $PKG/install/slack-desc
+
+/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.${PKGTYPE:-tgz}
