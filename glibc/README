@@ -1,7 +1,7 @@
 Before we start to patch and compile glibc we will have to download and install Stuart Winter´s slackkit-*-aarch64-1.txz.
 From here: https://slackware.uk/slackwarearm/slackwareaarch64-current/slackware/d/
 
-And we also have to download slackware64-current/source/l/glibc with rsync
+And we also have to download "slackware64-current/source/l/glibc" and "slackwarearm/slackwareaarch64-current/source/l/glibc/" with rsync
 
 As root
    # cd /usr/src
