@@ -1,0 +1,19 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.  Line
+# up the first '|' above the ':' following the base package name, and the '|'
+# on the right side marks the last column you can put a character in.  You must
+# make exactly 11 lines for the formatting to be correct.  It's also
+# customary to leave one space after the ':' except on otherwise blank lines.
+
+              |-----handy-ruler------------------------------------------------------|
+libwidevinecdm: widevine-plugin (Widevine plugin for Slackware arm and aarch64)
+libwidevinecdm:
+libwidevinecdm: This package contains Google Chrome's Widevine DRM
+libwidevinecdm: plugin for Slackware arm and aarch64.
+libwidevinecdm: Widevine Content Decryption Module enables Widevine
+libwidevinecdm: licenses for playback of HTML audio/video content.
+libwidevinecdm: The library is extracted from a Google Chrome RPM.
+libwidevinecdm: You will have to accept the bundled license file
+libwidevinecdm: if you want to use this closed-source plugin.
+libwidevinecdm:
+libwidevinecdm: Googles-widevine-plugin home: https://dl.google.com/widevine-cdm/
