@@ -1,19 +1,4 @@
-Before we start and to avoid any errors like:
-  "parsetexi/Parsetexi.c: loadable library and perl binaries are mismatched (got first handshake key 0xf180080, needed 0xf980080)"
-So in this case it there was some issue with the package "texinfo-7.0.3-x86_64-1.txz".
-Solution was to uninstall the package and download the package directly from "https://slackware.uk/slackwarearm/slackwareaarch64-current/slackware/ap/".
-Because if trying to reinstall the package i recived a "ERROR - Package not installed! md5sum error!"...Might have courht this package just been updated.
-Because the package name was "texinfo-7.0.3-aarch64-2.txz" apparently something went wrong?
-Well there is is a reason this iS "current" as i noticed when checking changelog "ap/texinfo-7.0.3-aarch64-2.txz: Rebuilt. Recompiled against perl-5.38.0."
-Well i guess that asnwers the issue with "mismatched" ;-)
-
-We will have to update all perl modules and recompile them.
-   # cpan -u
-
-And to recompile them
-  # cpan-r
-
-Before we can patch and compile glibc we will have to download and install Stuart Winter´s slackkit-*-aarch64-1.txz.
+Before we start to patch and compile glibc we will have to download and install Stuart Winter´s slackkit-*-aarch64-1.txz.
 From here: https://slackware.uk/slackwarearm/slackwareaarch64-current/slackware/d/
 
 And we also have to download slackware64-current/source/l/glibc with rsync
@@ -34,6 +19,11 @@ Sync the Slackware/x86_64 tree for glibc:
    # cd
    # mkdir -p slackwarearm/slackwareaarch64-current/source/l/glibc
    # cd slackwarearm/slackwareaarch64-current/source/l/glibc
+
+We also need glibc directory from aarch64 source
+   # rsync -Pavv ftp.slackware.org.uk::slackwarearm/slackwareaarch64-current/source/l/glibc/ .
+   # mv glibc.SlackBuild glibc.SlackBuild.aarch64
+   # wget 
    # cp patches/* /root/slackware64-current/source/l/glibc/
 
 And now we can compile glibc
