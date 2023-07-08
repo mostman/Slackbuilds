@@ -1,7 +1,7 @@
 #!/bin/bash
 ulimit -s unlimited
 
-# Copyright 2006, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019  Patrick J. Volkerding, Sebeka, MN, USA
+# Copyright 2006, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023  Patrick J. Volkerding, Sebeka, MN, USA
 # All rights reserved.
 #
 # Redistribution and use of this script, with or without modification, is
@@ -23,7 +23,6 @@ ulimit -s unlimited
 #
 #
 # Modified by Stuart Winter for Slackware ARM.
-# Modified by Martin Östman (Minime) to make widevine working on slackware ARM.
 #
 
 # Record toolchain & other info for the build log:
@@ -64,10 +63,10 @@ echo "Building for /patches? $SLACKPATCHING"
 # itself, so we use the version number from the Kernel package.
 #
 #if [ "$SLACKPATCHING" = "yes" ]; then
-#   eval $( sed 's?VERSION?KERNELHEADERS?g' $PORTCWD/../kernel/kernel-pkgs/arm/build | egrep '^export KERNELHEADERS' )
+#   eval $( sed 's?VERSION?KERNELHEADERS?g' $PORTCWD/../kernel/kernel-pkgs/arm/build | grep -E '^export KERNELHEADERS' )
 # else
 #   # Within -current:
-#   eval $( sed 's?VERSION?KERNELHEADERS?g' ../../k/arm/build | egrep '^export KERNELHEADERS' )
+#   eval $( sed 's?VERSION?KERNELHEADERS?g' ../../k/arm/build | grep -E '^export KERNELHEADERS' )
 #fi
 #if [ -z "$KERNELHEADERS" ]; then
 #   echo "ERROR: Unable to determine the version of Linux Kernel headers."
@@ -119,20 +118,15 @@ function extractglibcsource () {
 
   # Support ru_RU.CP1251 locale:
   zcat $CWD/glibc.ru_RU.CP1251.diff.gz | patch -p1 --verbose || exit 1
-  # Add a C.UTF-8 locale:
-  zcat $CWD/glibc-c-utf8-locale.patch.gz | patch -p1 --verbose || exit 1
 
   # Don't use AM/PM format for date(1). That's just plain crazy.
   zcat $CWD/glibc-2.32.en_US.no.am.pm.date.format.diff.gz | patch -p1 --verbose || exit 1
 
   #
-  #-------- Patches fixes Widevine (CDM) in ARM -------#
+  #-------- Patches fixes Widevine (CDM) in ARM aarch64 -------#
   #
-  # Add support for SHT_RELR
-  zcat $CWD/glibc-add-support-for-SHT_RELR-sections.patch.gz | patch -p1 --verbose || exit 1
-
   # Fix TLS for Widevine
-  zcat $CWD/glibc-tls-libwidevinecdm.so-since-4.10.2252.0-has-TLS-with.patch.gz | patch -p1 --verbose || exit 1
+  zcat $CWD/glibc-do_not_check-GLIBC_ABI_DT_RELR-chrome-tls-libwidevine.patch.gz | patch -p1 --verbose || exit 1
 
   # Other regression fixes from git:
   for git_patch in $CWD/patches/*.patch.gz ; do
@@ -166,8 +160,8 @@ function extractglibcsource () {
 
   # Determine version of ld-linux.so:
   case $SLKPORTARCH in
-    arm)     export ARMLDLINUXVER="$( grep -A1 "hard-float ABI" sysdeps/unix/sysv/linux/arm/shlib-versions | egrep "^ld=" | awk -F= '{print $2}' )" ;;
-    aarch64) export ARMLDLINUXVER="$( egrep "^ld=" sysdeps/unix/sysv/linux/aarch64/shlib-versions | grep -v "be" | awk -F= '{print $2}' )" ;;
+    arm)     export ARMLDLINUXVER="$( grep -A1 "hard-float ABI" sysdeps/unix/sysv/linux/arm/shlib-versions | grep -E "^ld=" | awk -F= '{print $2}' )" ;;
+    aarch64) export ARMLDLINUXVER="$( grep -E "^ld=" sysdeps/unix/sysv/linux/aarch64/shlib-versions | grep -v "be" | awk -F= '{print $2}' )" ;;
   esac
   if [ -z "$ARMLDLINUXVER" ]; then
      echo "Unable to determine version of ld-linux.so required for the package doinst.sh on platform $SLKPORTARCH"
@@ -446,8 +440,24 @@ mkdir -vpm755 lib${LIBDIRSUFFIX}
 cp -a $PKG/lib${LIBDIRSUFFIX}/* lib${LIBDIRSUFFIX}
 ( cd lib${LIBDIRSUFFIX}
   mkdir -vpm755 incoming
-  mv -fv *so* incoming
-  mv -fv incoming/libSegFault.so .
+  mv -fv *so* incoming/
+  # Beginning with glibc-2.34, shared objects are using their ABI sonames
+  # directly, which is frankly, a terrible idea. It might help other package
+  # managers, but doesn't do us any favors where we already had a system for
+  # dealing with upgrades (and downgrades!). We'll change these libraries to
+  # use the versioned naming system of glibc-2.33 and earlier so that we don't
+  # have to handle these files differently and so that it's easy to see what
+  # version of glibc is in use at a glance.
+  cd incoming
+  for library in *.so.* ; do
+    mv -fv $library $(echo $library | cut -f 1 -d .)-${VERSION}.so
+  done
+  # This one is a special case. We don't want an $ARCH embedded in the
+  # filename. It prevents using the same install scripts on all $ARCH
+  # and does no good since we'll never have multiple $ARCH libraries
+  # installed in the same directory anyway. So give it the previous name
+  # format:
+  mv -fv ld-linux*-${VERSION}.so ld-${VERSION}.so
 )
 mkdir -vpm755 usr
 cp -a $PKG/usr/bin usr
@@ -509,8 +519,25 @@ fix_doinst
 
 ( cd lib${LIBDIRSUFFIX}
   mkdir -vpm755 incoming
-  mv -fv *so* incoming
-  mv -fv incoming/libSegFault.so .
+  mv -fv *so* incoming/
+  mv -fv incoming/libmemusage.so .
+  # Beginning with glibc-2.34, shared objects are using their ABI sonames
+  # directly, which is frankly, a terrible idea. It might help other package
+  # managers, but doesn't do us any favors where we already had a system for
+  # dealing with upgrades (and downgrades!). We'll change these libraries to
+  # use the versioned naming system of glibc-2.33 and earlier so that we don't
+  # have to handle these files differently and so that it's easy to see what
+  # version of glibc is in use at a glance.
+  cd incoming
+  for library in *.so.* ; do
+    mv -fv $library $(echo $library | cut -f 1 -d .)-${VERSION}.so
+  done
+  # This one is a special case. We don't want an $ARCH embedded in the
+  # filename. It prevents using the same install scripts on all $ARCH
+  # and does no good since we'll never have multiple $ARCH libraries
+  # installed in the same directory anyway. So give it the previous name
+  # format:
+  mv -fv ld-linux*-${VERSION}.so ld-${VERSION}.so
 )
 # Build the package:
 makepkg -l y -c n $PKGSTORE/l/glibc-$VERSION-$PKGARCH-$BUILD.txz
