@@ -15,7 +15,6 @@ As root
 As we only need and want glibc directory
 Sync the Slackware/x86_64 tree for glibc:
    # rsync -Pavv ftp.slackware.org.uk::slackware/slackware64-current/source/l/glibc/ .
-
    # cd
    # mkdir -p slackwarearm/slackwareaarch64-current/source/l/glibc
    # cd slackwarearm/slackwareaarch64-current/source/l/glibc
@@ -23,14 +22,18 @@ Sync the Slackware/x86_64 tree for glibc:
 We also need glibc directory from aarch64 source
    # rsync -Pavv ftp.slackware.org.uk::slackwarearm/slackwareaarch64-current/source/l/glibc/ .
    # mv glibc.SlackBuild glibc.SlackBuild.aarch64
-   # wget 
-   # cp patches/* /root/slackware64-current/source/l/glibc/
+   # wget https://raw.githubusercontent.com/mostman/Slackbuilds/Slackwareaarch64-current/glibc/glibc.SlackBuild
+   # wget https://github.com/mostman/Slackbuilds/raw/Slackwareaarch64-current/glibc/glibc-do_not_check-GLIBC_ABI_DT_RELR-chrome-tls-libwidevine.patch.gz
+   # cp glibc-do_not_check-GLIBC_ABI_DT_RELR-chrome-tls-libwidevine.patch.gz /root/slackware64-current/source/l/glibc/
+
+Set correct permissions
+   # chmod 755 glibc.SlackBuild
 
 And now we can compile glibc
    # ./arm/build
  
 Packages will be stored under "/root/tgzstash"
    # cd /root/tgzstash
-   # <del>upgradepkg a/aaa_glibc-solibs-2.33-arm-5p1_slack15.0.txz l/glibc-2.33-arm-5p1_slack15.0.txz</del>
+   # upgradepkg a/aaa_glibc-solibs-2.37-aarch64-1p1.txz l/glibc-2.37-aarch64-1p1.txz
  
  And you are all done.
