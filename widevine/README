@@ -1,4 +1,4 @@
-Regarding the included python script from DavidBuchanan314:
+Regarding the included python script from DavidBuchanan314 for SLackware aarch64 devices:
 IMPORTANT NOTE: On systems with >4k page size (e.g. Apple Silicon devices),
 Using the patched binary *significantly* weakens the security of your web browser,
 in two ways. Firstly, it disables the RELRO security mitigation, and secondly it
