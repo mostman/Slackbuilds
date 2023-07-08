@@ -15,5 +15,5 @@ This will most likley not be needed as Slacware aarch64 alredy has llvm/clang 16
 <del>[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/16.0.6/chromium-llvm-16.0.6-arm-1_SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/16.0.6/)  </del>
 
 glibc package patched with TLS 64-byte and compiled for Slackware aarch64 15.0-current (RPI 4)  
-<del>[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/glibc-2.33-5/glibc-2.33-arm-5p1_slack15.0.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/glibc-2.33-5/)  
-[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/glibc-2.33-5/aaa_glibc-solibs-2.33-arm-5p1_slack15.0.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/glibc-2.33-5/)  </del>
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/glibc-2.37/glibc-2.37-aarch64-1p1.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/glibc-2.37/)  
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/glibc-2.37/aaa_glibc-solibs-2.37-aarch64-1p1.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/glibc-2.37/)  
