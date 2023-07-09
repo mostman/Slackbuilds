@@ -66,5 +66,9 @@ llvm/clang package Compiled for Slackware ARM 15.0 (RPI 4), note: Chromiums inte
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/13.0.1/llvm-13.0.1-arm-1_SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/13.0.1/)  
 
 glibc package patched with SHT_RELR and TLS with 64-byte and compiled for Slackware ARM 15.0 (RPI 4)  
-[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/glibc-2.33-5/glibc-2.33-arm-5p1_slack15.0.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/glibc-2.33-5/)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/glibc-2.33-5/aaa_glibc-solibs-2.33-arm-5p1_slack15.0.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/glibc-2.33-5/)  
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/glibc-2.33-5/glibc-2.33-arm-5p1_slack15.0.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/glibc-2.33-5/)  
+
+glibc package patched with TLS with 64-byte and compiled for Slackware aarch64 Current (RPI 4)  
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/glibc-2.37/aaa_glibc-solibs-2.37-aarch64-1p1.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/glibc-2.37/)  
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/glibc-2.37/glibc-2.37-aarch64-1p1.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/glibc-2.37/)  
