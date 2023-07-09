@@ -28,6 +28,11 @@ We also need glibc directory from aarch64 source
 
 Set correct permissions
    # chmod 755 glibc.SlackBuild
+   # cd arm
+   # mv build build.aarch64
+   # wget https://raw.githubusercontent.com/mostman/Slackbuilds/Slackwareaarch64-current/glibc/arm/build
+   # chmod 755 build
+   # cd ..
 
 And now we can compile glibc
    # ./arm/build
