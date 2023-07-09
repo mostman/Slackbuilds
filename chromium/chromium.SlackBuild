@@ -293,6 +293,10 @@
 #                  01/jul/2023 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Fixed build for ARM of google's internal llvm/clang from source.
 #                     Should be possible to build now.
+#                  09/jul/2023 by Minime <slackware[at]slackwarelinux[dot]se>
+#                  * Fixed build for AArch64.
+#                   (Was surprisingly a lot easier than getting chromium to built for ARM.)
+#                   Not so sure about the stripping of chromedriver, but better safe than sorry.
 #
 # -----------------------------------------------------------------------------
 #
@@ -401,7 +405,12 @@ USE_CUSTCLANG=${USE_CUSTCLANG:-1}
 # Make sure you to set correct clang base path.
 # Path where you installed clang, default is set to "/usr" (The system).
 # If you installed my llvm/clang package then set CLANG_BASE_PATH="/opt/llvm".
-#CLANG_BASE_PATH="/usr"
+# ---------------------
+# As Slackware Aaarch64 Current has clang 16.0.6 we set this to "/usr"
+# Telling the build script to use the systems clang.
+# If building Slackware ARM 15.0 we will have to use custom built clang
+# Then set this to "/opt/llvm"
+# CLANG_BASE_PATH="/usr"
 CLANG_BASE_PATH="/opt/llvm"
 
 # If you don't want to enable support for Widevine CDM
@@ -531,6 +540,20 @@ case "$ARCH" in
              fi
              #DSSE="0"
              DSSE="1"
+             ;;
+  aarch64)   SLKCFLAGS="-O2 -march=armv8-a -mtune=cortex-a72"
+             SLKLDFLAGS="-L/usr/lib64"; LIBDIRSUFFIX="64"
+             DSSE="1"
+             # Widevine not supported (no binary library available):
+             # However there are workarounds so why deny this?
+             # Added patch that enables widevine support for armv7
+             #USE_CDM=0
+             # VAAPI not supported:
+             USE_VAAPI=0
+             FFMPEG_ARCH="arm64"
+             SYSROOT_ARCH="arm64"
+             SYSROOT_TARGET="aarch64-linux-gnu"
+             PKGARCH="$ARCH"
              ;;
   armv7*)    SLKCFLAGS="-O2 -march=armv7-a -mtune=cortex-a72 -mfpu=neon-fp-armv8 -mfloat-abi=hard"
              SLKLDFLAGS="-Wl,-z,notext"; LIBDIRSUFFIX=""
@@ -765,6 +788,14 @@ if [[ "$ARCH" =~ arm.* ]]; then
   # as above lines...
   #sed -i tools/clang/scripts/build.py \
   #  -e "/    cmake_args.append('-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON')/d"
+elif [ "$ARCH" == "aarch64" ]; then
+  sed -i tools/clang/scripts/build.py \
+    -e "s/targets = 'AArch64;ARM;Mips;PowerPC;RISCV;SystemZ;WebAssembly;X86'/targets = 'ARM;X86;AArch64'/"
+  # We are compiling bootstrap for AArch64 and not X86.
+  sed -i tools/clang/scripts/build.py \
+    -e "s/bootstrap_targets = 'X86'/bootstrap_targets = 'AArch64'/"
+  sed -i tools/clang/scripts/build.py \
+    -e "s/aarch64-unknown-linux-gnu/$TARGET/"
 fi
 
 # When compiling google's clang, use the system cmake
@@ -958,6 +989,11 @@ fi
 if [[ "$ARCH" =~ arm.* ]]; then
   _chromium_conf+=(
       'target_cpu="arm"'
+      'target_os="linux"'
+  )
+elif [ "$ARCH" == "aarch64" ]; then
+  _chromium_conf+=(
+      'target_cpu="arm64"'
       'target_os="linux"'
   )
 fi
@@ -1355,10 +1391,13 @@ install -D -m0644 out/Release/${PRGNAM}.1 $PKG/usr/man/man1/${PRGNAM}.1
 process_template chrome/installer/linux/common/desktop.template \
   out/Release/${PRGNAM}.desktop
 
-# Fix user-agent for ARM
+# Fix user-agent for ARM and aarch64
 if [[ "$ARCH" =~ arm.* ]]; then
   sed -i out/Release/${PRGNAM}.desktop \
     -e "s/\/${PRGNAM}/\/${PRGNAM} \-\-user-agent=\"Mozilla\/5.0 \(X11; CrOS armv7l 10895.56.0\) AppleWebKit\/537.36 \(KHTML, like Gecko\) Chrome\/${VERSION} Safari\/537.36\"/"
+elif [ "$ARCH" == "aarch64" ]; then
+  sed -i out/Release/${PRGNAM}.desktop \
+    -e "s/\/${PRGNAM}/\/${PRGNAM} \-\-user-agent=\"Mozilla\/5.0 \(X11; CrOS aarch64 15393.58.0\) AppleWebKit\/537.36 \(KHTML, like Gecko\) Chrome\/${VERSION} Safari\/537.36\"/"
 fi
 
 install -D -m0644 out/Release/${PRGNAM}.desktop \
