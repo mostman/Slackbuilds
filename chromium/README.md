@@ -16,13 +16,14 @@ Might also want to download/copy the patches from the patch directory to Alien B
 * Fixed ARM sysroot path/link for libsqlite3.so, glibconfig.h,
 dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * Fixed link for debians arm-linux-gnueabihf-readelf to slackwares readelf
-* Fixed compiling google's internal llvm/clang for ARM.
+* Fixed compiling google's internal llvm/clang for ARM and aarch64.
 * Also made it possible to use eithers systems llvm/clang version or my slackbuild llvm/clang version instead of chromiums llvm/clang build.
-* Patched chromium for arm to support Widevine. (Using my patched glibc will also make Widevine 4.10.2252.x and latest 4.10.2557.x working on ARM)
+* Patched chromium for arm and aarch64 to support Widevine. (Using my patched glibc will also make Widevine 4.10.2252.x and latest 4.10.2557.x working on ARM and aarch64)
 
 # Dependencies needed to build:
 * ninja (Is avalible throught slack package)
-* nodejs >= 18.7.0 (Is avalible at [Alien's SlackBuilds](http://www.slackware.com/~alien/slackbuilds/nodejs/build/))
+* nodejs >= 18.7.0 (For ARM this is avalible at [Alien's SlackBuilds](http://www.slackware.com/~alien/slackbuilds/nodejs/build/))  
+  # Note: (For Slackware aarch64 Current it is avalible throught slack package)
 * gcc >= 8 for bootstrapping gn (Is avalible throught slack package)
 * nasm >= 2.14 (yasm no longer being used) (Is avalible throught slack package)
 * cmake >= 3.13.4 (Is avalible throught slack package)
