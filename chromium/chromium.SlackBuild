@@ -1110,7 +1110,7 @@ fi
 # --- Compile --- #
 
 # Final link uses lots of file descriptors.
-ulimit -n 2048
+ulimit -n 4096
 
 # Compile google's internal clang sources if needed
 if [ ${USE_CLANG} -eq 1 ] && [ ${USE_CUSTCLANG} -eq 0 ]; then
