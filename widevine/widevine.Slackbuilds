@@ -93,7 +93,7 @@ if [ "${DEBARCH}" == "arm64" ]; then
   python3 $CWD/widevine_fixup.py \
     opt/WidevineCdm/_platform_specific/linux_${PKGARCH}/libwidevinecdm_real.so libwidevinecdm.so;
 else
-  cp opt/WidevineCdm/_platform_specific/linux_${PKGARCH}/libwidevinecdm_real.so libwidevinecdm.so
+  cp opt/WidevineCdm/_platform_specific/linux_${PKGARCH}/libwidevinecdm.so libwidevinecdm.so
 fi
 
 chown -R root:root .
