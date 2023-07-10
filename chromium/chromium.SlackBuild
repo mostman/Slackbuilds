@@ -795,7 +795,7 @@ elif [ "$ARCH" == "aarch64" ]; then
   sed -i tools/clang/scripts/build.py \
     -e "s/bootstrap_targets = 'X86'/bootstrap_targets = 'AArch64'/"
   sed -i tools/clang/scripts/build.py \
-    -e "s/aarch64-unknown-linux-gnu/$TARGET/"
+    -e "s/aarch64-unknown-linux/$TARGET/"
 fi
 
 # When compiling google's clang, use the system cmake
@@ -1110,7 +1110,7 @@ fi
 # --- Compile --- #
 
 # Final link uses lots of file descriptors.
-ulimit -n 2048
+ulimit -n 4096
 
 # Compile google's internal clang sources if needed
 if [ ${USE_CLANG} -eq 1 ] && [ ${USE_CUSTCLANG} -eq 0 ]; then
