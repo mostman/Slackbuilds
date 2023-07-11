@@ -110,9 +110,9 @@ install -D -m644 manifest.json -t "${PKG}/opt/google/chrome/WidevineCdm/"
 
 # Fixing links for chromium and chromium-ungoogled
 mkdir -p usr/lib${LIBDIRSUFFIX}/chromium/
-ln -s opt/google/chrome/WidevineCdm usr/lib${LIBDIRSUFFIX}/chromium/WidevineCdm
+ln -s ../../../opt/google/chrome/WidevineCdm/ usr/lib${LIBDIRSUFFIX}/chromium/WidevineCdm
 mkdir -p usr/lib${LIBDIRSUFFIX}/chromium-ungoogled/
-ln -s opt/google/chrome/WidevineCdm usr/lib${LIBDIRSUFFIX}/chromium-ungoogled/WidevineCdm
+ln -s ../../../opt/google/chrome/WidevineCdm/ usr/lib${LIBDIRSUFFIX}/chromium-ungoogled/WidevineCdm
 
 # cleanup
 rm -rf ${PKG}/opt/WidevineCdm/
