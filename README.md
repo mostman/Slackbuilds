@@ -7,7 +7,7 @@ chromium-ungoogled package compiled for Slackware ARM 15.0 (RPI 4)<br />
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/114.0.5735.198/chromium-ungoogled-114.0.5735.198-armv7l-1SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/114.0.5735.198/)  
 
 Kodi package compiled for Slackware ARM 15.0 (RPI 4)  
-[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.1/kodi-20.2-armv7-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.2/)  
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.2/kodi-20.2-armv7-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.2/)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.2/kodi-addons-20.2-armv7-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.2/)   
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.2/dav1d-1.2.1-arm-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.2/)   
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.2/jdk-8u371-arm-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.2/)   
