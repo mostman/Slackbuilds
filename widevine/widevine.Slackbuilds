@@ -32,10 +32,12 @@ TAG=${TAG:-_SLse}
 if [ -z "$ARCH" ]; then
   case "$( uname -m )" in
     arm*) ARCH=arm;
+          LIBDIRSUFFIX="";
           DEBARCH="armhf";
           PKGARCH="arm";
        ;;
-       *) ARCH=$( uname -m );
+    aarch64) ARCH=$( uname -m );
+          LIBDIRSUFFIX="64";
           DEBARCH="arm64";
           PKGARCH="arm64";
        ;;
@@ -105,6 +107,12 @@ find -L . \
 
 install -D -m755 libwidevinecdm.so -t "${PKG}/opt/google/chrome/WidevineCdm/_platform_specific/linux_${PKGARCH}/"
 install -D -m644 manifest.json -t "${PKG}/opt/google/chrome/WidevineCdm/"
+
+# Fixing links for chromium and chromium-ungoogled
+mkdir -p usr/lib${LIBDIRSUFFIX}/chromium/
+ln -s opt/google/chrome/WidevineCdm usr/lib${LIBDIRSUFFIX}/chromium/WidevineCdm
+mkdir -p usr/lib${LIBDIRSUFFIX}/chromium-ungoogled/
+ln -s opt/google/chrome/WidevineCdm usr/lib${LIBDIRSUFFIX}/chromium-ungoogled/WidevineCdm
 
 # cleanup
 rm -rf ${PKG}/opt/WidevineCdm/
