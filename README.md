@@ -20,6 +20,18 @@ Kodi package compiled for Slackware ARM 15.0 (RPI 4)
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.2/rapidjson-1.1.0-arm-1alien.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.2/)   
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.2/tinyxml-2.6.2-arm-2_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.2/)   
 
+Kodi package compiled for Slackware AArch64 Current (RPI 4)  
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.2/dav1d-1.2.1-aarch64-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.2/)   
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.2/jdk-8u371-aarch64-1_SBo.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.2/)   
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.2/libass-0.17.1-aarch64-1alien.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.2/)   
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.2/libcec-6.0.2-aarch64-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.2/)   
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.2/libmicrohttpd-0.9.77-aarch64-1alien.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.2/)   
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.2/libnfs-5.0.2-aarch64-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.2/)   
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.2/platform-2.1.0-aarch64-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.2/)   
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.2/pycryptodomex-3.18.0-aarch64-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.2/)   
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.2/rapidjson-1.1.0-aarch64-1alien.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.2/)   
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.2/tinyxml-2.6.2-aarch64-2_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.2/)   
+
 python3 package compiled for Slackware ARM 15.0 (RPI 4), note: this is not needed anymore as python3 was updated for Slackware ARM 15.0  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/python3-3.9.13/python3-3.9.13-arm-1_slack15.0.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/python3-3.9.13/) 
 
