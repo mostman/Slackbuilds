@@ -1398,10 +1398,14 @@ if [[ "$ARCH" =~ arm.* ]]; then
   cp out/Release/${PRGNAM}.desktop out/Release/${PRGNAM}-netflix.desktop
   sed -i out/Release/${PRGNAM}-netflix.desktop \
     -e "s/\/${PRGNAM}/\/${PRGNAM} \-\-user-agent=\"Mozilla\/5.0 \(X11; CrOS armv7l 10895.56.0\) AppleWebKit\/537.36 \(KHTML, like Gecko\) Chrome\/${VERSION} Safari\/537.36\"/"
+  install -D -m0644 out/Release/${PRGNAM}-netflix.desktop \
+    $PKG/usr/share/applications/${PRGNAM}-netflix.desktop
 elif [ "$ARCH" == "aarch64" ]; then
   cp out/Release/${PRGNAM}.desktop out/Release/${PRGNAM}-netflix.desktop
   sed -i out/Release/${PRGNAM}-netflix.desktop \
     -e "s/\/${PRGNAM}/\/${PRGNAM} \-\-user-agent=\"Mozilla\/5.0 \(X11; CrOS aarch64 15393.58.0\) AppleWebKit\/537.36 \(KHTML, like Gecko\) Chrome\/${VERSION} Safari\/537.36\"/"
+  install -D -m0644 out/Release/${PRGNAM}-netflix.desktop \
+    $PKG/usr/share/applications/${PRGNAM}-netflix.desktop
 fi
 
 install -D -m0644 out/Release/${PRGNAM}.desktop \
