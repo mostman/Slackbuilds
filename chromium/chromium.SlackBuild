@@ -297,6 +297,8 @@
 #                  * Fixed build for AArch64.
 #                   (Was surprisingly a lot easier than getting chromium to built for ARM.)
 #                   Not so sure about the stripping of chromedriver, but better safe than sorry.
+# 115.0.5790.98-1: 19/jul/2023 by Minime <slackware[at]slackwarelinux[dot]se>
+#                  * Update to M115 version fix chromium/ungoogled for ARM and AArch64. 
 #
 # -----------------------------------------------------------------------------
 #
@@ -321,8 +323,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-114.0.5735.198}
-UNGOOGLED=${UNGOOGLED:-114.0.5735.198-1}
+VERSION=${VERSION:-115.0.5790.98}
+UNGOOGLED=${UNGOOGLED:-115.0.5790.98-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
@@ -410,8 +412,8 @@ USE_CUSTCLANG=${USE_CUSTCLANG:-1}
 # Telling the build script to use the systems clang.
 # If building Slackware ARM 15.0 we will have to use custom built clang
 # Then set this to "/opt/llvm"
-# CLANG_BASE_PATH="/usr"
-CLANG_BASE_PATH="/opt/llvm"
+# CLANG_BASE_PATH="/opt/llvm"
+CLANG_BASE_PATH="/usr"
 
 # If you don't want to enable support for Widevine CDM
 # (content decryption module) say "0" here.
@@ -1393,10 +1395,12 @@ process_template chrome/installer/linux/common/desktop.template \
 
 # Fix user-agent for ARM and aarch64
 if [[ "$ARCH" =~ arm.* ]]; then
-  sed -i out/Release/${PRGNAM}.desktop \
+  cp out/Release/${PRGNAM}.desktop out/Release/${PRGNAM}-netflix.desktop
+  sed -i out/Release/${PRGNAM}-netflix.desktop \
     -e "s/\/${PRGNAM}/\/${PRGNAM} \-\-user-agent=\"Mozilla\/5.0 \(X11; CrOS armv7l 10895.56.0\) AppleWebKit\/537.36 \(KHTML, like Gecko\) Chrome\/${VERSION} Safari\/537.36\"/"
 elif [ "$ARCH" == "aarch64" ]; then
-  sed -i out/Release/${PRGNAM}.desktop \
+  cp out/Release/${PRGNAM}.desktop out/Release/${PRGNAM}-netflix.desktop
+  sed -i out/Release/${PRGNAM}-netflix.desktop \
     -e "s/\/${PRGNAM}/\/${PRGNAM} \-\-user-agent=\"Mozilla\/5.0 \(X11; CrOS aarch64 15393.58.0\) AppleWebKit\/537.36 \(KHTML, like Gecko\) Chrome\/${VERSION} Safari\/537.36\"/"
 fi
 
