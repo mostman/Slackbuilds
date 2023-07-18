@@ -412,8 +412,8 @@ USE_CUSTCLANG=${USE_CUSTCLANG:-1}
 # Telling the build script to use the systems clang.
 # If building Slackware ARM 15.0 we will have to use custom built clang
 # Then set this to "/opt/llvm"
-# CLANG_BASE_PATH="/opt/llvm"
-CLANG_BASE_PATH="/usr"
+# CLANG_BASE_PATH="/usr"
+CLANG_BASE_PATH="/opt/llvm"
 
 # If you don't want to enable support for Widevine CDM
 # (content decryption module) say "0" here.
