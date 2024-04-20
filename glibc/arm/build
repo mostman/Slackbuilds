@@ -13,7 +13,7 @@ export SLACKPACKAGE=$PKGNAM-$VERSION-$PKGARCH-$BUILD.txz
 # 'series' directories within /tmp:
 slack_findpkgstore_is_stablerelease && {
   export PKGSTORE=/tmp/
-  export BUILD=5p1_slack15.0
+  export BUILD=6p1_slack15.0
   # Since we have packages in both series
   mkdir -vpm755 $PKGSTORE/{a,l} ;}
 
