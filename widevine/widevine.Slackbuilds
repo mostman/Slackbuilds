@@ -2,7 +2,7 @@
 
 # Slackware build script for Widevine
 
-# Copyright 2023 Martin Östman (Minime), Sweden
+# Copyright 2023-2024 Martin Östman (Minime), Sweden
 # All rights reserved.
 #
 # Redistribution and use of this script, with or without modification, is
@@ -25,7 +25,7 @@
 cd $(dirname $0) ; CWD=$(pwd)
 
 PRGNAM=libwidevinecdm
-VERSION=${VERSION:-4.10.2252.0}
+VERSION=${VERSION:-4.10.2662.3}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SLse}
 
@@ -57,8 +57,8 @@ set -eu
 
 rm -rf $PKG
 mkdir -p $TMP $PKG $OUTPUT
-if [ ! -f ${CWD}/${PRGNAM}0_${VERSION}+3_${DEBARCH}.deb ]; then
-  wget ${PKGURL}${PRGNAM}0_${VERSION}+3_${DEBARCH}.deb
+if [ ! -f ${CWD}/${PRGNAM}0_${VERSION}+1_${DEBARCH}.deb ]; then
+  wget ${PKGURL}${PRGNAM}0_${VERSION}+1_${DEBARCH}.deb
 fi
 cd $PKG
 # Extract data.tar.gz from deb package
