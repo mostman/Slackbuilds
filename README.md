@@ -35,7 +35,7 @@ Kodi package compiled for Slackware AArch64 Current (RPI 4)
 python3 package compiled for Slackware ARM 15.0 (RPI 4), note: this is not needed anymore as python3 was updated for Slackware ARM 15.0  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/python3-3.9.13/python3-3.9.13-arm-1_slack15.0.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/python3-3.9.13/) 
 
-llvm/clang package Compiled for Slackware ARM 15.0 (RPI 4), note: Chromiums internal llvm takes about 6-8 hours to compile, so to speed up the process i built latest llvm-16.0.x to be able to build chromium/ungoogled > 104.  
+llvm/clang package Compiled for Slackware ARM 15.0 (RPI 4), note: Chromiums internal llvm takes about 6-8 hours to compile, so to speed up the process i built latest llvm-18.1.x to be able to build chromium/ungoogled > 104.  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/18.1.4/chromium-llvm-18.1.4-arm-1_SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/18.1.4/)  
 
 glibc package patched with SHT_RELR and TLS with 64-byte and compiled for Slackware ARM 15.0 (RPI 4)  
