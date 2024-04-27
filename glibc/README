@@ -5,8 +5,8 @@ And we also have to download "slackware64-current/source/l/glibc" and "slackware
 
 As root
    # cd /usr/src
-   # wget https://slackware.uk/slackwarearm/slackwareaarch64-current/slackware/d/slackkit-1.34-aarch64-1.txz
-   # installpkg slackkit-1.34-aarch64-1.txz
+   # wget https://slackware.uk/slackwarearm/slackwareaarch64-current/slackware/d/slackkit-1.40-aarch64-1.txz
+   # installpkg slackkit-1.40-aarch64-1.txz
 
    # cd /root
    # mkdir -p slackware64-current/source/l/glibc/
@@ -39,6 +39,6 @@ And now we can compile glibc
  
 Packages will be stored under "/root/tgzstash"
    # cd /root/tgzstash
-   # upgradepkg a/aaa_glibc-solibs-2.37-aarch64-1p1.txz l/glibc-2.37-aarch64-1p1.txz
+   # upgradepkg a/aaa_glibc-solibs-2.39-aarch64-1p1.txz l/glibc-2.39-aarch64-1p1.txz
  
  And you are all done.
