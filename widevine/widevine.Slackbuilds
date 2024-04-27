@@ -57,12 +57,12 @@ set -eu
 
 rm -rf $PKG
 mkdir -p $TMP $PKG $OUTPUT
-if [ ! -f ${CWD}/${PRGNAM}0_${VERSION}+3_${DEBARCH}.deb ]; then
-  wget ${PKGURL}${PRGNAM}0_${VERSION}+3_${DEBARCH}.deb
+if [ ! -f ${CWD}/${PRGNAM}0_${VERSION}+1_${DEBARCH}.deb ]; then
+  wget ${PKGURL}${PRGNAM}0_${VERSION}+1_${DEBARCH}.deb
 fi
 cd $PKG
 # Extract data.tar.gz from deb package
-ar -p $CWD/${PRGNAM}0_${VERSION}+3_${DEBARCH}.deb data.tar.xz | tar -Jxv
+ar -p $CWD/${PRGNAM}0_${VERSION}+1_${DEBARCH}.deb data.tar.xz | tar -Jxv
 
 # Get major and minor version numbers from pkgver string
 
