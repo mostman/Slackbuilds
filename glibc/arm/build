@@ -4,7 +4,7 @@ source /usr/share/slackdev/buildkit.sh
 
 # Package metadata:
 export PKGNAM=glibc
-export VERSION=${VERSION:-2.37}
+export VERSION=${VERSION:-2.39}
 export BUILD=1p1
 slack_var_pkgseries
 
