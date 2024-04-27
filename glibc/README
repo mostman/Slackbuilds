@@ -5,8 +5,8 @@ And we also have to download slackware64-15.0/source/l/glibc with rsync
 
 As root
    # cd /usr/src
-   # wget https://slackware.uk/slackwarearm/slackwarearm-devtools/slackkit/pkgs/slackkit-1.32-arm-1.txz
-   # installpkg slackkit-1.32-arm-1.txz
+   # wget https://slackware.uk/slackwarearm/slackwarearm-devtools/slackkit/pkgs/slackkit-1.40-arm-1.txz
+   # installpkg slackkit-1.40-arm-1.txz
 
    # cd /root
    # mkdir -p slackware64-current/source/l/glibc/
@@ -28,6 +28,6 @@ And now we can compile glibc
  
 Packages will be stored under "/root/tgzstash"
    # cd /root/tgzstash
-   # upgradepkg a/aaa_glibc-solibs-2.33-arm-5p1_slack15.0.txz l/glibc-2.33-arm-5p1_slack15.0.txz
+   # upgradepkg a/aaa_glibc-solibs-2.33-arm-6p1_slack15.0.txz l/glibc-2.33-arm-6p1_slack15.0.txz
  
  And you are all done.
