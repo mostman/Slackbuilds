@@ -22,6 +22,7 @@ Kodi package compiled for Slackware ARM 15.0 (RPI 4)
 
 Kodi package compiled for Slackware AArch64 Current (RPI 4)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.5/kodi-20.5-aarch64-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.5/)  
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.5/inputstream.adaptive-20.3.18-aarch64-1_SBo.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.5/)   
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.5/jdk-8u411-aarch64-1_SBo.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.5/)   
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.5/libcec-6.0.2-aarch64-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.5/)   
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.5/libmicrohttpd-1.0.1-aarch64-1alien.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.5/)  
