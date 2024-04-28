@@ -27,7 +27,7 @@ Kodi package compiled for Slackware AArch64 Current (RPI 4)
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.5/libmicrohttpd-1.0.1-aarch64-1alien.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.5/)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.5/libnfs-5.0.3-aarch64-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.5/)   
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.5/platform-2.1.0-aarch64-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.5/)   
-[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.5/pycryptodomex-3.20.0-aarch64-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.5/) 
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.5/pycryptodomex-3.20.0-aarch64-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.5/)   
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/20.5/tinyxml-2.6.2-aarch64-2_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/20.5/)   
 
 python3 package compiled for Slackware ARM 15.0 (RPI 4), note: this is not needed anymore as python3 was updated for Slackware ARM 15.0  
