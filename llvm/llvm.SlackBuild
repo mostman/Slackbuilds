@@ -160,6 +160,7 @@ LDFLAGS="$LDFLAGS" \
 cmake -GNinja -DCMAKE_BUILD_TYPE=Release \
       -DLLVM_ENABLE_ASSERTIONS=OFF \
       -DLLVM_ENABLE_PROJECTS="clang;compiler-rt;lld;clang-tools-extra" \
+      -DLLVM_ENABLE_RUNTIMES="compiler-rt" \
       -DLLVM_TARGETS_TO_BUILD="ARM;X86;AArch64" \
       -DLLVM_DEFAULT_TARGET_TRIPLE="${TARGET}" \
       -DLLVM_ENABLE_PIC=${SETPIC} \
