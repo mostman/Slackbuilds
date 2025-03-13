@@ -4,8 +4,8 @@ source /usr/share/slackdev/buildkit.sh
 
 # Package metadata:
 export PKGNAM=glibc
-export VERSION=${VERSION:-2.39}
-export BUILD=2p1
+export VERSION=${VERSION:-2.41}
+export BUILD=1p1
 slack_var_pkgseries
 
 # If building within /patches, we'll drop the packages in to their respective
@@ -13,7 +13,7 @@ slack_var_pkgseries
 # We don't build glibc via r2b for /patches yet - it'd need a little more work.
 slack_findpkgstore_is_stablerelease && {
   export PKGSTORE=/tmp/
-  export BUILD=2p1_slack15.1
+  export BUILD=1p1_slack15.1
   # Since we have packages in both series:
   mkdir -vpm755 $PKGSTORE/{a,l} ;}
 
