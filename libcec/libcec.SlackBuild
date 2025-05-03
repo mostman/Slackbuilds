@@ -3,6 +3,9 @@
 # Slackware build script for libcec
 
 # Copyright 2011-2020 Larry Hajali <larryhaja[at]gmail[dot]com>
+# Modifyed by Minime <slackware[at]slackwarelinux[dot]se>
+# For working on ARM and Aaarch64
+
 # All rights reserved.
 #
 # Redistribution and use of this script, with or without modification, is
@@ -55,7 +58,6 @@ elif [ "$ARCH" = "x86_64" ]; then
   SARCH=x86_64
 elif [ "$ARCH" = "aarch64" ]; then
   SLKCFLAGS="-O2 -fPIC -march=armv8-a -mtune=cortex-a72"
-  #SLKCFLAGS="-O2"
   LIBDIRSUFFIX="64"
   SARCH=aarch64
 elif [ "$ARCH" = "armv7l" ]; then
