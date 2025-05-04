@@ -93,6 +93,8 @@ echo "pref(\"media.eme.encrypted-media-encryption-scheme.enabled\", true);" >> w
 # Patch aarch64 widevine blobs from ChromeOS to work on non-ChromeOS linux, including
 # platforms with 16K page size like Apple Silicon / Asahi Linux
 # https://gist.github.com/DavidBuchanan314/c6b97add51b97e4c3ee95dc890f9e3c8
+# New version:
+# https://github.com/AsahiLinux/widevine-installer/blob/main/widevine_fixup.py
 if [ "${DEBARCH}" == "arm64" ]; then
   python3 $CWD/widevine_fixup.py \
     opt/WidevineCdm/_platform_specific/linux_${PKGARCH}/libwidevinecdm_real.so libwidevinecdm.so;
