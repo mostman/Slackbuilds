@@ -19,5 +19,6 @@ Kodi package compiled for Slackware AArch64 Current (RPI 4)
 
 glibc package patched with TLS with 64-byte and compiled for Slackware aarch64 Current (RPI 4)  
 **Note**: Both aaa_glibc-solibs and glibc packages are needed or it will not work to load libwidevine...  
+**Only needed for Kodi** If using unpatched libwidevinecdm.so  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/glibc-2.41/aaa_glibc-solibs-2.41-aarch64-1p1.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/glibc-2.41)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/glibc-2.41/glibc-2.41-aarch64-1p1.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/glibc-2.41)  
