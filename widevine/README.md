@@ -1,3 +1,7 @@
+# widevine_fixup.py script is not needed from latest aarch64 widevine deb packages.
+(Seams already to be patched)
+This also means that you do not have to patch aarch64 glibc anymore.
+
 # Regarding the included python script from DavidBuchanan314 for Slackware aarch64 devices:
 (This does however not concern ARM as the python script "widevine_fixup.py" is only used to resolve issues  
 on aarch64 non-ChromeOS linux systems.)
