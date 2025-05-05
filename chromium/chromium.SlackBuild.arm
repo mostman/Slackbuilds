@@ -1251,7 +1251,6 @@ _chromium_conf=(
   'treat_warnings_as_errors=false'
   'use_allocator="none"'
   'use_bundled_fontconfig=false'
-  'use_cfi_icall=false' # https://crbug.com/866290
   'use_cups=true'
   "use_custom_libcxx=${do_customcxx}"
   'use_kerberos=false'
