@@ -1189,6 +1189,7 @@ echo Building ...
 [ ${USE_CLANG} -eq 1 ] && do_clang=true || do_clang=false
 [ ${USE_CUSTCLANG} -eq 1 ] && do_clang_plug=false || do_clang_plug=true
 [ ${USE_CDM} -eq 1 ] && do_cdm=true || do_cdm=false
+[ ${USE_CUSTOMCXX} -eq 1 ] && do_customcxx=true || do_customcxx=false
 [ ${USE_HOTWORD} -eq 1 ] && do_hotword=true || do_hotword=false
 [ ${USE_PA} -eq 1 ] && do_pa=true || do_pa=false
 [ ${USE_QT} -eq 1 ] && do_qt=true || do_qt=false
