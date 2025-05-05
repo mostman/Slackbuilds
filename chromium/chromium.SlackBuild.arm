@@ -914,7 +914,7 @@ cat $SRCDIR/patches/chromium-136_drop_nodejs_vercheck.patch \
 cat $SRCDIR/patches/widevine_support_for_arm.patch \
   | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 
-if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
+if [ ${USE_CLANG} -eq 1 ] && [ ${USE_CUSTCLANG} -eq 0 ]; then
   # Adjust expectations about where to find the clang libs on Slackware:
   cat $SRCDIR/patches/chromium-132-bindgen-custom-toolchain.patch \
     | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
