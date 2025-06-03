@@ -3,6 +3,9 @@ My Slackbuilds for Slackwarea arch64 Current
 
 Most of the slackbuilds i have written my self, some are rewritten slackbuilds to suite my needs.
 
+chromium-ungoogled package compiled for Slackware Current Aarch64 (15.1) (RPI 4)<br />
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/137.0.7151.55/chromium-ungoogled-137.0.7151.55-aarch64-1SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/137.0.7151.55/)  
+
 Kodi package compiled for Slackware AArch64 Current (RPI 4)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.2/kodi-21.2-aarch64-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.2/)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.2/kodi-addons-21.2-aarch64-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.2/)   
