@@ -3,7 +3,7 @@ My Slackbuilds
 
 Most of the slackbuilds i have written my self, some are rewritten slackbuilds to suite my needs.
 
-chromium-ungoogled package compiled for Slackware Current Aatch64 (15.1) (RPI 4)<br />
+chromium-ungoogled package compiled for Slackware Current Aarch64 (15.1) (RPI 4)<br />
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/137.0.7151.55/chromium-ungoogled-137.0.7151.55-aarch64-1SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/137.0.7151.55/)  
 
 chromium-ungoogled package compiled for Slackware ARM 15.0 (RPI 4)<br />
