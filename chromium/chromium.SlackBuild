@@ -1,9 +1,10 @@
 #!/bin/bash
-# Copyright 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024  Eric Hameleers, Eindhoven, NL
+# $Id: chromium.SlackBuild,v 1.469 2025/05/02 14:36:30 root Exp root $
+# Copyright 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025  Eric Hameleers, Eindhoven, NL
 # All rights reserved.
 #
 #   Permission to use, copy, modify, and distribute this software for
-#   any purpose with or without fee is hereby granted, provided that
+######"""#   any purpose with or without fee is hereby granted, provided that
 #   the above copyright notice and this permission notice appear in all
 #   copies.
 #
@@ -24,7 +25,7 @@
 #
 # -----------------------------------------------------------------------------
 #
-# Slackware SlackBuild script
+# Slackware SlackBuild script 
 # ===========================
 # By:              Eric Hameleers <alien@slackware.com>
 # Modified by      Martin Östman (Minime) <slackware[at]slackwarelinux[dot]se>
@@ -32,14 +33,14 @@
 # Descr:           Open Source version of Chrome Web Browser
 # URL:             http://www.chromium.org/
 # Build needs:     - ninja;
-#                  - nodejs >= 20.0.0;
+#                  - nodejs >= 20.13.0
 #                  - gcc >= 8 , llvm >= 16 for bootstrapping gn;
 #                  - nasm >= 2.14 (yasm no longer being used);
-#                  - cmake >= 3.13.4;
+#                  - cmake >= 3.30.1
 #                  - python3 >= 3.7, python3-setuptools;
 #                  - java runtime
 #                  - Internet access (for downloading toolchain bins)
-# Needs:
+# Needs:       
 # Changelog:
 # 92.0.4515.107-1: 22/jul/2021 by Eric Hameleers <alien@slackware.com>
 #                  * Update to M92.
@@ -276,8 +277,6 @@
 #                  * Update to M114.
 # 114.0.5735.90-1: 31/may/2023 by Eric Hameleers <alien@slackware.com>
 #                  * Update.
-#                  07/jun/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * version fix chromium/ungoogled for ARM.
 # 114.0.5735.106-1:06/jun/2023 by Eric Hameleers <alien@slackware.com>
 #                  * Update.
 #                  15/jun/2023 by Minime <slackware[at]slackwarelinux[dot]se>
@@ -286,21 +285,15 @@
 #                  * Update.
 #                  17/jun/2023 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * version fix chromium/ungoogled for ARM.
-#                  27/jun/2023 by Minime <slackware[at]slackwarelinux[dot]se>
+# 114.0.5735.198-1:27/jun/2023 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Update version fix chromium/ungoogled for ARM.
-# 114.0.5735.198-1:01/jul/2023 by Eric Hameleers <alien@slackware.com>
+#                  01/jul/2023 by Eric Hameleers <alien@slackware.com>
 #                  * Update.
 #                  01/jul/2023 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Fixed build for ARM of google's internal llvm/clang from source.
 #                     Should be possible to build now.
 #                  09/jul/2023 by Minime <slackware[at]slackwarelinux[dot]se>
 #                  * Fixed build for AArch64.
-#                   (Was surprisingly a lot easier than getting chromium to built for ARM.)
-#                   Not so sure about the stripping of chromedriver, but better safe than sorry.
-# 114.0.5735.198-1:27/jun/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Update version fix chromium/ungoogled for ARM.
-# 115.0.5790.98-1: 19/jul/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Update to M115 version fix chromium/ungoogled for ARM and AArch64.
 # 115.0.5790.170-1:03/aug/2023 by Eric Hameleers <alien@slackware.com>
 #                  * Update to M115.
 # 116.0.5845.96-1: 16/aug/2023 by Eric Hameleers <alien@slackware.com>
@@ -362,16 +355,111 @@
 #                   * Update.
 # 124.0.6367.60-1:  17/apr/2024 by Eric Hameleers <alien@slackware.com>
 #                   * Update to M124.
-#                   21/apr/2024 by Minime <slackware[at]slackwarelinux[dot]se>
-#                   * Update version fix chromium/ungoogled for ARM and AArch64.
+# 124.0.6367.118-1: 02/may/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 124.0.6367.201-1: 10/may/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 124.0.6367.207-1: 14/may/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 125.0.6422.60-1:  17/may/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M125.
+# 125.0.6422.112-1: 25/may/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 125.0.6422.141-1: 01/jun/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 126.0.6478.55-1:  13/jun/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M126.
+# 126.0.6478.61-1:  15/jun/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 126.0.6478.114-1: 19/jun/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 126.0.6478.126-1: 25/jun/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 126.0.6478.182-1: 17/jul/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update. MH17 10 years.
+# 127.0.6533.72-1:  24/jul/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M127.
+# 127.0.6533.88-1:  31/jul/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 127.0.6533.99-1:  06/aug/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 127.0.6533.119-1: 13/aug/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 128.0.6613.84-1:  22/aug/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M128.
+# 128.0.6613.113-1: 29/aug/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 128.0.6613.119-1: 02/sep/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 128.0.6613.137-1: 11/sep/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 129.0.6668.58-1:  18/sep/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M129.
+# 129.0.6668.70-1:  24/sep/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 129.0.6668.89-1:  04/oct/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 129.0.6668.100-1: 09/oct/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 130.0.6723.58-1:  16/oct/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M130.
+# 130.0.6723.69-1:  26/oct/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 130.0.6723.91-1:  30/oct/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 130.0.6723.116-1: 05/nov/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 131.0.6778.69-1:  13/nov/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M131.
+# 131.0.6778.85-1:  20/nov/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 131.0.6778.108-1: 03/dec/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 131.0.6778.139-1: 11/dec/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 131.0.6778.204-1: 19/dec/2024 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 131.0.6778.264-1: 08/jan/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 132.0.6834.83-1:  15/jan/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M132.
+# 132.0.6834.110-1: 23/jan/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 132.0.6834.159-1: 29/jan/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 133.0.6943.53-1:  04/feb/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M133.
+# 133.0.6943.98-1:  15/feb/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 133.0.6943.126-1: 19/feb/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 133.0.6943.141-1: 25/feb/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 134.0.6998.35-1:  05/mar/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M134.
+# 134.0.6998.88-1:  11/mar/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 134.0.6998.165-1: 27/mar/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 135.0.7049.84-1:  13/apr/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M135.
+# 135.0.7049.114-1: 24/apr/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 136.0.7103.59-1:  01/may/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M136.
+# 136.0.7103.113-1: 15/may/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 137.0.7151.55-1:  27/may/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M137.
+# 137.0.7151.55-1:  28/May/2025 by Minime <slackware[at]slackwarelinux[dot]se>
+#                   * Fixed build for AArch64
 #
-# -----------------------------------------------------------------------------
 #
 # -----------------------------------------------------------------------------
 #
 # Run 'sh chromium.SlackBuild' to build a Slackware package.
 # The package (.txz) and .txt file as well as build logs are created in /tmp .
-# Install it using 'installpkg'.
+# Install it using 'installpkg'. 
 #
 # -----------------------------------------------------------------------------
 
@@ -388,8 +476,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-124.0.6367.60}
-UNGOOGLED=${UNGOOGLED:-124.0.6367.60-1}
+VERSION=${VERSION:-137.0.7151.55}
+UNGOOGLED=${UNGOOGLED:-137.0.7151.55-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
@@ -425,20 +513,33 @@ else
   USE_WAYLAND=${USE_WAYLAND:-0}
 fi
 
-# Build Chromium using a debian sysroot for Slackware 14.2 or older;
-# FYI, this will actually also just work for Slackware > 14.2:
-USE_SYSROOT=${USE_SYSROOT:-1}
+# Build Chromium using a debian sysroot for Slackware 15.0 or older;
+# FYI, this will actually also just work for Slackware > 15.0:
+if [ "$(cat /etc/slackware-version)" == "Slackware 15.0+" ]; then
+  USE_SYSROOT=${USE_SYSROOT:-0}
+  USE_CUSTOMCXX=${USE_CUSTOMCXX:-1}
+else
+  USE_SYSROOT=${USE_SYSROOT:-1}
+  USE_CUSTOMCXX=${USE_CUSTOMCXX:-1}
+fi
+if [ $USE_SYSROOT -eq 1 ]; then
+  echo "-- Using debian sysroot instead of system libraries."
+else
+  echo "-- Prefer system libraries, do not use debian sysroot."
+fi
+if [ $USE_CUSTOMCXX -eq 1 ]; then
+  echo "-- Using custom Google libc++ libraries."
+fi
 
-# Enable Qt UI on Slackware 15.0 & newer where we do not need a debian sysroot.
-# Until Chromium 110, enable Qt5 UI using param '--enable-features=AllowQt':
-if pkg-config --exists "Qt5Core >= 5.15.3" ; then
-  if [ ${USE_SYSROOT} -eq 0 ]; then
-    USE_QT=${USE_QT:-1}
+# Enable Qt6 UI when we do not need a debian sysroot.
+if [ ${USE_SYSROOT} -eq 0 ]; then
+  if pkg-config --exists "Qt6Core >= 6.7.2" ; then
+    USE_QT6=${USE_QT6:-1}
   else
-    USE_QT=${USE_QT:-0}
+    USE_QT6=${USE_QT6:-0}
   fi
 else
-  USE_QT=${USE_QT:-0}
+  USE_QT6=${USE_QT6:-0}
 fi
 
 # By default the ffmpeg and other component libraries are built statically
@@ -466,25 +567,19 @@ FFMPEG_HEVC=${FFMPEG_HEVC:-0}
 # clang for download0:
 USE_CLANG=${USE_CLANG:-1}
 
-# Use custom clang the systems clang version or if you installed the build i made
-# to save time rather than trying to compile googles clang build every time.
-USE_CUSTCLANG=${USE_CUSTCLANG:-1}
-
-# If set custom clang (USE_CUSTCLANG "1")
-# Make sure you to set correct clang base path.
-# Path where you installed clang, default is set to "/usr" (The system).
-# If you installed my llvm/clang package then set CLANG_BASE_PATH="/opt/llvm".
-# ---------------------
-# As Slackware Aaarch64 Current has clang 16.0.6 we set this to "/usr"
-# Telling the build script to use the systems clang.
-# If building Slackware ARM 15.0 we will have to use custom built clang
-# Then set this to "/opt/llvm"
-# CLANG_BASE_PATH="/opt/llvm"
-CLANG_BASE_PATH="/usr"
-
 # Prefer using Google's custom clang as pre-built binaries or compile ourselves?
 # Possible values: 'src' or 'bin':
 GOOGLE_CLANG=${GOOGLE_CLANG:-"bin"}
+
+# Build a custom clang or use the system clang?
+# CLANG_MIN is the minimal clang version needed to compile chromium,
+# see 'CLANG_REVISION' in ./tools/clang/scripts/update.py :
+CLANG_MIN=20
+if [ $(clang -dumpversion |cut -d. -f1) -ge ${CLANG_MIN} ]; then
+  BUILD_CLANG=${BUILD_CLANG:-0}
+else
+  BUILD_CLANG=${BUILD_CLANG:-1}
+fi
 
 # If you don't want to enable support for Widevine CDM
 # (content decryption module) say "0" here.
@@ -493,12 +588,14 @@ USE_CDM=${USE_CDM:-1}
 # Chromium supports VAAPI (we disable it when the platform is not capable):
 USE_VAAPI=${USE_VAAPI:-1}
 
-# If you are OK with the "OK Google" hotwording feature which will
-# automatically download a binary blob with proprietary code, set this to "1".
-# Some people object to a download without consent so it is disabled by default:
-USE_HOTWORD=${USE_HOTWORD:-0}
-
 DOCS="AUTHORS BUILD.gn CODE_OF_CONDUCT.md DEPS LICENSE* OWNERS WATCHLISTS README*"
+
+# Get rid of depreciation warnings:
+if which magick 1>/dev/null 2>/dev/null ; then
+  MAGICK="magick"
+else
+  MAGICK=""
+fi
 
 # Where do we look for sources?
 SRCDIR=$(cd $(dirname $0); pwd)
@@ -507,27 +604,6 @@ SRCDIR=$(cd $(dirname $0); pwd)
 TMP=${TMP:-/tmp/build}
 PKG=$TMP/package-$PRGNAM
 OUTPUT=${OUTPUT:-/tmp}
-
-CLANG_VER=$(${CLANG_BASE_PATH}/bin/clang --version | grep -m1 version | sed 's/.* \([0-9]\+\).*/\1/')
-
-if [ ${USE_CUSTCLANG} -eq 1 ] && [ ! -f "${CLANG_BASE_PATH}/bin/clang" ]; then
-  echo "You have not installed llvm/clang"
-  echo "Build will fail"
-  exit 1
-else
-  CLANG_MIN=18
-  #if [ ! $(${CLANG_BASE_PATH}/bin/clang --version | grep -m1 version | sed 's/.* \([0-9]\+\).*/\1/') -ge ${CLANG_MIN} ]; then
-  if [ ! ${CLANG_VER} -ge ${CLANG_MIN} ]; then
-    echo "Need newer version of llvm/clang"
-    echo "Will proceed in 10 seconds and build internal llvm/clang"
-    echo "If you rather wish to install prebuilt llvm/clang, then abort by pressing Ctrl-C"
-    #CLANG_VER=$(${CLANG_BASE_PATH}/bin/clang --version | grep -m1 version | sed 's/.* \([0-9]\+\).*/\1/')
-    USE_CUSTCLANG=${USE_CUSTCLANG:-0}
-    GOOGLE_CLANG=${GOOGLE_CLANG:-"src"}
-    sleep 10
-    echo "Internal llvm/clang build started..."
-  fi
-fi
 
 # Visible directory listing of anything Chrome related is:
 #   http://gsdview.appspot.com/
@@ -539,7 +615,7 @@ fi
 # If you rebuild this package, you can use your own API keys. See:
 #   http://www.chromium.org/developers/how-tos/api-keys
 # This browser is now compiled without API keys. This will disable stuff like
-# browser sync and other functionality which accesses Google APIs.
+# browser sync and other functionality which accesses Google APIs. 
 # The following variables must be set to access Google's public APIs:
 #   _google_api_key
 #   _google_default_client_id
@@ -619,13 +695,9 @@ case "$ARCH" in
              #DSSE="0"
              DSSE="1"
              ;;
-  aarch64)   SLKCFLAGS="-O2 -march=armv8-a -mtune=cortex-a72"
+  aarch64)   SLKCFLAGS="-O2 -fPIC"
              SLKLDFLAGS="-L/usr/lib64"; LIBDIRSUFFIX="64"
              DSSE="1"
-             # Widevine not supported (no binary library available):
-             # However there are workarounds so why deny this?
-             # Added patch that enables widevine support for armv7
-             #USE_CDM=0
              # VAAPI not supported:
              USE_VAAPI=0
              FFMPEG_ARCH="arm64"
@@ -633,7 +705,7 @@ case "$ARCH" in
              SYSROOT_TARGET="aarch64-linux-gnu"
              PKGARCH="$ARCH"
              ;;
-  armv7*)    SLKCFLAGS="-O2 -march=armv7-a -mtune=cortex-a72 -mfpu=neon-fp-armv8 -mfloat-abi=hard"
+  armv7*)    SLKCFLAGS="-O2 -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard"
              SLKLDFLAGS="-Wl,-z,notext"; LIBDIRSUFFIX=""
              DSSE="1"
              # Widevine not supported (no binary library available):
@@ -663,7 +735,8 @@ esac
 
 case "$ARCH" in
     arm*)    TARGET=${SYSROOT_ARCH}-slackware-linux-gnueabihf ;;
-    *)       TARGET=${ARCH}-slackware-linux ;;
+    aarch64) TARGET=$ARCH-slackware-linux-gnu ;;
+    *)       TARGET=$ARCH-slackware-linux ;;
 esac
 
 # Exit the script on errors:
@@ -686,8 +759,7 @@ SRCURL[1]="https://dl.google.com/widevine-cdm/versions.txt"
 
 if [ ${USE_UNGOOGLED} -ne 0 ]; then
   SOURCE[2]="$SRCDIR/ungoogled-chromium-${UNGOOGLED}.tar.gz"
-  SRCURL[2]="https://github.com/Eloston/ungoogled-chromium/archive/${UNGOOGLED}.tar.gz"
-  #SRCURL[2]="https://github.com/tangalbert919/ungoogled-chromium/archive/${UNGOOGLED}.tar.gz"
+  SRCURL[2]="https://github.com/ungoogled-software/ungoogled-chromium/archive/${UNGOOGLED}.tar.gz"
 fi
 
 # Create working directories:
@@ -738,35 +810,35 @@ tar -xf ${SOURCE[0]}
 if [ ${USE_UNGOOGLED} -ne 0 ]; then
   tar -xf ${SOURCE[2]}
   UGDIR=$TMP/tmp-$PRGNAM/ungoogled-chromium-${UNGOOGLED}
+  # We do not wait for the ungoogled tarball if the only change is the version:
+  if [ "${VERSION}"="120.0.6099.129" ] && [ ${UNGOOGLED}="120.0.6099.109-1" ];
+  then
+    sed -i ungoogled-chromium-${UNGOOGLED}/chromium_version.txt \
+        -e "s/${UNGOOGLED}/${VERSION}/"
+  fi
 fi
 cd ${SRCNAM}-${VERSION}
 
 if [ ${USE_UNGOOGLED} -ne 0 ]; then
   # Give chromium-ungoogled our own Slackware grey logo:
   for size in 16 32 ; do
-    convert ${SRCDIR}/${PRGNAM}.png -resize ${size}x${size} \
+    ${MAGICK:-convert} ${SRCDIR}/${PRGNAM}.png -resize ${size}x${size} \
       chrome/app/theme/default_200_percent/chromium/product_logo_$size.png
-    convert ${SRCDIR}/${PRGNAM}.png -resize ${size}x${size} \
+    ${MAGICK:-convert} ${SRCDIR}/${PRGNAM}.png -resize ${size}x${size} \
       chrome/app/theme/default_100_percent/chromium/product_logo_$size.png
-    convert ${SRCDIR}/${PRGNAM}.png -resize ${size}x${size} \
+    ${MAGICK:-convert} ${SRCDIR}/${PRGNAM}.png -resize ${size}x${size} \
       chrome/app/theme/default_100_percent/chromium/linux/product_logo_$size.png
   done
   for size in 24 48 64 128 256; do
-    convert ${SRCDIR}/${PRGNAM}.png -resize ${size}x${size} \
+    ${MAGICK:-convert} ${SRCDIR}/${PRGNAM}.png -resize ${size}x${size} \
       chrome/app/theme/chromium/product_logo_$size.png
-    convert ${SRCDIR}/${PRGNAM}.png -resize ${size}x${size} \
+    ${MAGICK:-convert} ${SRCDIR}/${PRGNAM}.png -resize ${size}x${size} \
       chrome/app/theme/chromium/linux/product_logo_$size.png
   done
   for size in 32 ; do
-    convert ${SRCDIR}/${PRGNAM}.png -resize ${size}x${size} \
+    ${MAGICK:-convert} ${SRCDIR}/${PRGNAM}.png -resize ${size}x${size} \
       chrome/app/theme/chromium/linux/product_logo_$size.xpm
   done
-fi
-
-if [ ${USE_SYSROOT} -eq 1 ]; then
-  # Download a sysroot image to build Chromium:
-  echo "-- Downloading sysroot image for ${SYSROOT_ARCH}"
-  python3 build/linux/sysroot_scripts/install-sysroot.py --arch=${SYSROOT_ARCH}
 fi
 
 ## For chromium >= 102, download a specific build.py which allows us to
@@ -778,19 +850,53 @@ fi
 # Allow building against system libraries in official builds:
 sed -e 's/OFFICIAL_BUILD/GOOGLE_CHROME_BUILD/' \
   -i tools/generate_shim_headers/generate_shim_headers.py
+
 # Patches and bug fixes:
 touch $OUTPUT/patch-${PRGNAM}.log
-# https://github.com/protocolbuffers/protobuf/issues/9792
-cat $SRCDIR/patches/chromium_protobuf_32bit.patch \
-  | patch -p0 --verbose \
-  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-# Be compatible with gcc 10:
-cat $SRCDIR/patches/chromium_gcc10.patch | patch -p1 --verbose \
-  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-
-# Fixes widevine support for arm
-cat $SRCDIR/patches/widevine_support_for_arm.patch \
+# Upstream Patches
+cat $SRCDIR/patches/arch/disable-clang-fextend-variable-liveness.patch \
   | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+cat $SRCDIR/patches/chromium-137-pdfium-system-libpng.patch \
+  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+cat $SRCDIR/patches/chromium-137-openh264-include-path.patch \
+  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+
+# https://bugs.gentoo.org/949654 - 'Aw,snap!' on certain pages with glibc-2.41
+cat $SRCDIR/patches/chromium_glibc241_map_droppable.patch \
+  | patch -p1 --verbose \
+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+# Gentoo contribution:
+cat $SRCDIR/patches/chromium-136_drop_nodejs_vercheck.patch \
+  | patch -p1 --verbose \
+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+# Needed for chromium 135-136
+#cat $SRCDIR/patches/gentoo/fix_build_with_gperf.patch \
+#  | patch -p1 --verbose \
+#  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+
+# archlinux contribution:
+# Fixes widevine support for arm
+cat $SRCDIR/patches/arch/widevine_support_for_arm.patch \
+  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+
+if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
+  # Adjust expectations about where to find the clang libs on Slackware:
+  cat $SRCDIR/patches/chromium-132-bindgen-custom-toolchain.patch \
+    | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+  cat $SRCDIR/patches/compiler-rt-adjust-paths.patch | patch -p1 --verbose \
+    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+  sed -i build/config/clang/BUILD.gn \
+    -e "s,clang_base_path/lib/clang/,clang_base_path/lib${LIBDIRSUFFIX}/clang/,"
+  sed  -i build/rust/rust_bindgen.gni \
+    -e 's%_libclang_path += "/lib"%_libclang_path += "/lib'${LIBDIRSUFFIX}'"%' \
+    -e 's%"/lib/clang/"%"/lib'${LIBDIRSUFFIX}'/clang/"%' \
+    -e 's%"/lib/"%"/lib'${LIBDIRSUFFIX}'/"%' \
+    -e 's%"/lib"%"/lib'${LIBDIRSUFFIX}'"%'
+  sed -i build/rust/rust_bindgen_generator.gni \
+    -e 's%_libclang_path += "/lib"%_libclang_path += "/lib'${LIBDIRSUFFIX}'"%' \
+    -e 's%clang_base_path + "/lib"%clang_base_path + "/lib'${LIBDIRSUFFIX}'"%' \
+    -e 's%_libclang_path = rust_bindgen_root%_libclang_path = clang_base_path%'
+fi
 
 # Fix the link on 32bit:
 sed -e '/ldflags /s/-m32/&", "-Wl,-z,notext/' \
@@ -963,48 +1069,48 @@ if [ "$ARCH" == "i586" ] || [ "${CROSS32}" = "YES" ]; then
   export VPYTHON_BYPASS="manually managed python not supported by chrome operations"
 fi
 
-
-# When compiling google's clang, we want 32bit too - don't limit us, devs:
-sed -i tools/clang/scripts/build.py -e "s/x86_64-unknown-linux-gnu/$TARGET/g"
-
 # And fix the 32bit compilation while we are at it:
-sed -i tools/clang/scripts/build.py -e "s/ldflags = \[\]/ldflags = \['-latomic'\]/"
-#sed -i tools/clang/scripts/build.py -e "s/ldflags = \[\]/ldflags = \['-latomic','-lpthread'\]/"
+sed -i tools/clang/scripts/build.py -e "s/ldflags = \[\]/ldflags = \['-latomic','-lpthread'\]/"
 
+## Avoid failure because the built clang version is not what update.py expects:
+#sed -i tools/clang/scripts/update.py -e "s/RELEASE_VERSION = '16'/RELEASE_VERSION = '16.0.0'/"
+
+# ARM platform specifics:
 # If ARM, then try to force the build script to build clang for arm instead of x86
+# Note: This will most likely fail as it does not detect the correct target architecture.
+# One of many reasons i built chromium's llvm package separately.
 if [[ "$ARCH" =~ arm.* ]]; then
+  sed -i tools/clang/scripts/build.py \
+      -e "s/sysroot_amd64\([,)]\)/sysroot_arm\1/"
+
+  # Non-functional vpython in the 32bit depot_tools:
+  export VPYTHON_BYPASS="manually managed python not supported by chrome operations"
+
+  # We are compiling bootstrap for ARM and not X86.
+  # Fix the hard-coded bootstrap target 'X86':
+  sed -i tools/clang/scripts/build.py \
+    -e "s/bootstrap_targets = 'X86'/bootstrap_targets = 'ARM'/"
   # We are using ARM, so to speed things up we only build the relevant back-ends
   # (ARM,AArch64 and x86), since it’s very unlikely that we will cross-compile to other arches.
   # x86 is also needed for Compiler-RT tests.
   sed -i tools/clang/scripts/build.py \
-    -e "s/targets = 'AArch64;ARM;LoongArch;Mips;PowerPC;RISCV;SystemZ;WebAssembly;X86'/targets = 'ARM;X86;AArch64'/"
+    -e "s/targets = 'AArch64;ARM;Mips;PowerPC;RISCV;SystemZ;WebAssembly;X86'/targets = 'ARM;X86;AArch64'/"
   # When comping clang for ARM its not recomended to use PIC
   sed -i tools/clang/scripts/build.py \
     -e "s/-DLLVM_ENABLE_PIC=ON/-DLLVM_ENABLE_PIC=OFF/"
-  # We are compiling bootstrap for ARM and not X86.
-  sed -i tools/clang/scripts/build.py \
-    -e "s/bootstrap_targets = 'X86'/bootstrap_targets = 'ARM'/"
   # When compiling google's clang, we want ARM 32bit too - don't limit us, devs:
-  sed -i tools/clang/scripts/build.py \
-    -e "s/platform.machine() == 'aarch64':/platform.machine() == 'arm':/"
-  sed -i tools/clang/scripts/build.py \
-    -e "s/aarch64-unknown-linux-gnu/$TARGET/"
+  #sed -i tools/clang/scripts/build.py \
+  #  -e "s/platform.machine() == 'aarch64':/platform.machine() == 'arm':/"
+  #sed -i tools/clang/scripts/build.py \
+  #  -e "s/aarch64-unknown-linux-gnu/$TARGET/"
   # One could just remove this line too, more or less the same thing
   # as above lines...
-  #sed -i tools/clang/scripts/build.py \
-  #  -e "/    cmake_args.append('-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON')/d"
-elif [ "$ARCH" == "aarch64" ]; then
   sed -i tools/clang/scripts/build.py \
-    -e "s/targets = 'AArch64;ARM;LoongArch;Mips;PowerPC;RISCV;SystemZ;WebAssembly;X86'/targets = 'ARM;X86;AArch64'/"
-  # We are compiling bootstrap for AArch64 and not X86.
-  sed -i tools/clang/scripts/build.py \
-    -e "s/bootstrap_targets = 'X86'/bootstrap_targets = 'AArch64'/"
-  sed -i tools/clang/scripts/build.py \
-    -e "s/aarch64-unknown-linux/$TARGET/"
+    -e "/    cmake_args.append('-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON')/d"
 fi
 
-# When compiling google's clang, use the system cmake
-# (prebuilt binary from google is only available as 64bit):
+## When compiling google's clang, use the system cmake
+## (prebuilt binary from google is only available as 64bit):
 #sed -i tools/clang/scripts/build.py -e 's/^ *AddCMakeToPath/#&/'
 
 # We require a 32bit gn binary, devs!
@@ -1013,6 +1119,8 @@ sed -i BUILD.gn \
 
 # Prevent a build failure (yes, 'x64' even on 32bit Slackware):
 mkdir -p third_party/node/linux/node-linux-x64/bin
+# In case a binary is already there:
+rm -f third_party/node/linux/node-linux-x64/bin/node
 ln -s /usr/bin/node third_party/node/linux/node-linux-x64/bin/
 # Other binaries we need to provide ourselves:
 ln -s /usr/lib${LIBDIRSUFFIX}/java/bin/java third_party/jdk/current/bin/
@@ -1049,25 +1157,33 @@ chmod -R u+w,go+r-w,a+X-s .
 echo Building ...
 
 [ ${USE_CLANG} -eq 1 ] && do_clang=true || do_clang=false
-[ ${USE_CUSTCLANG} -eq 1 ] && do_clang_plug=false || do_clang_plug=true
+[ ${BUILD_CLANG} -eq 1 ] && do_custclang=true || do_custclang=false
 [ ${USE_CDM} -eq 1 ] && do_cdm=true || do_cdm=false
-[ ${USE_HOTWORD} -eq 1 ] && do_hotword=true || do_hotword=false
+[ ${USE_CUSTOMCXX} -eq 1 ] && do_customcxx=true || do_customcxx=false
 [ ${USE_PA} -eq 1 ] && do_pa=true || do_pa=false
-[ ${USE_QT} -eq 1 ] && do_qt=true || do_qt=false
+[ ${USE_QT6} -eq 1 ] && do_qt6=true || do_qt6=false
 [ ${USE_SYSROOT} -eq 1 ] && do_sysroot=true || do_sysroot=false
+[ ${USE_SYSROOT} -eq 1 ] && do_syslibs=false || do_syslibs=true
 [ ${USE_VAAPI} -eq 1 ] && do_vaapi=true || do_vaapi=false
 [ ${USE_WAYLAND} -eq 1 ] && do_wayland=true || do_wayland=false
-[ ${FFMPEG_HEVC} -eq 1 ] && do_hevc=true || do_hevc=false
+[ ${FFMPEG_HEVC} -eq 1 ] && do_hevc=true || do_hevc=false 
 
 export LDFLAGS="$SLKLDFLAGS"
 export CXXFLAGS="$SLKCFLAGS -Wno-unknown-warning-option"
 export CFLAGS="$SLKCFLAGS -Wno-unused-local-typedefs -Wno-unknown-warning-option"
 export PATH="$TMP/tmp-$PRGNAM/privatebin:$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/third_party/depot_tools:$PATH"
-#export PATH="$TMP/tmp-$PRGNAM/privatebin:$PATH"
 
-if [ ${USE_QT} -eq 1 ]; then
+if [ ${USE_SYSROOT} -eq 1 ]; then
+  SYSROOTDIR=$(basename $(ls $TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/build/linux/ |grep ${SYSROOT_ARCH}-sysroot))
+  export CFLAGS="$CFLAGS -I$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/build/linux/${SYSROOTDIR}/usr/include/${SYSROOT_TARGET}/qt5"
+  export CXXFLAGS="$CXXFLAGS -I$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/build/linux/${SYSROOTDIR}/usr/include/${SYSROOT_TARGET}/qt5"
+else
   export CFLAGS="$CFLAGS -I/usr/include/qt5"
   export CXXFLAGS="$CXXFLAGS -I/usr/include/qt5"
+fi
+if [ ${USE_QT6} -eq 1 ]; then
+  export CFLAGS="$CFLAGS -I/usr/include/qt6"
+  export CXXFLAGS="$CXXFLAGS -I/usr/include/qt6"
 fi
 
 # After building gn, run:
@@ -1078,87 +1194,80 @@ _chromium_conf=(
     'blink_symbol_level=0'
     "enable_hevc_parser_and_hw_decoder=${do_hevc}"
     "enable_platform_hevc=${do_hevc}"
+    "enable_platform_hevc_decoding=${do_hevc}"
     "enable_platform_ac3_eac3_audio=${do_hevc}"
-    'enable_platform_mpeg_h_audio=true'
     "enable_platform_dolby_vision=${do_hevc}"
+    'enable_platform_mpeg_h_audio=true'
     'enable_mse_mpeg2ts_stream_parser=true'
     'enable_precompiled_headers=false'
     'enable_pseudolocales=false'
+    'enable_webrtc=true'
     'fatal_linker_warnings=false'
     "ffmpeg_branding=\"${FFMPEG_BRANDING}\""
     "is_clang=${do_clang}"
-    "clang_use_chrome_plugins=${do_clang_plug}"
+    #"llvm_force_head_revision=${do_clang}"
     'is_debug=false'
-    'is_official_build=true'
-    'dcheck_always_on=false'
     "is_component_build=${SHARED_FFMPEG}"
     "is_component_ffmpeg=${SHARED_FFMPEG}"
     "link_pulseaudio=${do_pa}"
+    "linux_sandbox_path=\"/usr/lib${LIBDIRSUFFIX}/${PRGNAM}/chrome_sandbox\""
+    #'linux_strip_binary=true'
+    'linux_use_bundled_binutils=false'
+    "ozone_platform_wayland=${do_wayland}"
     #"rtc_use_pipewire=${do_wayland}"
     #"rtc_link_pipewire=${do_wayland}"
-    #'rtc_pipewire_version="0.3"' # Otherwise chromium tries to link absent 0.2
-    "ozone_platform_wayland=${do_wayland}"
+    #'rtc_pipewire_version="0.3"' # Otherwise chromium tries to link absent 0.2 
     'proprietary_codecs=true'
+    'remove_webcore_debug_symbols=true'
     'symbol_level=0'
     'treat_warnings_as_errors=false'
+    "usb_ids_path=\"/usr/share/hwdata/usb.ids\""
     'use_allocator="none"'
     'use_bundled_fontconfig=false'
-    'use_cfi_icall=false' # https://crbug.com/866290
     'use_cups=true'
-    'use_custom_libcxx=true'
+    "use_custom_libcxx=${do_customcxx}"
+    'use_gconf=false'
     'use_kerberos=false'
     'use_lld=true'
     'use_ozone=true'
     "use_pulseaudio=${do_pa}"
-    'use_system_libffi=false'
-    "use_system_libwayland=${do_wayland}"
-    'use_system_minigbm=false'
-    "use_qt=${do_qt}"
+    "use_system_libffi=${do_syslibs}"
+    "use_system_libjpeg=${do_syslibs}"
+    "use_system_minigbm=${do_syslibs}"
+    'use_qt5=false'
+    "use_qt6=${do_qt6}"
+    "moc_qt6_path=\"/usr/lib${LIBDIRSUFFIX}/qt6/bin\""
     "use_sysroot=${do_sysroot}"
     "use_vaapi=${do_vaapi}"
     "use_xkbcommon=${do_wayland}"
     "extra_cxxflags=\"${CXXFLAGS}\""
     "extra_ldflags=\"${LDFLAGS}\""
 )
-
-# Prevent segfaults with llvm-12.0.1 (Chromium 94), thanks Void Linux:
+# Needed for Ungoogled Chromium 94 to prevent compile error related to
+# missing pref 'kGoogleServicesConsentedToSync' because 'is_debug=false' seems
+# to no longer suffice. Also, need to reduce crash proneness according to
+# https://groups.google.com/a/chromium.org/g/chromium-packagers/c/2E5AayFuFt4 :
 _chromium_conf+=(
-  'is_cfi=false'
-  'use_thin_lto=false'
-  'use_cfi_icall=false'
-  'chrome_pgo_phase=0'
+  'is_official_build=true'
+  'dcheck_always_on=false'
 )
 
-# Allow the use of nightly features with stable Rust compiler
-# https://github.com/ungoogled-software/ungoogled-chromium/pull/2696#issuecomment-1918173198
-export RUSTC_BOOTSTRAP=1
-
-# Set base path custom clang
-if [ ${USE_CUSTCLANG} -eq 1 ]; then
+#if [ "$ARCH" == "x86_64" ]; then
+if [ "$ARCH" == "x86_64" ] || [ "$ARCH" == "aarch64" ]; then
+  # Speed up the build:
   _chromium_conf+=(
-    'clang_use_default_sample_profile=false'
-    "clang_base_path=\"${CLANG_BASE_PATH}\""
-    "clang_version=\"${CLANG_VER}\""
-    'chrome_pgo_phase=0' # needs newer clang to read the bundled PGO profile
-    "rust_sysroot_absolute=\"/usr\"" # Fix for rust
-    "rustc_version=\"$(rustc --version)\""
+    'use_thin_lto=true'
+    'is_cfi=true'
+    'use_cfi_icall=true'
+  )
+else
+  # Thin LTO requires more than 4 GB of RAM, skip it on 32bit:
+  _chromium_conf+=(
+    'use_thin_lto=false'
+    'concurrent_links=1'
   )
 fi
 
-if [[ ! "$ARCH" =~ arm.* ]]; then
-  _chromium_conf+=(
-    "enable_platform_hevc_decoding=${do_hevc}"
-    "enable_platform_encrypted_hevc=${do_hevc}"
-    'enable_hidpi=true'
-    'enable_webrtc=true'
-    "linux_sandbox_path=\"/usr/lib${LIBDIRSUFFIX}/${PRGNAM}/chrome_sandbox\""
-    #'linux_strip_binary=true'
-    'linux_use_bundled_binutils=false'
-    'remove_webcore_debug_symbols=true'
-    "usb_ids_path=\"/usr/share/hwdata/usb.ids\""
-    'use_gconf=false'
-  )
-fi
 
 if [ ${USE_UNGOOGLED} -ne 0 ]; then
   # Add ungoogled flags if requested:
@@ -1166,26 +1275,18 @@ if [ ${USE_UNGOOGLED} -ne 0 ]; then
 else
   # Add remainder of standard chromium flags:
   # https://chromium.googlesource.com/chromium/src/+/refs/heads/main/testing/variations/README.md
-  if [[ ! "$ARCH" =~ arm.* ]]; then
-    # Add remainder of standard chromium flags:
-    _chromium_conf+=(
-        "enable_hotwording=${do_hotword}"
-        'enable_pepper_cdms=true'
-    )
-  fi
   _chromium_conf+=(
-      'disable_fieldtrial_testing_config=true'
-      'logging_like_official_build=true'
-      'enable_hangout_services_extension=true'
-      'enable_js_type_check=true'
-      'enable_nacl=false'
-      'enable_nacl_nonsfi=false'
-      "enable_widevine=${do_cdm}"
-      'exclude_unwind_tables=true'
-      'fieldtrial_testing_like_official_build=true'
+    "clang_use_chrome_plugins=${do_custclang}"
+    'enable_hangout_services_extension=true'
+    'enable_nacl=false'
+    'enable_nacl_nonsfi=false'
+    'enable_pepper_cdms=true'
+    "enable_widevine=${do_cdm}"
+    'exclude_unwind_tables=true'
+    'disable_fieldtrial_testing_config=true'
+    'logging_like_official_build=true'
   )
 fi
-
 # Add Google API key if defined:
 if [ -n "$_google_api_key" ]; then
   _chromium_conf+=(
@@ -1205,16 +1306,14 @@ if [ $(cat /etc/slackware-version |cut -d' ' -f2- |cut -d. -f1) -lt 15 ]; then
   _chromium_conf+=( 'use_system_libdrm=false' )
 fi
 
+if [ "$ARCH" == "i586" ] || [ "${CROSS32}" = "YES" ]; then
+  _chromium_conf+=( 'target_cpu="x86"' 'v8_target_cpu="x86"' )
+fi
 if [[ "$ARCH" =~ arm.* ]]; then
-  _chromium_conf+=(
-      'target_cpu="arm"'
-      'target_os="linux"'
-  )
-elif [ "$ARCH" == "aarch64" ]; then
-  _chromium_conf+=(
-      'target_cpu="arm64"'
-      'target_os="linux"'
-  )
+  _chromium_conf+=( 'target_cpu="arm"' 'v8_target_cpu="arm"' 'target_os="linux"' )
+fi
+if [[ "$ARCH" == "aarch64" ]]; then
+  _chromium_conf+=( 'target_cpu="arm64"' 'v8_target_cpu="arm64"' 'target_os="linux"' )
 fi
 
     # Change this back when CRBUG 592268 is fixed (error during final link:
@@ -1293,12 +1392,9 @@ fi
 
 if [ ${USE_SYSROOT} -eq 1 ]; then
   # Take care of Debian/Ubuntu related missing header issues:
-  if [[ "$ARCH" =~ arm.* ]]; then
-    SYSROOTDIR=$(basename $(ls build/linux/ |grep ${SYSROOT_ARCH}hf-sysroot))
-  else
-    SYSROOTDIR=$(basename $(ls build/linux/ |grep ${SYSROOT_ARCH}-sysroot))
-  fi
+  SYSROOTDIR=$(basename $(ls build/linux/ |grep ${SYSROOT_ARCH}-sysroot))
 
+  # Take care of Debian/Ubuntu related linker issues:
   ln -s ../../lib/${SYSROOT_TARGET}/glib-2.0/include/glibconfig.h \
     build/linux/${SYSROOTDIR}/usr/include/glib-2.0/glibconfig.h
   ln -s ../../../lib/${SYSROOT_TARGET}/dbus-1.0/include/dbus/dbus-arch-deps.h \
@@ -1306,7 +1402,6 @@ if [ ${USE_SYSROOT} -eq 1 ]; then
   ln -s ../../lib/${SYSROOT_TARGET}/graphene-1.0/include/graphene-config.h \
     build/linux/${SYSROOTDIR}/usr/include/graphene-1.0/graphene-config.h
 
-  # Take care of Debian/Ubuntu related linker issues:
   for SOFILE in build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}/nss/*.so ;
   do
     ln -sf nss/$(basename $SOFILE) \
@@ -1317,9 +1412,11 @@ if [ ${USE_SYSROOT} -eq 1 ]; then
 
   # The platform-specific alias for the ARM readelf binary is missing
   # from the debian sysroot image:
-  if [ ! -f /usr/bin/${SYSROOT_TARGET}-readelf ]; then
-    ln -s /usr/bin/readelf /usr/bin/${SYSROOT_TARGET}-readelf
+  if [ ! -f build/linux/${SYSROOTDIR}/usr/bin/${SYSROOT_TARGET}-readelf ]; then
+    ln -s /usr/bin/readelf \
+      build/linux/${SYSROOTDIR}/usr/bin/${SYSROOT_TARGET}-readelf
   fi
+
   unset SYSROOTDIR
 fi
 
@@ -1337,7 +1434,7 @@ fi
 ulimit -n 4096
 
 # Compile google's internal clang sources if needed
-if [ ${USE_CLANG} -eq 1 ] && [ ${USE_CUSTCLANG} -eq 0 ]; then
+if [ ${USE_CLANG} -eq 1 ] && [  ${BUILD_CLANG} -eq 1 ]; then
  if [ "${GOOGLE_CLANG}" == "src" ]; then
   # Build clang from source instead of downloading:
   echo "-- Building google's clang toolchain."
@@ -1358,6 +1455,20 @@ if [ ${USE_CLANG} -eq 1 ] && [ ${USE_CUSTCLANG} -eq 0 ]; then
     -i tools/clang/scripts/build.py
   unset SYSROOTDIR
 
+  HDR2REM=""
+  if [ "$ARCH" == "i586" ]; then
+    # Actually 32bit compilation fails by not finding 'bits/c++config.h'.
+    # I could only work around this using a kludge:
+    # cp -ia /usr/include/c++/$(gcc -dumpversion)/${TARGET}/bits/* /usr/include/c++/$(gcc -dumpversion)/bits/
+    # Keep a list of the symlinks we'll be creating:
+    for HDR in /usr/include/c++/$(gcc -dumpversion)/${TARGET}/bits/*.h ; do
+      if [ ! -f /usr/include/c++/$(gcc -dumpversion)/bits/$(basename $HDR) ];
+    then
+      ln -s $HDR /usr/include/c++/$(gcc -dumpversion)/bits/
+      HDR2REM="$(basename $HDR) $HDR2REM"
+      fi
+    done
+  fi
   ####LDFLAGS="$LDFLAGS" \
   export CFLAGS=""
   export CXXFLAGS=""
@@ -1365,16 +1476,20 @@ if [ ${USE_CLANG} -eq 1 ] && [ ${USE_CUSTCLANG} -eq 0 ]; then
   python3 tools/clang/scripts/build.py \
     --bootstrap \
     --skip-checkout \
+    --pic \
     --disable-asserts \
-    --gcc-toolchain /usr \
-    --host-cc /usr/bin/clang \
-    --host-cxx /usr/bin/clang++ \
+    --host-cc /usr/bin/gcc \
+    --host-cxx /usr/bin/g++ \
     --use-system-cmake \
     --no-tools \
     --without-android \
     --without-fuchsia \
     --without-zstd \
     2>&1 | tee $OUTPUT/clang_build-${PRGNAM}.log
+    #--llvm-force-head-revision \
+    #--gcc-toolchain /usr \
+    #--host-cc /usr/bin/clang \
+    #--host-cxx /usr/bin/clang++ \
 
   # Building gn for Chromium 110 fails when this file is not present:
   if [ ! -f third_party/llvm-build/Release+Asserts/cr_build_revision ]; then
@@ -1415,19 +1530,16 @@ if [ ${USE_CLANG} -eq 1 ] && [ ${USE_CUSTCLANG} -eq 0 ]; then
   # Ensure that only this new rust is used, ignoring the system version:
   MYRUST_PATH="$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/third_party/rust-toolchain"
   export PATH="$MYRUST_PATH:$PATH"
- #else
- # # Download prebuilt llvm and rust binaries instead of compiling them:
- # python3 tools/rust/update_rust.py
- # python3 tools/clang/scripts/update.py
+ else
+  # Download prebuilt llvm and rust binaries instead of compiling them:
+  python3 tools/rust/update_rust.py
+  python3 tools/clang/scripts/update.py
 
- #  # Ensure that only this new clang is used, ignoring the system version:
- #  MYCLANG_PATH="$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/third_party/llvm-build/Release+Asserts/bin"
- #  export PATH="$MYCLANG_PATH:$PATH"
+  # Ensure that only this new clang is used, ignoring the system version:
+  MYCLANG_ROOT="$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/third_party/llvm-build/Release+Asserts"
+  MYCLANG_PATH="${MYCLANG_ROOT}/bin"
+  export PATH="$MYCLANG_PATH:$PATH"
  fi
-elif [ ${USE_CLANG} -eq 1 ] && [ ${USE_CUSTCLANG} -eq 1 ]; then
-  # Ensure correct path for custom clang version:
-  MYCLANG_PATH="${CLANG_BASE_PATH}/bin"
-  export PATH="${MYCLANG_PATH}:$PATH"
 fi
 
 # For Chromium 92, disable ffmpeg re-configuration on 32bit OS,
@@ -1448,8 +1560,10 @@ if [ ${FFMPEG_HEVC} -eq 1 ] && [ "${FFMPEG_ARCH}" != "ia32" ]; then
   fi
   cd third_party/ffmpeg
     ## To prevent error on x86_64:
-    ## "clang-5.0: error: invalid linker name in argument '-fuse-ld=lld'"
+    ## "clang-5.0: error: invalid linker name in argument '-fuse-ld=lld'" 
     ## in third_party/ffmpeg/build.x64.linux/ChromeOS/ffbuild/config.log
+    #sed -e "s/--extra-ldflags=-fuse-ld=lld/--extra-ldflags=''/" \
+    #    -i chromium/scripts/build_ffmpeg.py
     # Actual reconfigure steps:
     python3 chromium/scripts/build_ffmpeg.py linux ${FFMPEG_ARCH} \
       --branding ${FFMPEG_BRANDING} -- ${FFMPEG_CUSTOM_ARGS} \
@@ -1465,7 +1579,9 @@ fi
 if [ ${USE_UNGOOGLED} -ne 0 ]; then
   # Apply ungoogled-chromium patch kit:
   echo "-- Un-googling internal binaries:"
-  python3 ${UGDIR}/utils/prune_binaries.py ./ ${UGDIR}/pruning.list
+  # Argument '--keep-contingent-paths' ensures that the Google compiler binaries
+  # and sysroots are not pruned (ungoogled-chromium issue #2960):
+  python3 ${UGDIR}/utils/prune_binaries.py --keep-contingent-paths ./ ${UGDIR}/pruning.list || true
   echo "-- Un-googling sources; apply patches:"
   python3 ${UGDIR}/utils/patches.py apply ./ ${UGDIR}/patches
   # We will have to un-google internally used domain list later.
@@ -1482,16 +1598,112 @@ fi
 # Generate the ninja build files:
 echo "-- Bootstrapping 'gn'."
 
-# Symlink ld to lld to make gn linking stage succeed:
-if [ "$USE_CLANG" -eq 1 ] && [ ! "$MYCLANG_PATH" = "/usr/bin" ]; then
-  if [ ! -f ${MYCLANG_PATH}/ld ]; then
-    cd ${MYCLANG_PATH} ; ln -s lld ld ; cd - 1>/dev/null
+if [ "${GOOGLE_CLANG}" == "src" ] && [  ${BUILD_CLANG} -eq 1 ]; then
+  # Symlink ld to lld to make gn linking stage succeed:
+  cd $MYCLANG_PATH ; ln -s lld ld ; cd - 1>/dev/null
+fi
+
+if [ -e tools/gn/build/gen.py ]; then
+  # Build the embedded version:
+  LDFLAGS="$LDFLAGS" python3 tools/gn/bootstrap/bootstrap.py \
+    2>&1 | tee $OUTPUT/gyp-${PRGNAM}.log
+    #--use-custom-libcxx \
+else
+  # Download and build the latest:
+  git clone https://gn.googlesource.com/gn gn.git
+  pushd gn.git
+    # We'll use the gn version referenced in the Chromium source:
+    GNREV=$(sed -En "s/^ +'gn_version': 'git_revision:([^']+)',/\1/p" $TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/DEPS)
+    git reset --hard $GNREV
+    git clean -ffdx
+    echo "-- Building externally downloaded gn version 0.$(git rev-list --count initial-commit..).$(git rev-parse --short=8 HEAD)"
+    ./build/gen.py 2>&1 | tee /$OUTPUT/gyp-${PRGNAM}.log
+    ninja -j $(getconf _NPROCESSORS_ONLN) -C out 2>&1 | tee -a /$OUTPUT/gyp-${PRGNAM}.log
+  popd
+  install -m0755 -D -t out/Release gn.git/out/gn
+fi
+
+#if [ "${GOOGLE_CLANG}" == "src" ] && [  ${BUILD_CLANG} -eq 1 ]; then
+#  # Remove symlink again:
+#  rm $MYCLANG_PATH/ld
+#fi
+
+if [ "${GOOGLE_CLANG}" == "src" ] && [  ${BUILD_CLANG} -eq 1 ]; then
+  if [ -n "$HDR2REM" ]; then
+    # Remove the temporary header symlinks we created earlier:
+    ( cd /usr/include/c++/$(gcc -dumpversion)/bits/ && rm $HDR2REM)
   fi
 fi
 
-LDFLAGS="$LDFLAGS" python3 tools/gn/bootstrap/bootstrap.py \
-  2>&1 | tee $OUTPUT/gyp-${PRGNAM}.log
-  #--use-custom-libcxx \
+if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
+  # Use system toolchain:
+
+  rm -rf third_party/rust-toolchain
+  rm -rf third_party/llvm-build
+
+  # Use system toolchain:
+  _chromium_conf+=(
+    'custom_toolchain="//build/toolchain/linux/unbundle:default"'
+    'host_toolchain="//build/toolchain/linux/unbundle:default"'
+  )
+
+  SL_CLANG=$(clang -dumpversion |cut -d. -f1)
+  SL_CLANG_RESDIR=$(clang -print-resource-dir)
+  _chromium_conf+=(
+    "bindgen_libclang_path=\"/usr/lib${LIBDIRSUFFIX}\""
+    'chrome_pgo_phase=0' # needs newer clang to read the bundled PGO profile
+    #"clang_base_path=\"${SL_CLANG_RESDIR}\""
+    'clang_base_path="/usr"'
+    "clang_version=\"$SL_CLANG\""
+  )
+
+  # Allow the use of nightly features with stable Rust compiler
+  # https://github.com/ungoogled-software/ungoogled-chromium/pull/2696#issuecomment-1918173198
+  export RUSTC_BOOTSTRAP=1
+
+  _chromium_conf+=(
+      'rust_sysroot_absolute="/usr"'
+      'rust_bindgen_root="/usr"'
+      "rustc_version=\"$(rustc --version |cut -d' ' -f2)\""
+    )
+
+    # Make bindgen find the gcc includes:
+    # Should fix aarch64 bindgen error like:
+    # FAILED: gen/third_party/crabbyavif/crabbyavif_dav1d_bindings/dav1d_bindgen.rs
+    if [ "$ARCH" == "aarch64" ]; then
+      export BINDGEN_EXTRA_CLANG_ARGS="-I/usr/include -I/usr/lib${LIBDIRSUFFIX}/gcc/${TARGET}/$(gcc -dumpversion)/include"
+    else
+      export BINDGEN_EXTRA_CLANG_ARGS="-I/usr/include -I/usr/lib/gcc/${TARGET}/$(gcc -dumpversion)/include"
+    fi
+fi
+
+if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 1 ]; then
+  # Use the clang that we build in-tree or downloaded,
+  # instead of using the system version:
+  echo "-- Using custom clang."
+  export CC="$MYCLANG_PATH/clang"
+  export CXX="$MYCLANG_PATH/clang++"
+  export LD="$MYCLANG_PATH/lld"
+  export AR="$MYCLANG_PATH/llvm-ar"
+  export NM="$MYCLANG_PATH/llvm-nm"
+elif [ "$USE_CLANG" = "0" ]; then
+  # Be careful not to override CC and CXX (may have been set by gcc5):
+  echo "-- Using gcc/g++ compilers."
+  export CC=${CC:-"gcc"}
+  export CXX=${CXX:-"g++"}
+else
+  # Use the system clang:
+  echo "-- Using the system clang."
+  export CC=clang
+  export CXX=clang++
+  export CPP="clang++ -E"
+  export LD=lld
+  export AR=llvm-ar
+  export NM=llvm-nm
+  export LIBCLANG_PATH="/usr/lib${LIBDIRSUFFIX}"
+  echo "-- Setting LIBCLANG_PATH to '$LIBCLANG_PATH'."
+fi
+export AS=as
 
 echo "-- Generating ninja build files."
 out/Release/gn gen out/Release -v --args="${_chromium_conf[*]}" \
@@ -1500,51 +1712,22 @@ out/Release/gn gen out/Release -v --args="${_chromium_conf[*]}" \
 # Compile everything:
 echo "-- Compiling the lot."
 
-if [ "$USE_CLANG" -eq 1 ] && [ ! "$MYCLANG_PATH" = "/usr/bin" ]; then
-  # Use the clang that we build in-tree instead of using the system version:
-  export CC="$MYCLANG_PATH/clang"
-  export CXX="$MYCLANG_PATH/clang++"
-  export LD="$MYCLANG_PATH/lld"
-  export AR="$MYCLANG_PATH/llvm-ar"
-  export NM="$MYCLANG_PATH/llvm-nm"
-  export AS="$MYCLANG_PATH/llvm-as"
-elif [ "$USE_CLANG" -eq 1 ] && [ "$MYCLANG_PATH" = "/usr/bin" ]; then
-  # Use the clang that we build in-tree instead of using the system version:
-  export CC="clang"
-  export CXX="clang++"
-  export LD="lld"
-  export AR="ar"
-  export NM="nm"
-  export AS="as"
-else
-  # Be careful not to override CC and CXX (may have been set by gcc5):
-  export CC=${CC:-"gcc"}
-  export CXX=${CXX:-"g++"}
-  export AS=${AS:-"as"}
-fi
-
-if [ $USE_UNGOOGLED -eq 1 ]; then
-  # Incorrect build order triggers: "fatal error: 'components/feed/core/proto/v2/wire/chrome_feed_response_metadata.pb.h' file not found",
-  # so build it in advance:
-  LDFLAGS="$LDFLAGS" \
-  LC_ALL=C \
-  ninja -C out/Release \
-    gen/components/feed/core/proto/v2/wire/chrome_feed_response_metadata.pb.h \
-    2>&1 | tee $OUTPUT/ninja-${PRGNAM}_chrome_feed_response_metadata.pb.log
-fi
-
+LIBCLANG_PATH="/usr/lib${LIBDIRSUFFIX}" \
 LDFLAGS="$LDFLAGS" \
 LC_ALL=C \
-ninja -C out/Release \
+VERBOSE=1 \
+ninja -j $(getconf _NPROCESSORS_ONLN) -C out/Release \
   chrome chrome_sandbox chromedriver \
   2>&1 | tee $OUTPUT/ninja-${PRGNAM}.log
 
 if [ $USE_UNGOOGLED -eq 0 ] &&  [ ! -f out/Release/chrome_crashpad_handler ]
 then
   # ungoogled-chromium has crash-reporting disabled:
+  LIBCLANG_PATH="/usr/lib${LIBDIRSUFFIX}" \
   LDFLAGS="$LDFLAGS" \
   LC_ALL=C \
-  ninja -C out/Release \
+  VERBOSE=1 \
+  ninja -j $(getconf _NPROCESSORS_ONLN) -C out/Release \
     chrome_crashpad_handler \
     2>&1 | tee -a $OUTPUT/ninja-${PRGNAM}.log
 fi
@@ -1569,10 +1752,14 @@ if [ $USE_UNGOOGLED -eq 0 ]; then
 fi
 
 # Copy libraries:
-for CRLIB in {libEGL,libGLESv2,libVkICD_mock_icd,libVkLayer_khronos_validation,libminigbm,libvk_swiftshader}.so libvulkan.so.1
- do
-  install -D -m0755 -o root -g root out/Release/$CRLIB \
-    $PKG/usr/lib${LIBDIRSUFFIX}/${PRGNAM}/$CRLIB
+for CRLIB in {libEGL,libGLESv2,libVkICD_mock_icd,libVkLayer_khronos_validation,libminigbm,libqt5_shim,libqt6_shim,libvk_swiftshader}.so libvulkan.so.1
+  do
+    if [ -f "out/Release/$CRLIB" ]; then
+      install -D -m0755 -o root -g root out/Release/$CRLIB \
+        $PKG/usr/lib${LIBDIRSUFFIX}/${PRGNAM}/$CRLIB
+    else
+      echo "** Could not find '$CRLIB'; not necessarily an error."
+    fi
 done
 install -D -m0755 -o root -g root out/Release/vk_swiftshader_icd.json \
   $PKG/usr/lib${LIBDIRSUFFIX}/${PRGNAM}/vk_swiftshader_icd.json
@@ -1600,11 +1787,6 @@ elif [ -f out/Release/lib/libffmpeg.so ]; then
     out/Release/lib/libffmpeg.so* \
     $PKG/usr/lib${LIBDIRSUFFIX}/${PRGNAM}/lib/
 fi
-if [ ${USE_QT} -eq 1 ]; then
-  cp -a \
-    out/Release/libqt5_shim.so \
-  $PKG/usr/lib${LIBDIRSUFFIX}/${PRGNAM}/
-fi
 for BLOB in out/Release/{natives_blob.bin,snapshot_blob.bin,v8_context_snapshot.bin};
 do
   if [ -f $BLOB ]; then
@@ -1615,14 +1797,15 @@ done
 # Install appdata:
 mkdir -p $PKG/usr/share/metainfo
 if [ $USE_UNGOOGLED -eq 0 ]; then
-  # Remove text with relevance to Google only (thanks Arch):
-  sed -n \
+  source chrome/installer/linux/common/installer.include 
+  source chrome/installer/linux/common/chromium-browser.info 
+  process_template chrome/installer/linux/common/appdata.xml.template \
+    $PKG/usr/share/metainfo/${PRGNAM}.appdata.xml
+  # Remove text with relevance to Google only:
+  sed -i $PKG/usr/share/metainfo/${PRGNAM}.appdata.xml \
    -e "s/chromium-browser\.desktop/chromium-browser${SRCEXT}.desktop/" \
    -e '/<update_contact>/d' \
-   -e '/<p>/N;/<p>\n.*\(We invite\|Chromium supports Vorbis\)/,/<\/p>/d' \
-   -e '/^<?xml/,$p' \
-   chrome/installer/linux/common/chromium-browser/chromium-browser.appdata.xml \
-   > $PKG/usr/share/metainfo/${PRGNAM}.appdata.xml
+   -e '/<!-- Copyright/d'
 elif [ -f $SRCDIR/${PRGNAM}.appdata.xml ]; then
   # A customized un-googled version for this package:
   cat $SRCDIR/${PRGNAM}.appdata.xml \
@@ -1673,24 +1856,18 @@ install -D -m0644 out/Release/${PRGNAM}.1 $PKG/usr/man/man1/${PRGNAM}.1
 # Add a desktop file:
 process_template chrome/installer/linux/common/desktop.template \
   out/Release/${PRGNAM}.desktop
+install -D -m0644 out/Release/${PRGNAM}.desktop \
+  $PKG/usr/share/applications/${PRGNAM}.desktop
 
 # Fix user-agent for ARM and aarch64
-if [[ "$ARCH" =~ arm.* ]]; then
+if [[ "$ARCH" =~ arm.* ]] || [ "$ARCH" == "aarch64" ]; then
+  MAJOR_VER="$(echo ${VERSION} | cut -d. -f1)"
   cp out/Release/${PRGNAM}.desktop out/Release/${PRGNAM}-netflix.desktop
   sed -i out/Release/${PRGNAM}-netflix.desktop \
-    -e "s/\/${PRGNAM}/\/${PRGNAM} \-\-user-agent=\"Mozilla\/5.0 \(X11; CrOS armv7l 10895.56.0\) AppleWebKit\/537.36 \(KHTML, like Gecko\) Chrome\/${VERSION} Safari\/537.36\"/"
-  install -D -m0644 out/Release/${PRGNAM}-netflix.desktop \
-    $PKG/usr/share/applications/${PRGNAM}-netflix.desktop
-elif [ "$ARCH" == "aarch64" ]; then
-  cp out/Release/${PRGNAM}.desktop out/Release/${PRGNAM}-netflix.desktop
-  sed -i out/Release/${PRGNAM}-netflix.desktop \
-    -e "s/\/${PRGNAM}/\/${PRGNAM} \-\-user-agent=\"Mozilla\/5.0 \(X11; CrOS aarch64 15393.58.0\) AppleWebKit\/537.36 \(KHTML, like Gecko\) Chrome\/${VERSION} Safari\/537.36\"/"
+    -e "s/\/${PRGNAM}/\/${PRGNAM} \-\-user-agent=\"Mozilla\/5.0 \(X11; CrOS ${ARCH} 10895.56.0\) AppleWebKit\/537.36 \(KHTML, like Gecko\) Chrome\/${MAJOR_VER}.0.0.0 Safari\/537.36\"/"
   install -D -m0644 out/Release/${PRGNAM}-netflix.desktop \
     $PKG/usr/share/applications/${PRGNAM}-netflix.desktop
 fi
-
-install -D -m0644 out/Release/${PRGNAM}.desktop \
-  $PKG/usr/share/applications/${PRGNAM}.desktop
 
 # Install desktop icons:
 for size in 16 32; do
@@ -1736,6 +1913,7 @@ cat $SRCDIR/${SRCNAM}.default | sed \
   -e "s/@CRFLAGS@/${CRFLAGS}/g" \
   -e "s/@CRUSERFLAGS@/${CRUSERFLAGS}/g" \
   -e "s/@LIBDIRSUFFIX@/${LIBDIRSUFFIX}/g" \
+  -e "s/@BUILDER@/Built by alienBOB for Slackware/g" \
   > $PKG/etc/${PRGNAM}/00-default.conf.new
 
 if [ $USE_UNGOOGLED -eq 0 ]; then
@@ -1839,7 +2017,7 @@ cd -
 cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
 
 # Cleanup
-if [ "$USE_CLANG" -eq 1 ] && [ ! "$MYCLANG_PATH" = "/usr/bin" ]; then
+if [ "${GOOGLE_CLANG}" == "src" ] && [  ${BUILD_CLANG} -eq 1 ]; then
   if  [ -f ${MYCLANG_PATH}/ld ]; then
     rm ${MYCLANG_PATH}/ld
   fi
