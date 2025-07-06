@@ -1,4 +1,4 @@
-Note, this is not needed anymore as there is a way to patch Widevine cdm.
+**Note**: This is not needed anymore as there is a way to patch Widevine cdm.
 So no need to patch glibc 2.41 any more...
 -------------------------------------------------------------------------
 Before we start to patch and compile glibc we will have to download and install Stuart Winter´s slackkit-*-aarch64-1.txz.
