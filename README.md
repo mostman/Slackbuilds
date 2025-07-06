@@ -48,8 +48,8 @@ llvm/clang package Compiled for Slackware ARM 15.0 (RPI 4), note: Chromiums inte
 
 glibc package patched with SHT_RELR and TLS with 64-byte and compiled for Slackware ARM 15.0 (RPI 4)  
 **Note**: Both aaa_glibc-solibs and glibc packages are needed or it will not work to load libwidevine...  
-[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/glibc-2.33-7/aaa_glibc-solibs-2.33-arm-7p1_slack15.0.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/glibc-2.33-7/)  
-[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/glibc-2.33-7/glibc-2.33-arm-7p1_slack15.0.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/glibc-2.33-7/)  
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/glibc-2.33-8/aaa_glibc-solibs-2.33-arm-8p1_slack15.0.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/glibc-2.33-8/)  
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/glibc-2.33-8/glibc-2.33-arm-8p1_slack15.0.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/glibc-2.33-8/)  
 
 glibc package patched with TLS with 64-byte and compiled for Slackware aarch64 Current (RPI 4)  
 **Note**: Both aaa_glibc-solibs and glibc packages are needed or it will not work to load libwidevine...  
