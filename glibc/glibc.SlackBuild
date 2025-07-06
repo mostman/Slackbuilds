@@ -22,8 +22,7 @@ ulimit -s unlimited
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 #
-# Modified by Stuart Winter for Slackware ARM.
-# Modified by Martin Östman (Minime) to make widevine working on slackware ARM.
+# Modified by Stuart Winter for Slackware ARM, 2006-2026
 #
 
 # Record toolchain & other info for the build log:
@@ -31,6 +30,13 @@ slackbuildinfo
 
 # Paths to skeleton port's source & real Slackware source tree:
 slackset_var_cwds
+
+#Â Load any plugins:
+# To use these plugins, prior to building glibc:
+# $ export BUILD_PLUGINS="rk3399 rpi other"
+# The functions contained within those plugin directories will be called at
+# pre-defined stages of the build of this package:
+fnexists_loadplugins "${BUILD_PLUGINS}" $PORTCWD/buildplugins
 
 # Determine the CFLAGS for the known architectures:
 # libdir is set within slackkit's '/usr/share/slackkit/buildkit.sh'
@@ -125,15 +131,6 @@ function extractglibcsource () {
   # Don't use AM/PM format for date(1). That's just plain crazy.
   zcat $CWD/glibc-2.32.en_US.no.am.pm.date.format.diff.gz | patch -p1 --verbose || exit 1
 
-  #
-  #-------- Patches fixes Widevine (CDM) in ARM -------#
-  #
-  # Add support for SHT_RELR
-  zcat $CWD/glibc-add-support-for-SHT_RELR-sections.patch.gz | patch -p1 --verbose || exit 1
-
-  # Fix TLS for Widevine
-  zcat $CWD/glibc-tls-libwidevinecdm.so-since-4.10.2252.0-has-TLS-with.patch.gz | patch -p1 --verbose || exit 1
-
   # Other regression fixes from git:
   for git_patch in $CWD/patches/*.patch.gz ; do
     zcat $git_patch | patch -p1 --verbose || exit 1
@@ -163,6 +160,9 @@ function extractglibcsource () {
 #     auto_apply_patch $PORTCWD/sources/$pf || failpatch
 ##     #auto_apply_patch debian/patches/$pf || exit 1
 #    done
+
+  # Apply any patches defined within by the build plugins:
+  fnexists_multicall "$BUILD_PLUGINS" srcpatch
 
   # Determine version of ld-linux.so:
   case $SLKPORTARCH in
@@ -256,7 +256,7 @@ extractglibcsource || exit 1
 # will create a symlink:
 # /lib/ld-linux-aarch64.so.1 -> ../lib64/ld-linux-aarch64.so.1
 # However, running it like this has caused
-# glibc to fail once during upgradepkg.  Upon investigation I found the symlink
+#Â glibc to fail once during upgradepkg.  Upon investigation I found the symlink
 # was missing.  This mitigates that risk.
 libc_cv_include_x86_isa_level=no \
 libc_cv_rtlddir=/lib${LIBDIRSUFFIX} \
