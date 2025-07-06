@@ -1,3 +1,6 @@
+Note, this is not needed anymore as there is a way to patch Widevine cdm.
+So no need to patch glibc 2.41 any more...
+-------------------------------------------------------------------------
 Before we start to patch and compile glibc we will have to download and install Stuart Winter´s slackkit-*-aarch64-1.txz.
 From here: https://slackware.uk/slackwarearm/slackwareaarch64-current/slackware/d/
 
@@ -5,8 +8,8 @@ And we also have to download "slackware64-current/source/l/glibc" and "slackware
 
 As root
    # cd /usr/src
-   # wget https://slackware.uk/slackwarearm/slackwareaarch64-current/slackware/d/slackkit-1.43-aarch64-1.txz
-   # installpkg slackkit-1.43-aarch64-1.txz
+   # wget https://slackware.uk/slackwarearm/slackwareaarch64-current/slackware/d/slackkit-1.47-aarch64-1.txz
+   # installpkg slackkit-1.47-aarch64-1.txz
 
    # cd /root
    # mkdir -p slackware64-current/source/l/glibc/
