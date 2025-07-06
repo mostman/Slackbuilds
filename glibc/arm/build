@@ -5,20 +5,20 @@ source /usr/share/slackdev/buildkit.sh
 # Package metadata:
 export PKGNAM=glibc
 export VERSION=${VERSION:-2.33}
-export BUILD=${BUILD:-7p1_slack15.0}
 export PKGSERIES=${PKGSERIES:-l}
-export SLACKPACKAGE=$PKGNAM-$VERSION-$PKGARCH-$BUILD.txz
 
 # If building within /patches, we'll drop the packages in to their respective
 # 'series' directories within /tmp:
 slack_findpkgstore_is_stablerelease && {
   export PKGSTORE=/tmp/
-  export BUILD=7p1_slack15.0
+  export BUILD=8p1_slack15.0
   # Since we have packages in both series
   mkdir -vpm755 $PKGSTORE/{a,l} ;}
 
 # Ensure base ARM packages are installed first:
 slackbasedeps
+
+export SLACKPACKAGE=$PKGNAM-$VERSION-$PKGARCH-$BUILD.txz
 
 # We require ARMedslack's kernel-header package to be installed
 # This package replaces Scratchbox's 2.6's headers which RMK stated
