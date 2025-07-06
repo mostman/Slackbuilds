@@ -131,6 +131,15 @@ function extractglibcsource () {
   # Don't use AM/PM format for date(1). That's just plain crazy.
   zcat $CWD/glibc-2.32.en_US.no.am.pm.date.format.diff.gz | patch -p1 --verbose || exit 1
 
+  #
+  #-------- Patches fixes Widevine (CDM) in ARM -------#
+  #
+  # Add support for SHT_RELR
+  zcat $CWD/glibc-add-support-for-SHT_RELR-sections.patch.gz | patch -p1 --verbose || exit 1
+
+  # Fix TLS for Widevine
+  zcat $CWD/glibc-tls-libwidevinecdm.so-since-4.10.2252.0-has-TLS-with.patch.gz | patch -p1 --verbose || exit 1
+
   # Other regression fixes from git:
   for git_patch in $CWD/patches/*.patch.gz ; do
     zcat $git_patch | patch -p1 --verbose || exit 1
