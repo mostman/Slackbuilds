@@ -16,6 +16,8 @@ As we only need and want glibc directory
 Sync the Slackware/x86_64 tree for glibc:
    # rsync -Pavv ftp.slackware.org.uk::slackware/slackware64-15.0/patches/source/glibc/ .
    
+This is the old way, Please read the New Way below as Stuart was kind to edit this to the origenal script.
+-----------------------------------------------------------------------------------------------
 Now go to the directory where you have your downloaded my glibc slackbuild with the patches.
 In this example i have the glibc directory under /usr/src
    # cd /usr/src/glibc/
@@ -29,5 +31,23 @@ And now we can compile glibc
 Packages will be stored under "/root/tgzstash"
    # cd /root/tgzstash
    # upgradepkg a/aaa_glibc-solibs-2.33-arm-8p1_slack15.0.txz l/glibc-2.33-arm-8p1_slack15.0.txz
- 
- And you are all done.
+
+New Way
+-----------------------------------------------------------------------------------------------
+In this example i have the glibc directory under /root
+   # cd /root
+   # mkdir -p slackwarearm-15.0/patches/source/glibc/
+   # cd slackwarearm-15.0/patches/source/glibc/
+
+As we only need and want glibc directory
+Sync the Slackware arm tree for glibc:
+   # rsync -Pavv ftp.slackware.org.uk::slackwarearm/slackwarearm-15.0/patches/source/glibc/ .
+
+And now we can compile glibc
+   # BUILD_PLUGINS=Widevine ./arm/build
+
+Packages will be stored under "/root/tgzstash"
+   # cd /root/tgzstash
+   # upgradepkg a/aaa_glibc-solibs-2.33-arm-8p1_slack15.0.txz l/glibc-2.33-arm-8p1_slack15.0.txz
+
+And you are all done.
