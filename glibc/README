@@ -14,7 +14,7 @@ As root
 
 As we only need and want glibc directory
 Sync the Slackware/x86_64 tree for glibc:
-   # rsync -Pavv ftp.slackware.org.uk::slackware/slackware64-15.0/source/l/glibc/ .
+   # rsync -Pavv ftp.slackware.org.uk::slackware/slackware64-15.0/patches/source/glibc/ .
    
 Now go to the directory where you have your downloaded my glibc slackbuild with the patches.
 In this example i have the glibc directory under /usr/src
@@ -28,6 +28,6 @@ And now we can compile glibc
  
 Packages will be stored under "/root/tgzstash"
    # cd /root/tgzstash
-   # upgradepkg a/aaa_glibc-solibs-2.33-arm-7p1_slack15.0.txz l/glibc-2.33-arm-7p1_slack15.0.txz
+   # upgradepkg a/aaa_glibc-solibs-2.33-arm-8p1_slack15.0.txz l/glibc-2.33-arm-8p1_slack15.0.txz
  
  And you are all done.
