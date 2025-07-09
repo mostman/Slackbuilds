@@ -25,7 +25,7 @@ dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * nasm >= 2.14 (yasm no longer being used) (Is avalible throught slack package)
 * cmake >= 3.13.4 (Is avalible throught slack package)
 * python3 >= 3.7, python3-setuptools (Is avalible throught slack package)
-* java runtime (Slackware ARM package Is avalible [here](https://github.com/mostman/Slackbuilds/releases/download/20.2/jdk-8u371-arm-1_SLse.tgz) and AArch64 package [here](https://github.com/mostman/Slackbuilds/releases/download/20.2/jdk-8u371-aarch64-1_SBo.tgz))
+* java runtime (Slackware ARM package Is avalible [here](https://github.com/mostman/Slackbuilds/releases/download/21.2/jdk-8u381-arm-1_SLse.tgz) and AArch64 package [here](https://github.com/mostman/Slackbuilds/releases/download/21.2/jdk-8u451-aarch64-1_SBo.tgz))
 * Internet access (for downloading toolchain bins)
 
 # Optional dependencies to build:
