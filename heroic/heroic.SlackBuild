@@ -26,7 +26,7 @@ cd $(dirname $0) ; CWD=$(pwd)
 
 PRGNAMDEB=Heroic
 PRGNAM=heroic
-VERSION=${VERSION:-2.17.2}
+VERSION=${VERSION:-2.18.0}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SLse}
 
