@@ -110,7 +110,7 @@ case "$ARCH" in
              LIBDIRSUFFIX="64"
              CORE_PLATFORM="x11 gbm" #Change this to "gbm" if you want to use gbm instead of x11
              RENDER_SYSTEM="gles"
-             DO_VAAPI=OFF # Does not support Intel, AMD and Nvidia. (Pi uses Broadcom chips)
+             DO_VAAPI=ON # Does not support Intel, AMD and Nvidia. (Pi uses Broadcom chips)
              DO_VDPAU=OFF # Does not support NVIDIA GPU. (Pi uses Broadcom chips)
              PLATFORMS="x11_gbm"
              ;;
