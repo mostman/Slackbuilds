@@ -6,7 +6,7 @@ Most of the slackbuilds i have written my self, some are rewritten slackbuilds t
 chromium-ungoogled package compiled for Slackware Current Aarch64 (15.1) (RPI 4)<br />
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/137.0.7151.55/chromium-ungoogled-137.0.7151.55-aarch64-1SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/137.0.7151.55/)  
 
-chromium-ungoogled package compiled for Slackware ARM 15.0 (RPI 4)<br />
+chromium-ungoogled package compiled for Slackware ARM 15.0 (RPI 4 & 5)<br />
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/114.0.5735.198/chromium-ungoogled-114.0.5735.198-armv7l-1SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/114.0.5735.198/)  
 
 Kodi package compiled for Slackware ARM 15.0 (RPI 4)  
@@ -26,11 +26,13 @@ Kodi package compiled for Slackware ARM 15.0 (RPI 4)
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.2/tinyxml-2.6.2-arm-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.2/)   
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.2/tinyxml2-11.0.0-arm-1_SBo.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.2/)   
 
-Kodi package compiled for Slackware AArch64 Current (RPI 4)  
+Kodi package compiled for Slackware AArch64 Current (RPI 4 & 5)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.2/kodi-21.2-aarch64-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.2/)  
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.2/kodi-21.2-aarch64-2_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.2/)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.2/kodi-addons-21.2-aarch64-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.2/)   
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.2/jdk-8u451-aarch64-1_SBo.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.2/)    
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.2/libcec-7.0.0-aarch64-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.2/)   
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.2/libcec-7.1.1-aarch64-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.2/)   
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.2/libmicrohttpd-1.0.1-aarch64-1alien.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.2/)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.2/libnfs-6.0.2-aarch64-1_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.2/)   
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.2/libudfread-1.1.2-aarch64-1_SBo.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.2/)   
