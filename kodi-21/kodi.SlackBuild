@@ -58,7 +58,7 @@ PRGNAM=kodi
 SRCNAM=xbmc
 CODNAM=Omega
 VERSION=${VERSION:-21.2}
-BUILD=${BUILD:-1}
+BUILD=${BUILD:-2}
 TAG=${TAG:-_SLse}
 
 # Use llvm/clang, for a faster build
