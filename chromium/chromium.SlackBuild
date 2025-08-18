@@ -447,13 +447,39 @@
 #                   * Update.
 # 136.0.7103.59-1:  01/may/2025 by Eric Hameleers <alien@slackware.com>
 #                   * Update to M136.
-# 136.0.7103.113-1: 15/may/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
+# 136.0.7103.113-1:  16/May/2025 by Minime <slackware[at]slackwarelinux[dot]se>
+#                   * Fixed build for AArch64
+#                   * Fixed build for ARM.
 # 137.0.7151.55-1:  27/may/2025 by Eric Hameleers <alien@slackware.com>
 #                   * Update to M137.
-# 137.0.7151.55-1:  28/May/2025 by Minime <slackware[at]slackwarelinux[dot]se>
+#                   28/May/2025 by Minime <slackware[at]slackwarelinux[dot]se>
 #                   * Fixed build for AArch64
-#
+# 137.0.7151.68-1:  03/jun/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 137.0.7151.103-1: 12/jun/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 137.0.7151.119-1: 19/jun/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 138.0.7204.49-1:  25/jun/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M138.
+# 138.0.7204.96-1:  01/jul/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 138.0.7204.100-1: 09/jul/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 138.0.7204.157-1: 15/jul/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 138.0.7204.168-1: 23/jul/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 138.0.7204.183-1: 31/jul/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 139.0.7258.66-1:  07/aug/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M139.
+#                   15/aug/2025 by Minime <slackware[at]slackwarelinux[dot]se>
+#                   * Fixed build for AArch64
+# 139.0.7258.127-1: 15/aug/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+#                   18/aug/2025 by Minime <slackware[at]slackwarelinux[dot]se>
+#                   * Fixed build for AArch64
 #
 # -----------------------------------------------------------------------------
 #
@@ -462,6 +488,7 @@
 # Install it using 'installpkg'. 
 #
 # -----------------------------------------------------------------------------
+
 
 # Build an ungoogled chromium package (default yes):
 USE_UNGOOGLED=${USE_UNGOOGLED:-1}
@@ -476,8 +503,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-137.0.7151.55}
-UNGOOGLED=${UNGOOGLED:-137.0.7151.55-1}
+VERSION=${VERSION:-139.0.7258.127}
+UNGOOGLED=${UNGOOGLED:-139.0.7258.127-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
@@ -810,12 +837,6 @@ tar -xf ${SOURCE[0]}
 if [ ${USE_UNGOOGLED} -ne 0 ]; then
   tar -xf ${SOURCE[2]}
   UGDIR=$TMP/tmp-$PRGNAM/ungoogled-chromium-${UNGOOGLED}
-  # We do not wait for the ungoogled tarball if the only change is the version:
-  if [ "${VERSION}"="120.0.6099.129" ] && [ ${UNGOOGLED}="120.0.6099.109-1" ];
-  then
-    sed -i ungoogled-chromium-${UNGOOGLED}/chromium_version.txt \
-        -e "s/${UNGOOGLED}/${VERSION}/"
-  fi
 fi
 cd ${SRCNAM}-${VERSION}
 
@@ -841,34 +862,33 @@ if [ ${USE_UNGOOGLED} -ne 0 ]; then
   done
 fi
 
-## For chromium >= 102, download a specific build.py which allows us to
-## compile our 32bit package successfully:
-#if [ ${VERSION%%.*} -ge 102 ]; then
-#  wget --no-check-certificate -O - https://raw.githubusercontent.com/chromium/chromium/ad35291af36d609042e1d320adb1568daafef9a8/tools/clang/scripts/build.py > tools/clang/scripts/build.py
-#fi
-
 # Allow building against system libraries in official builds:
 sed -e 's/OFFICIAL_BUILD/GOOGLE_CHROME_BUILD/' \
   -i tools/generate_shim_headers/generate_shim_headers.py
 
 # Patches and bug fixes:
 touch $OUTPUT/patch-${PRGNAM}.log
-# Upstream Patches
-cat $SRCDIR/patches/arch/disable-clang-fextend-variable-liveness.patch \
-  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-cat $SRCDIR/patches/chromium-137-pdfium-system-libpng.patch \
-  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-cat $SRCDIR/patches/chromium-137-openh264-include-path.patch \
-  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+# Upstream Patches 137
+#cat $SRCDIR/patches/arch/disable-clang-fextend-variable-liveness.patch \
+#  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+#cat $SRCDIR/patches/chromium-137-pdfium-system-libpng.patch \
+#  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+#cat $SRCDIR/patches/chromium-137-openh264-include-path.patch \
+#  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 
 # https://bugs.gentoo.org/949654 - 'Aw,snap!' on certain pages with glibc-2.41
 cat $SRCDIR/patches/chromium_glibc241_map_droppable.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # Gentoo contribution:
-cat $SRCDIR/patches/chromium-136_drop_nodejs_vercheck.patch \
+cat $SRCDIR/patches/chromium-138-nodejs-version-check.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+# https://issues.chromium.org/issues/424424323
+cat $SRCDIR/patches/rust_lifetime_424424323.patch \
+  | patch -p1 --verbose \
+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+
 # Needed for chromium 135-136
 #cat $SRCDIR/patches/gentoo/fix_build_with_gperf.patch \
 #  | patch -p1 --verbose \
@@ -881,9 +901,11 @@ cat $SRCDIR/patches/arch/widevine_support_for_arm.patch \
 
 if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
   # Adjust expectations about where to find the clang libs on Slackware:
-  cat $SRCDIR/patches/chromium-132-bindgen-custom-toolchain.patch \
+  cat $SRCDIR/patches/chromium-134-bindgen-custom-toolchain.patch \
     | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-  cat $SRCDIR/patches/compiler-rt-adjust-paths.patch | patch -p1 --verbose \
+  # Was for chromium 137
+  #cat $SRCDIR/patches/compiler-rt-adjust-paths.patch | patch -p1 --verbose \
+  cat $SRCDIR/patches/compiler-rt-adjust-paths-139.patch | patch -p1 --verbose \
     2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
   sed -i build/config/clang/BUILD.gn \
     -e "s,clang_base_path/lib/clang/,clang_base_path/lib${LIBDIRSUFFIX}/clang/,"
@@ -893,6 +915,7 @@ if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
     -e 's%"/lib/"%"/lib'${LIBDIRSUFFIX}'/"%' \
     -e 's%"/lib"%"/lib'${LIBDIRSUFFIX}'"%'
   sed -i build/rust/rust_bindgen_generator.gni \
+    -e 's%"/lib/clang/"%"/lib'${LIBDIRSUFFIX}'/clang/"%' \
     -e 's%_libclang_path += "/lib"%_libclang_path += "/lib'${LIBDIRSUFFIX}'"%' \
     -e 's%clang_base_path + "/lib"%clang_base_path + "/lib'${LIBDIRSUFFIX}'"%' \
     -e 's%_libclang_path = rust_bindgen_root%_libclang_path = clang_base_path%'
@@ -1166,7 +1189,8 @@ echo Building ...
 [ ${USE_SYSROOT} -eq 1 ] && do_syslibs=false || do_syslibs=true
 [ ${USE_VAAPI} -eq 1 ] && do_vaapi=true || do_vaapi=false
 [ ${USE_WAYLAND} -eq 1 ] && do_wayland=true || do_wayland=false
-[ ${FFMPEG_HEVC} -eq 1 ] && do_hevc=true || do_hevc=false 
+[ ${FFMPEG_HEVC} -eq 1 ] && do_hevc=true || do_hevc=false
+
 
 export LDFLAGS="$SLKLDFLAGS"
 export CXXFLAGS="$SLKCFLAGS -Wno-unknown-warning-option"
@@ -1252,7 +1276,6 @@ _chromium_conf+=(
   'dcheck_always_on=false'
 )
 
-#if [ "$ARCH" == "x86_64" ]; then
 if [ "$ARCH" == "x86_64" ] || [ "$ARCH" == "aarch64" ]; then
   # Speed up the build:
   _chromium_conf+=(
@@ -1618,7 +1641,7 @@ else
     git clean -ffdx
     echo "-- Building externally downloaded gn version 0.$(git rev-list --count initial-commit..).$(git rev-parse --short=8 HEAD)"
     ./build/gen.py 2>&1 | tee /$OUTPUT/gyp-${PRGNAM}.log
-    ninja -j $(getconf _NPROCESSORS_ONLN) -C out 2>&1 | tee -a /$OUTPUT/gyp-${PRGNAM}.log
+    ninja -C out 2>&1 | tee -a /$OUTPUT/gyp-${PRGNAM}.log
   popd
   install -m0755 -D -t out/Release gn.git/out/gn
 fi
@@ -1652,8 +1675,8 @@ if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
   _chromium_conf+=(
     "bindgen_libclang_path=\"/usr/lib${LIBDIRSUFFIX}\""
     'chrome_pgo_phase=0' # needs newer clang to read the bundled PGO profile
-    #"clang_base_path=\"${SL_CLANG_RESDIR}\""
     'clang_base_path="/usr"'
+    #"clang_base_path=\"${SL_CLANG_RESDIR}\""
     "clang_version=\"$SL_CLANG\""
   )
 
@@ -1670,11 +1693,11 @@ if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
     # Make bindgen find the gcc includes:
     # Should fix aarch64 bindgen error like:
     # FAILED: gen/third_party/crabbyavif/crabbyavif_dav1d_bindings/dav1d_bindgen.rs
-    if [ "$ARCH" == "aarch64" ]; then
-      export BINDGEN_EXTRA_CLANG_ARGS="-I/usr/include -I/usr/lib${LIBDIRSUFFIX}/gcc/${TARGET}/$(gcc -dumpversion)/include"
-    else
-      export BINDGEN_EXTRA_CLANG_ARGS="-I/usr/include -I/usr/lib/gcc/${TARGET}/$(gcc -dumpversion)/include"
-    fi
+    #if [ "$ARCH" == "aarch64" ]; then
+    #  export BINDGEN_EXTRA_CLANG_ARGS="-I/usr/include -I/usr/lib${LIBDIRSUFFIX}/gcc/${TARGET}/$(gcc -dumpversion)/include"
+    #else
+    #  export BINDGEN_EXTRA_CLANG_ARGS="-I/usr/include -I/usr/lib/gcc/${TARGET}/$(gcc -dumpversion)/include"
+    #fi
 fi
 
 if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 1 ]; then
@@ -1716,18 +1739,17 @@ LIBCLANG_PATH="/usr/lib${LIBDIRSUFFIX}" \
 LDFLAGS="$LDFLAGS" \
 LC_ALL=C \
 VERBOSE=1 \
-ninja -j $(getconf _NPROCESSORS_ONLN) -C out/Release \
+ninja -C out/Release \
   chrome chrome_sandbox chromedriver \
   2>&1 | tee $OUTPUT/ninja-${PRGNAM}.log
 
-if [ $USE_UNGOOGLED -eq 0 ] &&  [ ! -f out/Release/chrome_crashpad_handler ]
-then
+if [ $USE_UNGOOGLED -eq 0 ] &&  [ ! -f out/Release/chrome_crashpad_handler ]; then
   # ungoogled-chromium has crash-reporting disabled:
   LIBCLANG_PATH="/usr/lib${LIBDIRSUFFIX}" \
   LDFLAGS="$LDFLAGS" \
   LC_ALL=C \
   VERBOSE=1 \
-  ninja -j $(getconf _NPROCESSORS_ONLN) -C out/Release \
+  ninja -C out/Release \
     chrome_crashpad_handler \
     2>&1 | tee -a $OUTPUT/ninja-${PRGNAM}.log
 fi
@@ -1864,6 +1886,7 @@ if [[ "$ARCH" =~ arm.* ]] || [ "$ARCH" == "aarch64" ]; then
   MAJOR_VER="$(echo ${VERSION} | cut -d. -f1)"
   cp out/Release/${PRGNAM}.desktop out/Release/${PRGNAM}-netflix.desktop
   sed -i out/Release/${PRGNAM}-netflix.desktop \
+    -e "s/Name\=Chromium-ungoogled Web Browser/Name\=Chromium-ungoogled Netflix/" \
     -e "s/\/${PRGNAM}/\/${PRGNAM} \-\-user-agent=\"Mozilla\/5.0 \(X11; CrOS ${ARCH} 10895.56.0\) AppleWebKit\/537.36 \(KHTML, like Gecko\) Chrome\/${MAJOR_VER}.0.0.0 Safari\/537.36\"/"
   install -D -m0644 out/Release/${PRGNAM}-netflix.desktop \
     $PKG/usr/share/applications/${PRGNAM}-netflix.desktop
@@ -1913,7 +1936,7 @@ cat $SRCDIR/${SRCNAM}.default | sed \
   -e "s/@CRFLAGS@/${CRFLAGS}/g" \
   -e "s/@CRUSERFLAGS@/${CRUSERFLAGS}/g" \
   -e "s/@LIBDIRSUFFIX@/${LIBDIRSUFFIX}/g" \
-  -e "s/@BUILDER@/Built by alienBOB for Slackware/g" \
+  -e "s/@BUILDER@/Built by Minime for Slackware ${ARCH}/g" \
   > $PKG/etc/${PRGNAM}/00-default.conf.new
 
 if [ $USE_UNGOOGLED -eq 0 ]; then
