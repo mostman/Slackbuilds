@@ -1,8 +1,8 @@
---- chromium.SlackBuild.orig2	2025-08-17 19:12:00.000000000 +0200
-+++ chromium.SlackBuild	2025-08-18 10:24:15.929486150 +0200
+--- chromium.SlackBuild.orig	2025-08-21 11:34:06.000000000 +0200
++++ chromium.SlackBuild	2025-08-24 02:01:36.774050051 +0200
 @@ -1,10 +1,10 @@
  #!/bin/bash
--# $Id: chromium.SlackBuild,v 1.488 2025/08/17 17:11:33 root Exp root $
+-# $Id: chromium.SlackBuild,v 1.491 2025/08/21 09:33:52 root Exp root $
 +# $Id: chromium.SlackBuild,v 1.469 2025/05/02 14:36:30 root Exp root $
  # Copyright 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025  Eric Hameleers, Eindhoven, NL
  # All rights reserved.
@@ -645,16 +645,17 @@
  # 137.0.7151.68-1:  03/jun/2025 by Eric Hameleers <alien@slackware.com>
  #                   * Update.
  # 137.0.7151.103-1: 12/jun/2025 by Eric Hameleers <alien@slackware.com>
-@@ -715,19 +474,24 @@
- #                   * Update.
- # 139.0.7258.66-1:  07/aug/2025 by Eric Hameleers <alien@slackware.com>
+@@ -717,19 +476,25 @@
  #                   * Update to M139.
-+#                   15/aug/2025 by Minime <slackware[at]slackwarelinux[dot]se>
-+#                   * Fixed build for AArch64
  # 139.0.7258.127-1: 15/aug/2025 by Eric Hameleers <alien@slackware.com>
  #                   * Update.
--# 
 +#                   18/aug/2025 by Minime <slackware[at]slackwarelinux[dot]se>
++#                   * Could not compile due to rust 1.89.0
+ # 139.0.7258.138-1: 21/aug/2025 by Eric Hameleers <alien@slackware.com>
+ #                   * Update.
+-# 
++#                   22/aug/2025 by Minime <slackware[at]slackwarelinux[dot]se>
++#                   * rust downgraded from 1.89.0 to 1.88.0
 +#                   * Fixed build for AArch64
 +#
  # -----------------------------------------------------------------------------
@@ -674,16 +675,16 @@
  
  # Build a development version of chromium (default no):
  USE_DEV=${USE_DEV:-0}
-@@ -742,7 +506,7 @@
- VERSION=${VERSION:-139.0.7258.127}
- UNGOOGLED=${UNGOOGLED:-139.0.7258.127-1}
+@@ -744,7 +509,7 @@
+ VERSION=${VERSION:-139.0.7258.138}
+ UNGOOGLED=${UNGOOGLED:-139.0.7258.138-1}
  BUILD=${BUILD:-1}
 -TAG=${TAG:-alien}
 +TAG=${TAG:-SLse}
  
  # Cross-compiling 32bit binaries on 64bit Slackware; set to "YES":
  CROSS32=${CROSS32:-"NO"}
-@@ -958,14 +722,26 @@
+@@ -960,14 +725,26 @@
               #DSSE="0"
               DSSE="1"
               ;;
@@ -712,7 +713,7 @@
               SYSROOT_ARCH="arm"
               SYSROOT_TARGET="arm-linux-gnueabihf"
               PKGARCH="$ARCH"
-@@ -985,8 +761,8 @@
+@@ -987,8 +764,8 @@
  esac
  
  case "$ARCH" in
@@ -722,7 +723,7 @@
      *)       TARGET=$ARCH-slackware-linux ;;
  esac
  
-@@ -1092,6 +868,14 @@
+@@ -1094,6 +871,14 @@
  
  # Patches and bug fixes:
  touch $OUTPUT/patch-${PRGNAM}.log
@@ -737,15 +738,22 @@
  # https://bugs.gentoo.org/949654 - 'Aw,snap!' on certain pages with glibc-2.41
  cat $SRCDIR/patches/chromium_glibc241_map_droppable.patch \
    | patch -p1 --verbose \
-@@ -1105,11 +889,23 @@
+@@ -1102,16 +887,28 @@
+ cat $SRCDIR/patches/chromium-138-nodejs-version-check.patch \
    | patch -p1 --verbose \
    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
- 
+-## https://issues.chromium.org/issues/424424323
+-#cat $SRCDIR/patches/rust_lifetime_confusing.patch \
++# https://issues.chromium.org/issues/424424323
++cat $SRCDIR/patches/rust_lifetime_424424323.patch \
++  | patch -p1 --verbose \
++  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
++
 +# Needed for chromium 135-136
 +#cat $SRCDIR/patches/gentoo/fix_build_with_gperf.patch \
-+#  | patch -p1 --verbose \
-+#  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-+
+ #  | patch -p1 --verbose \
+ #  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+ 
 +# archlinux contribution:
 +# Fixes widevine support for arm
 +cat $SRCDIR/patches/arch/widevine_support_for_arm.patch \
@@ -762,7 +770,7 @@
      2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
    sed -i build/config/clang/BUILD.gn \
      -e "s,clang_base_path/lib/clang/,clang_base_path/lib${LIBDIRSUFFIX}/clang/,"
-@@ -1303,14 +1099,37 @@
+@@ -1305,14 +1102,37 @@
  #sed -i tools/clang/scripts/update.py -e "s/RELEASE_VERSION = '16'/RELEASE_VERSION = '16.0.0'/"
  
  # ARM platform specifics:
@@ -785,11 +793,11 @@
 +  # We are using ARM, so to speed things up we only build the relevant back-ends
 +  # (ARM,AArch64 and x86), since it’s very unlikely that we will cross-compile to other arches.
 +  # x86 is also needed for Compiler-RT tests.
-+  sed -i tools/clang/scripts/build.py \
-+    -e "s/targets = 'AArch64;ARM;Mips;PowerPC;RISCV;SystemZ;WebAssembly;X86'/targets = 'ARM;X86;AArch64'/"
-+  # When comping clang for ARM its not recomended to use PIC
    sed -i tools/clang/scripts/build.py \
 -    -e "s/\(^ *targets = \).*$/\1'ARM;X86;AArch64'/"
++    -e "s/targets = 'AArch64;ARM;Mips;PowerPC;RISCV;SystemZ;WebAssembly;X86'/targets = 'ARM;X86;AArch64'/"
++  # When comping clang for ARM its not recomended to use PIC
++  sed -i tools/clang/scripts/build.py \
 +    -e "s/-DLLVM_ENABLE_PIC=ON/-DLLVM_ENABLE_PIC=OFF/"
 +  # When compiling google's clang, we want ARM 32bit too - don't limit us, devs:
 +  #sed -i tools/clang/scripts/build.py \
@@ -803,7 +811,7 @@
  fi
  
  ## When compiling google's clang, use the system cmake
-@@ -1370,7 +1189,8 @@
+@@ -1372,7 +1192,8 @@
  [ ${USE_SYSROOT} -eq 1 ] && do_syslibs=false || do_syslibs=true
  [ ${USE_VAAPI} -eq 1 ] && do_vaapi=true || do_vaapi=false
  [ ${USE_WAYLAND} -eq 1 ] && do_wayland=true || do_wayland=false
@@ -813,7 +821,7 @@
  
  export LDFLAGS="$SLKLDFLAGS"
  export CXXFLAGS="$SLKCFLAGS -Wno-unknown-warning-option"
-@@ -1456,7 +1276,7 @@
+@@ -1458,7 +1279,7 @@
    'dcheck_always_on=false'
  )
  
@@ -822,7 +830,7 @@
    # Speed up the build:
    _chromium_conf+=(
      'use_thin_lto=true'
-@@ -1466,7 +1286,8 @@
+@@ -1468,7 +1289,8 @@
  else
    # Thin LTO requires more than 4 GB of RAM, skip it on 32bit:
    _chromium_conf+=(
@@ -832,7 +840,7 @@
    )
  fi
  
-@@ -1514,6 +1335,9 @@
+@@ -1516,6 +1338,9 @@
  if [[ "$ARCH" =~ arm.* ]]; then
    _chromium_conf+=( 'target_cpu="arm"' 'v8_target_cpu="arm"' 'target_os="linux"' )
  fi
@@ -842,7 +850,7 @@
  
      # Change this back when CRBUG 592268 is fixed (error during final link:
      # undefined reference to `base::i18n::GetRawIcuMemory())
-@@ -1593,6 +1417,7 @@
+@@ -1595,6 +1420,7 @@
    # Take care of Debian/Ubuntu related missing header issues:
    SYSROOTDIR=$(basename $(ls build/linux/ |grep ${SYSROOT_ARCH}-sysroot))
  
@@ -850,7 +858,7 @@
    ln -s ../../lib/${SYSROOT_TARGET}/glib-2.0/include/glibconfig.h \
      build/linux/${SYSROOTDIR}/usr/include/glib-2.0/glibconfig.h
    ln -s ../../../lib/${SYSROOT_TARGET}/dbus-1.0/include/dbus/dbus-arch-deps.h \
-@@ -1600,9 +1425,6 @@
+@@ -1602,9 +1428,6 @@
    ln -s ../../lib/${SYSROOT_TARGET}/graphene-1.0/include/graphene-config.h \
      build/linux/${SYSROOTDIR}/usr/include/graphene-1.0/graphene-config.h
  
@@ -860,7 +868,7 @@
    for SOFILE in build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}/nss/*.so ;
    do
      ln -sf nss/$(basename $SOFILE) \
-@@ -1619,17 +1441,6 @@
+@@ -1621,17 +1444,6 @@
    fi
  
    unset SYSROOTDIR
@@ -878,7 +886,7 @@
  fi
  
  # Do not make the build fail on stripping chromedriver,
-@@ -1879,6 +1690,14 @@
+@@ -1881,6 +1693,14 @@
        "rustc_version=\"$(rustc --version |cut -d' ' -f2)\""
      )
  
@@ -893,7 +901,7 @@
  fi
  
  if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 1 ]; then
-@@ -1924,8 +1743,7 @@
+@@ -1926,8 +1746,7 @@
    chrome chrome_sandbox chromedriver \
    2>&1 | tee $OUTPUT/ninja-${PRGNAM}.log
  
@@ -903,7 +911,7 @@
    # ungoogled-chromium has crash-reporting disabled:
    LIBCLANG_PATH="/usr/lib${LIBDIRSUFFIX}" \
    LDFLAGS="$LDFLAGS" \
-@@ -2063,6 +1881,17 @@
+@@ -2065,6 +1884,17 @@
  install -D -m0644 out/Release/${PRGNAM}.desktop \
    $PKG/usr/share/applications/${PRGNAM}.desktop
  
@@ -921,7 +929,7 @@
  # Install desktop icons:
  for size in 16 32; do
    install -D -m0644 \
-@@ -2107,7 +1936,7 @@
+@@ -2109,7 +1939,7 @@
    -e "s/@CRFLAGS@/${CRFLAGS}/g" \
    -e "s/@CRUSERFLAGS@/${CRUSERFLAGS}/g" \
    -e "s/@LIBDIRSUFFIX@/${LIBDIRSUFFIX}/g" \
@@ -930,7 +938,7 @@
    > $PKG/etc/${PRGNAM}/00-default.conf.new
  
  if [ $USE_UNGOOGLED -eq 0 ]; then
-@@ -2210,5 +2039,15 @@
+@@ -2212,5 +2042,15 @@
  cd -
  cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
  
