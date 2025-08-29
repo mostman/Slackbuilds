@@ -483,6 +483,10 @@
 #                   22/aug/2025 by Minime <slackware[at]slackwarelinux[dot]se>
 #                   * rust downgraded from 1.89.0 to 1.88.0
 #                   * Fixed build for AArch64
+# 139.0.7258.154-1: 27/aug/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+#                   28/aug/2025 by Minime <slackware[at]slackwarelinux[dot]se>
+#                   * Fixed build for AArch64
 #
 # -----------------------------------------------------------------------------
 #
@@ -506,8 +510,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-139.0.7258.138}
-UNGOOGLED=${UNGOOGLED:-139.0.7258.138-1}
+VERSION=${VERSION:-139.0.7258.154}
+UNGOOGLED=${UNGOOGLED:-139.0.7258.154-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
