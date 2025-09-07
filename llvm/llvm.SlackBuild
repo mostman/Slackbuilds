@@ -1,6 +1,6 @@
 #!/bin/sh
-# llvm Verion 1.17 2024/04/22
-# Copyright 2021-2024  Martin Östman (Minime), SE
+# llvm Verion 1.18 2024/09/07
+# Copyright 2021-2026 Martin Östman (Minime), SE
 # All rights reserved.
 #
 #   Permission to use, copy, modify, and distribute this software for
@@ -34,13 +34,13 @@
 #                  - ncurses
 #                  - libxml2
 #                  - zlib
-#                  - clang
+#                  - clang >= 18
 #                  - python3 >= 3.7, python3-setuptools;
 #
 #######################################################################
 
 PRGNAM=llvm
-VERSION=${VERSION:-18.1.4}
+VERSION=${VERSION:-21.1.0}
 #VERRC="-rc4"
 VERRC=""
 GIT_REV=llvmorg-${VERSION}${VERRC}
@@ -66,35 +66,44 @@ OUTPUT=${OUTPUT:-/tmp}
 # Use system´s clang, for a faster build
 # and make the binaries smaller.
 USE_CLANG=${USE_CLANG:-1}
+USE_CUSTCLANG=${USE_CLANG:-1}
 
 if [ "$ARCH" = "i586" ]; then
   SLKCFLAGS="-O2 -march=i586 -mtune=i686"
   SLKLDFLAGS="-Wl,-z,notext"; LIBDIRSUFFIX=""
-  SETPIC="OFF"
+  SETPIC="ON"
+  OPTTEST="OFF"
 elif [ "$ARCH" = "i686" ]; then
   SLKCFLAGS="-O2 -march=i686 -mtune=i686"
   SLKLDFLAGS="-Wl,-z,notext"; LIBDIRSUFFIX=""
-  SETPIC="OFF"
+  SETPIC="ON"
+  OPTTEST="OFF"
 elif [ "$ARCH" = "x86_64" ]; then
   SLKCFLAGS="-O2 -fPIC"
   SLKLDFLAGS=""; LIBDIRSUFFIX="64"
   SETPIC="ON"
+  OPTTEST="ON"
 else
   SLKCFLAGS="-O2"
   LIBDIRSUFFIX=""
   SLKLDFLAGS="-Wl,-z,notext"; LIBDIRSUFFIX=""
   SETPIC="OFF"
+  OPTTEST="OFF"
 fi
 
 # Building clang with clang
-if [ ${USE_CLANG} -eq 1 ]; then
-  #CUST_CLANG_PATH="/usr/bin"
-  #export PATH="$CUST_CLANG_PATH:$PATH"
-  #CCOMPILER=$CUST_CLANG_PATH/clang
-  #CPPCOMPILER=$CUST_CLANG_PATH/clang++
+if [ ${USE_CLANG} -eq 1 ] && [ ${USE_CUSTCLANG} -eq 0 ]; then
   CCOMPILER=clang
   CPPCOMPILER=clang++
-  export LD="lld"
+  LINKER="lld"
+  export LD="${LINKER}"
+elif [ ${USE_CLANG} -eq 1 ]  && [ ${USE_CUSTCLANG} -eq 1 ]; then
+  CUST_CLANG_PATH="/opt/bootstrap-llvm/bin"
+  export PATH="$CUST_CLANG_PATH:$PATH"
+  CCOMPILER=$CUST_CLANG_PATH/clang
+  CPPCOMPILER=$CUST_CLANG_PATH/clang++
+  LINKER=${CUST_CLANG_PATH}/ldd
+  #export LD="${LINKER}"
 else
   CCOMPILER=gcc
   CPPCOMPILER=g++
@@ -104,14 +113,13 @@ fi
 if [[ $ARCH =~ arm.* ]]; then
   TARGET=${ARCH}-slackware-linux-gnueabihf
 else
-  TARGET=${ARCH}-slackware-linux
+  TARGET=${ARCH}-slackware-linux-gnu
 fi
 
 export LDFLAGS="$SLKLDFLAGS"
 
 # Exit the script on errors:
-set -e
-trap 'echo "$0 FAILED at line ${LINENO}" | tee $OUTPUT/error-${PRGNAM}.log' ERR
+set -e trap 'echo "$0 FAILED at line ${LINENO}" | tee $OUTPUT/error-${PRGNAM}.log' ERR
 
 rm -rf $PKG $LLVMBUILD $TMP/$LLVMSRC
 mkdir -p $TMP $PKG $LLVMBUILD $OUTPUT 
@@ -146,54 +154,68 @@ echo "++"
 cd $LLVMSRC
 
 # Support GCC built for arm-slackware-linux and i586-slackware-linux:
+#zcat $CWD/clang.toolchains.arm_i586.triple_13.diff.gz | patch -p1 --verbose || exit 1
 zcat $CWD/clang.toolchains.arm_i586.triple_14.diff.gz | patch -p1 --verbose || exit 1
 
 cd ../${PRGNAM}-build
 
 echo "++"
-echo "|| Build process"
+echo "|| Build llvm process with bootstrap ${BOOTSTRAP}"
 echo "||"
-echo "|| Configure"
+echo "|| Configure llvm"
 echo "++"
 
-LDFLAGS="$LDFLAGS" \
 cmake -GNinja -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_BUILD_TYPE=Release \
       -DLLVM_ENABLE_ASSERTIONS=OFF \
-      -DLLVM_ENABLE_PROJECTS="clang;compiler-rt;lld;clang-tools-extra" \
+      -DLLVM_ENABLE_PROJECTS="clang;lld" \
       -DLLVM_ENABLE_RUNTIMES="compiler-rt" \
       -DLLVM_TARGETS_TO_BUILD="ARM;X86;AArch64" \
-      -DLLVM_DEFAULT_TARGET_TRIPLE="${TARGET}" \
       -DLLVM_ENABLE_PIC=${SETPIC} \
-      -DLLVM_ENABLE_UNWIND_TABLES=OFF \
+      -DLLVM_DEFAULT_TARGET_TRIPLE=${TARGET} \
       -DLLVM_ENABLE_TERMINFO=OFF \
       -DLLVM_ENABLE_Z3_SOLVER=OFF \
       -DCLANG_PLUGIN_SUPPORT=OFF \
       -DCLANG_ENABLE_STATIC_ANALYZER=OFF \
       -DCLANG_ENABLE_ARCMT=OFF \
-      -DLLVM_INCLUDE_TESTS=OFF \
-      -DENABLE_X86_RELAX_RELOCATIONS=NO \
       -DLLVM_ENABLE_DIA_SDK=OFF \
-      -DLLVM_ENABLE_LLD=ON \
-      -DCOMPILER_RT_SANITIZERS_TO_BUILD="asan;dfsan;msan;hwasan;tsan;cfi" \
-      -DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF \
       -DLLVM_ENABLE_CURL=OFF \
       -DLIBCLANG_BUILD_STATIC=ON \
+      -DLLVM_INSTALL_UTILS=ON \
+      -DLLVM_ENABLE_ZSTD=OFF \
+      -DLLVM_ENABLE_UNWIND_TABLES=OFF \
+      -DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF \
+      -DLLVM_INCLUDE_TESTS=${OPTTEST} \
+      -DCOMPILER_RT_BUILD_CRT=ON \
+      -DCOMPILER_RT_BUILD_LIBFUZZER=OFF \
+      -DCOMPILER_RT_BUILD_CTX_PROFILE=OFF \
+      -DCOMPILER_RT_BUILD_MEMPROF=OFF \
+      -DCOMPILER_RT_BUILD_ORC=OFF \
+      -DCOMPILER_RT_BUILD_PROFILE=ON \
+      -DCOMPILER_RT_BUILD_SANITIZERS=ON \
+      -DCOMPILER_RT_BUILD_XRAY=OFF \
+      -DCOMPILER_RT_SANITIZERS_TO_BUILD="asan;dfsan;msan;hwasan;tsan;cfi" \
+      -DCOMPILER_RT_DEFAULT_TARGET_ONLY=ON \
       -DLLVM_ENABLE_LIBXML2=FORCE_ON \
+      -DCLANG_ENABLE_LIBXML2=OFF \
       -DLIBXML2_INCLUDE_DIR="/usr/include/libxml2" \
       -DLIBXML2_LIBRARIES="/usr/lib${LIBDIRSUFFIX}/libxml2.so" \
-      -DCMAKE_INSTALL_PREFIX="${PKGPATH}" \
+      -DLIBXML2_LIBRARY="/usr/lib${LIBDIRSUFFIX}/libxml2.so" \
+      -DCLANG_ENABLE_LIBXML2=NO \
       -DCMAKE_C_FLAGS=-DLIBXML_STATIC \
       -DCMAKE_CXX_FLAGS=-DLIBXML_STATIC \
-      -DCMAKE_EXE_LINKER_FLAGS=-latomic \
-      -DCMAKE_SHARED_LINKER_FLAGS=-latomic \
-      -DCMAKE_MODULE_LINKER_FLAGS=-latomic \
+      -DCMAKE_EXE_LINKER_FLAGS="-latomic -lpthread" \
+      -DCMAKE_SHARED_LINKER_FLAGS="-latomic -lpthread" \
+      -DCMAKE_MODULE_LINKER_FLAGS="-latomic -lpthread" \
+      -DCMAKE_INSTALL_PREFIX="${PKGPATH}" \
+      -DLLVM_ENABLE_LLD=ON \
       -DCMAKE_C_COMPILER=${CCOMPILER} \
       -DCMAKE_CXX_COMPILER=${CPPCOMPILER} \
       ../$LLVMSRC/${PRGNAM} 2>&1 | tee -a ${OUTPUT}/cmake-${PRGNAM}.log
 
 echo "++"
 echo "|| Configure done"
-echo "|| Copying /usr/lib/libstdc++.so.6 to ${PKG}${PKGPATH}/lib"
+echo "|| Copying /usr/lib${LIBDIRSUFFIX}/libstdc++.so.6 to ${PKG}${PKGPATH}/lib"
 echo "++"
 
 mkdir -p ${PKG}${PKGPATH}/lib${LIBDIRSUFFIX}
@@ -235,21 +257,6 @@ rm -rf $PKG${PKGPATH}/share/man
   find . | xargs file | grep "executable" | grep ELF | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null
   find . | xargs file | grep "shared object" | grep ELF | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null
 )
-
-cd $TMP/$LLVMSRC
-mkdir -p $PKG${PKGPATH}/doc/$PRGNAM-$VERSION$VERRC/{llvm,clang,lld,clang-tools-extra,compiler-rt,openmp}
-cp -a llvm/{CODE_OWNERS,CREDITS,LICENSE,README,RELEASE_TESTERS}* \
-  $PKG${PKGPATH}/doc/$PRGNAM-$VERSION$VERRC/llvm
-cp -a clang/{CodeOwners,INSTALL,LICENSE,NOTES,README}* \
-  $PKG${PKGPATH}/doc/$PRGNAM-$VERSION$VERRC/clang
-cp -a clang-tools-extra/{CODE_OWNERS,LICENSE,README}* \
-  $PKG${PKGPATH}/doc/$PRGNAM-$VERSION$VERRC/clang-tools-extra
-cp -a compiler-rt/{CODE_OWNERS,LICENSE,README}* \
-  $PKG${PKGPATH}/doc/$PRGNAM-$VERSION$VERRC/compiler-rt
-cp -a lld/{CODE_OWNERS,LICENSE}* \
-  $PKG${PKGPATH}/doc/$PRGNAM-$VERSION$VERRC/lld
-cp -a openmp/{CREDITS,LICENSE}* \
-  $PKG/opt/llvm/doc/$PRGNAM-$VERSION$VERRC/openmp
 
 mkdir -p $PKG/install
 cat $CWD/slack-desc > $PKG/install/slack-desc
