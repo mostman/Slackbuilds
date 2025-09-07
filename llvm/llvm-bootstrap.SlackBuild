@@ -217,7 +217,6 @@ cd ..
 )
 
 # Remove man page directory:
-#rm -rf $PKG${PKGPATH}/share/man
 rm -rf $BOOTSTRAP${PKGPATH}/share/man
 
 # Strip binaries:
