@@ -1,0 +1,21 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description. Line
+# up the first '|' above the ':' following the base package name, and the '|'
+# on the right side marks the last column you can put a character in. You must
+# make exactly 11 lines for the formatting to be correct. It's also
+# customary to leave one space after the ':' except on otherwise blank lines.
+
+             |-----handy-ruler------------------------------------------------------|
+bootstrap-llvm: bootstrap-llvm (LLVM compiler toolkit)
+bootstrap-llvm:
+bootstrap-llvm: LLVM is a toolkit for the construction of highly optimized compilers,
+bootstrap-llvm: optimizers, and runtime environments.
+bootstrap-llvm:
+bootstrap-llvm: This package also includes the clang frontend for the C family of
+bootstrap-llvm: languages: C, C++, Objective-C, and Objective-C++
+bootstrap-llvm:
+bootstrap-llvm: Note, this package will install in /opt/bootstrap-llvm 
+bootstrap-llvm: and is compiled for ARM with modules clang, lld only
+bootstrap-llvm:
+bootstrap-llvm: Homepage: http://llvm.org/
+bootstrap-llvm:
