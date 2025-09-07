@@ -1,13 +1,18 @@
 SlackBuild script aiming to build llvm for Slackware ARM.
-Installing modules clang, lld, clang-tools-extra, compiler-rt and aiming targets
-ARM,X86 and AArch64 as it's not likely one will be using a Raspberry Pi 
-to crosscompile to any other architectures.
+Installing modules clang, lld, compiler-rt and aiming targets
+ARM,X86 and AArch64 as it's not likely one will be using a Raspberry Pi to crosscompile to any other architectures.
 The script is designed to suit my slackbuild for chromium that i adopted from AlienBOB
 in order to be able to compile chromium/chromium-ungoogled for Slackware ARM on a Rasberry Pi
-and not having to compile llvm/clang every time (Saves about six hours of compiling time).
+and not having to compile llvm/clang every time (Saves about atleast 12 hours of compiling time).
 
 This script installs the llvm/clang toolchain to /opt/llvm.
 
 Update: As Slackware Arm 15.0 was released, lld was added to system pacakage llvm.
-However chromium >= 104 now requiers llvm version 16.
-And as chromium does not allow to build llvm for 32-bit systems i made this slackbuild.
+However Chromium >= 104 now requiers clang version 16.
+As Chromium does not allow to build llvm for 32-bit systems i made this slackbuild.
+
+Chromium 137 >= now requiers minimum clang version 20.
+It's not possible to build clang 20.x with gcc or clang 13.x (clang version in Slackware 15.0)
+So the work around that i came up with, was to build clang and lld version 18.x with Slackware 15.0 system clang (Version 13.x).
+Why use system clang to compile clang? Well because building with gcc broke in clang 12.
+So i created a Slackbuild called llvm-bootstrap to make this easier.
