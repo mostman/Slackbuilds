@@ -128,6 +128,7 @@ if [ -f ${CWD}/${GIT_REV}.tar.gz ]; then
 else
   echo "++"
   echo "|| $PRGNAM-$GIT_REV"
+  echo "||"
   echo "|| Downloading ${PRGNAM} ${VERSION}"
   echo "++"
   wget https://github.com/llvm/llvm-project/archive/refs/tags/${GIT_REV}.tar.gz -P $CWD
