@@ -136,6 +136,7 @@ if [ -f ${CWD}/${GIT_REV}.tar.gz ]; then
 else
   echo "++"
   echo "|| $PRGNAM-$GIT_REV"
+  echo "||"
   echo "|| Downloading ${PRGNAM} ${VERSION}"
   echo "++"
   wget https://github.com/llvm/llvm-project/archive/refs/tags/${GIT_REV}.tar.gz -P $CWD
@@ -215,6 +216,7 @@ cmake -GNinja -DCMAKE_BUILD_TYPE=Release \
 
 echo "++"
 echo "|| Configure done"
+echo "||"
 echo "|| Copying /usr/lib${LIBDIRSUFFIX}/libstdc++.so.6 to ${PKG}${PKGPATH}/lib"
 echo "++"
 
@@ -223,6 +225,7 @@ cp /usr/lib${LIBDIRSUFFIX}/libstdc++.so.6 ${PKG}${PKGPATH}/lib${LIBDIRSUFFIX}
 
 echo "++"
 echo "|| Copying libstdc++.so.6 done"
+echo "||"
 echo "|| Start compiling"
 echo "++"
 
