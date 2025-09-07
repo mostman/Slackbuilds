@@ -111,8 +111,7 @@ fi
 export LDFLAGS="$SLKLDFLAGS"
 
 # Exit the script on errors:
-set -e
-trap 'echo "$0 FAILED at line ${LINENO}" | tee $OUTPUT/error-${PRGNAM}.log' ERR
+set -e trap 'echo "$0 FAILED at line ${LINENO}" | tee $OUTPUT/error-${PRGNAM}.log' ERR
 
 rm -rf $PKG $LLVMBUILD $TMP/$LLVMSRC
 mkdir -p $TMP $PKG $LLVMBUILD $OUTPUT 
@@ -189,6 +188,7 @@ cmake -GNinja -DCMAKE_BUILD_TYPE=Release \
 
 echo "++"
 echo "|| Configure done"
+echo "||"
 echo "|| Start compiling"
 echo "++"
 
@@ -197,7 +197,6 @@ ninja 2>&1 | tee -a ${OUTPUT}/ninja-bootstrap-${PRGNAM}.log
 echo "++"
 echo "|| Compiling Compleate"
 echo "||"
-#echo "|| Start install to ${PKG}"
 echo "|| Start install to ${BOOTSTRAP}"
 echo "++"
 
