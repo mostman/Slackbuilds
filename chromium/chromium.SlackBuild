@@ -487,6 +487,10 @@
 #                   * Update.
 #                   28/aug/2025 by Minime <slackware[at]slackwarelinux[dot]se>
 #                   * Fixed build for AArch64
+# 140.0.7339.80-1:  04/sep/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M140.
+#                   07/sep/2025 by Minime <slackware[at]slackwarelinux[dot]se>
+#                   * Fixed build for ARM and AArch64
 #
 # -----------------------------------------------------------------------------
 #
@@ -510,8 +514,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-139.0.7258.154}
-UNGOOGLED=${UNGOOGLED:-139.0.7258.154-1}
+VERSION=${VERSION:-140.0.7339.80}
+UNGOOGLED=${UNGOOGLED:-140.0.7339.80-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
@@ -602,8 +606,16 @@ FFMPEG_HEVC=${FFMPEG_HEVC:-0}
 USE_CLANG=${USE_CLANG:-1}
 
 # Prefer using Google's custom clang as pre-built binaries or compile ourselves?
-# Possible values: 'src' or 'bin':
-GOOGLE_CLANG=${GOOGLE_CLANG:-"bin"}
+# Possible values: 'src', 'bin' or 'armbin':
+GOOGLE_CLANG=${GOOGLE_CLANG:-"armbin"}
+
+# If set GOOGLE_CLANG to 'src' and it's a ARM system
+# we will need to tell where we have our already bootstraped clang
+BOOTSTRAP_PATH="/opt/bootstrap-llvm"
+
+# If set GOOGLE_CLANG to 'armbin' and it's a ARM system
+# We will need to tell where we have our precompiled clang for ARM
+ARMBIN_PATH="/opt/llvm"
 
 # Build a custom clang or use the system clang?
 # CLANG_MIN is the minimal clang version needed to compile chromium,
@@ -869,6 +881,12 @@ if [ ${USE_UNGOOGLED} -ne 0 ]; then
   done
 fi
 
+if [ ${USE_SYSROOT} -eq 1 ] && [[ "$ARCH" =~ arm.* ]]; then
+  # Download a sysroot image to build Chromium:
+  echo "-- Downloading sysroot image for ${SYSROOT_ARCH}"
+  python3 build/linux/sysroot_scripts/install-sysroot.py --arch=${SYSROOT_ARCH}
+fi
+
 # Allow building against system libraries in official builds:
 sed -e 's/OFFICIAL_BUILD/GOOGLE_CHROME_BUILD/' \
   -i tools/generate_shim_headers/generate_shim_headers.py
@@ -892,9 +910,9 @@ cat $SRCDIR/patches/chromium-138-nodejs-version-check.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # https://issues.chromium.org/issues/424424323
-cat $SRCDIR/patches/rust_lifetime_424424323.patch \
-  | patch -p1 --verbose \
-  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+#cat $SRCDIR/patches/rust_lifetime_424424323.patch \
+#  | patch -p1 --verbose \
+#  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 
 # Needed for chromium 135-136
 #cat $SRCDIR/patches/gentoo/fix_build_with_gperf.patch \
@@ -1110,11 +1128,15 @@ sed -i tools/clang/scripts/build.py -e "s/ldflags = \[\]/ldflags = \['-latomic',
 # Note: This will most likely fail as it does not detect the correct target architecture.
 # One of many reasons i built chromium's llvm package separately.
 if [[ "$ARCH" =~ arm.* ]]; then
+  # Can't run tests on x86 host.
+  sed -i tools/clang/scripts/build.py \
+      -e "s/sysroot_amd64,/sysroot_arm, \n            \x27LLVM_INCLUDE_TESTS=OFF\x27,/"
+  # We want to compile for ARM and not AMD64
   sed -i tools/clang/scripts/build.py \
       -e "s/sysroot_amd64\([,)]\)/sysroot_arm\1/"
 
   # Non-functional vpython in the 32bit depot_tools:
-  export VPYTHON_BYPASS="manually managed python not supported by chrome operations"
+  #export VPYTHON_BYPASS="manually managed python not supported by chrome operations"
 
   # We are compiling bootstrap for ARM and not X86.
   # Fix the hard-coded bootstrap target 'X86':
@@ -1124,19 +1146,7 @@ if [[ "$ARCH" =~ arm.* ]]; then
   # (ARM,AArch64 and x86), since it’s very unlikely that we will cross-compile to other arches.
   # x86 is also needed for Compiler-RT tests.
   sed -i tools/clang/scripts/build.py \
-    -e "s/targets = 'AArch64;ARM;Mips;PowerPC;RISCV;SystemZ;WebAssembly;X86'/targets = 'ARM;X86;AArch64'/"
-  # When comping clang for ARM its not recomended to use PIC
-  sed -i tools/clang/scripts/build.py \
-    -e "s/-DLLVM_ENABLE_PIC=ON/-DLLVM_ENABLE_PIC=OFF/"
-  # When compiling google's clang, we want ARM 32bit too - don't limit us, devs:
-  #sed -i tools/clang/scripts/build.py \
-  #  -e "s/platform.machine() == 'aarch64':/platform.machine() == 'arm':/"
-  #sed -i tools/clang/scripts/build.py \
-  #  -e "s/aarch64-unknown-linux-gnu/$TARGET/"
-  # One could just remove this line too, more or less the same thing
-  # as above lines...
-  sed -i tools/clang/scripts/build.py \
-    -e "/    cmake_args.append('-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON')/d"
+    -e "s/targets = 'AArch64;ARM;LoongArch;Mips;PowerPC;RISCV;SystemZ;WebAssembly;X86'/targets = 'ARM;X86;AArch64'/"
 fi
 
 ## When compiling google's clang, use the system cmake
@@ -1205,7 +1215,11 @@ export CFLAGS="$SLKCFLAGS -Wno-unused-local-typedefs -Wno-unknown-warning-option
 export PATH="$TMP/tmp-$PRGNAM/privatebin:$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/third_party/depot_tools:$PATH"
 
 if [ ${USE_SYSROOT} -eq 1 ]; then
-  SYSROOTDIR=$(basename $(ls $TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/build/linux/ |grep ${SYSROOT_ARCH}-sysroot))
+  if [[ "$ARCH" =~ arm.* ]]; then
+    SYSROOTDIR=$(basename $(ls $TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/build/linux/ |grep ${SYSROOT_ARCH}hf-sysroot))
+  else
+    SYSROOTDIR=$(basename $(ls $TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/build/linux/ |grep ${SYSROOT_ARCH}-sysroot))
+  fi
   export CFLAGS="$CFLAGS -I$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/build/linux/${SYSROOTDIR}/usr/include/${SYSROOT_TARGET}/qt5"
   export CXXFLAGS="$CXXFLAGS -I$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/build/linux/${SYSROOTDIR}/usr/include/${SYSROOT_TARGET}/qt5"
 else
@@ -1422,7 +1436,11 @@ fi
 
 if [ ${USE_SYSROOT} -eq 1 ]; then
   # Take care of Debian/Ubuntu related missing header issues:
-  SYSROOTDIR=$(basename $(ls build/linux/ |grep ${SYSROOT_ARCH}-sysroot))
+  if [[ "$ARCH" =~ arm.* ]]; then
+    SYSROOTDIR=$(basename $(ls build/linux/ |grep ${SYSROOT_ARCH}hf-sysroot))
+  else
+    SYSROOTDIR=$(basename $(ls build/linux/ |grep ${SYSROOT_ARCH}-sysroot))
+  fi
 
   # Take care of Debian/Ubuntu related linker issues:
   ln -s ../../lib/${SYSROOT_TARGET}/glib-2.0/include/glibconfig.h \
@@ -1503,23 +1521,46 @@ if [ ${USE_CLANG} -eq 1 ] && [  ${BUILD_CLANG} -eq 1 ]; then
   export CFLAGS=""
   export CXXFLAGS=""
   export LDFLAGS=""
-  python3 tools/clang/scripts/build.py \
-    --bootstrap \
-    --skip-checkout \
-    --pic \
-    --disable-asserts \
-    --host-cc /usr/bin/gcc \
-    --host-cxx /usr/bin/g++ \
-    --use-system-cmake \
-    --no-tools \
-    --without-android \
-    --without-fuchsia \
-    --without-zstd \
-    2>&1 | tee $OUTPUT/clang_build-${PRGNAM}.log
-    #--llvm-force-head-revision \
-    #--gcc-toolchain /usr \
-    #--host-cc /usr/bin/clang \
-    #--host-cxx /usr/bin/clang++ \
+  # As it's not possible to compile clang with gcc since version 12.x
+  # and its not possble to compile clang version 21.x with clang version 13.x
+  # (Slackware ARM's systems clang version).
+  # We will have to use our own bootstraped clang 18.x, then it's no need
+  # to bootstrap clang onece again, so we jump this step.
+  # And wile we are at it, we also drop compiling clang with pic enabled.
+  if [[ "$ARCH" =~ arm.* ]]; then
+    python3 tools/clang/scripts/build.py \
+      --skip-checkout \
+      --disable-asserts \
+      --host-cc ${BOOTSTRAP_PATH}/clang \
+      --host-cxx ${BOOTSTRAP_PATH}/clang++ \
+      --use-system-cmake \
+      --no-tools \
+      --without-android \
+      --without-fuchsia \
+      --without-zstd \
+      2>&1 | tee $OUTPUT/clang_build-${PRGNAM}.log
+  # If arch is not ARM then we proceed as usual
+  # Note, this will not work as it isn't possible to compile
+  # clang with gcc since clang 12.x
+  else
+    python3 tools/clang/scripts/build.py \
+      --bootstrap \
+      --skip-checkout \
+      --pic \
+      --disable-asserts \
+      --host-cc /usr/bin/gcc \
+      --host-cxx /usr/bin/g++ \
+      --use-system-cmake \
+      --no-tools \
+      --without-android \
+      --without-fuchsia \
+      --without-zstd \
+      2>&1 | tee $OUTPUT/clang_build-${PRGNAM}.log
+      #--llvm-force-head-revision \
+      #--gcc-toolchain /usr \
+      #--host-cc /usr/bin/clang \
+      #--host-cxx /usr/bin/clang++ \
+  fi
 
   # Building gn for Chromium 110 fails when this file is not present:
   if [ ! -f third_party/llvm-build/Release+Asserts/cr_build_revision ]; then
@@ -1549,6 +1590,21 @@ if [ ${USE_CLANG} -eq 1 ] && [  ${BUILD_CLANG} -eq 1 ]; then
   # - disable removing that openssl directory in build_rust.py
   # - ... and possibly lots more crap to fix
   ### END NOTE ###
+
+  # Next, build Rust against our custom compiler:
+  LDFLAGS="$LDFLAGS" \
+  python3 tools/rust/build_rust.py \
+    --skip-llvm-build \
+    --use-system-cmake \
+    2>&1 | tee $OUTPUT/rust_build-${PRGNAM}.log
+
+  # Ensure that only this new rust is used, ignoring the system version:
+  MYRUST_PATH="$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/third_party/rust-toolchain"
+  export PATH="$MYRUST_PATH:$PATH"
+ elif [ "${GOOGLE_CLANG}" == "armbin" ]; then
+  # Ensure that only this new clang is used, ignoring the system version:
+  MYCLANG_PATH="$ARMBIN_PATH/bin"
+  export PATH="$MYCLANG_PATH:$PATH"
 
   # Next, build Rust against our custom compiler:
   LDFLAGS="$LDFLAGS" \
