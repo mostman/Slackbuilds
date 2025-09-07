@@ -1,8 +1,8 @@
 # Alien BOB´s Chromium slackbuild adopted for Slackware ARM (SARPI 15.0) and Slackware AArch64 (SARPI Current)
 Adopted Alien BOB´s Chromium Slackbuild for Slackware ARM SARPI-15.0 and Slackware AArch64 SAPRI-Current so one can compile chromium/chromium-ungoogled for your Slackware ARM and AArch64 Rasberry Pi.
 
-This is built on SARPI 15.0 and SARPI Current Rasberry Pi 4.
-I have not tried to build this on any other device.
+This is built on SARPI 15.0 (Rasberry Pi 4) and SARPI Current (Rasberry Pi 4 & 5).
+I have not tried to build this on any other devices.
 
 Might also want to download/copy the patches from the patch directory to Alien BOB´s patch directory of the chromium slackbuild directory.
 
@@ -13,7 +13,7 @@ Might also want to download/copy the patches from the patch directory to Alien B
 * Fixed ARM sysroot path/link for libsqlite3.so, glibconfig.h,
 dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * Fixed link for debians arm-linux-gnueabihf-readelf to slackwares readelf
-* Fixed compiling google's internal llvm/clang for ARM and aarch64.
+* Fixed compiling google's internal llvm/clang for ARM, just use system clang for AArch64.
 * Also made it possible to use eithers systems llvm/clang version or my slackbuild llvm/clang version instead of chromiums llvm/clang build.
 * Patched chromium for arm and aarch64 to support Widevine. (Using my patched glibc will also make Widevine 4.10.2252.x and latest 4.10.2557.x working on ARM and aarch64)
 
@@ -29,7 +29,7 @@ dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * Internet access (for downloading toolchain bins)
 
 # Optional dependencies to build:
-* llvm >= 16.0.x (Is avalible throught slack package or my [llvm](https://github.com/mostman/Slackbuilds/tree/main/llvm) buildscript or prebuilt [llvm slackware x86_64 and ARM](https://github.com/mostman/Slackbuilds/releases/tag/16.0.6) package).
+* llvm >= 16.0.x (Is avalible throught slack package or my [clang](https://github.com/mostman/Slackbuilds/tree/Slackware-15.0/llvm) buildscript or prebuilt [clang slackware ARM](https://github.com/mostman/Slackbuilds/releases/tag/18.0.1) package).
 To speed up the build and not having to build Chromiums internal llvm/clang everytime, to get around this issue you can install my llvm/clang package for Slackware Arm 15.0.
 By doing this you save about a day comping time on a RPI4.
 
@@ -45,7 +45,6 @@ By doing this you save about a day comping time on a RPI4.
 * Download the chromium.Slackbuild file to build directory.
 
 Some last notes.
-Make sure you have at least 15-20 GB free space on your memory card, drive or USBstick (Or where ever you store the source code and tmp folder) and at least 1 GB swap space.
-Recommended to set "gpu_mem" to 32 or 64 and then run system in runlevel 3 when compiling.
-I´am sorry to say, that estimated compiling time will be at least thirty six hours if not even more.
-
+Make sure you have at least 20-50 GB free space on your memory card, drive or USBstick (Or where ever you store the source code and tmp folder) and at least 1 GB swap space.
+Recommended to set "gpu_mem" to 8 or 16 and then run system in runlevel 3 when compiling.
+I´am sorry to say, that estimated compiling time will be at least sixty hours on a RPI 5 and about 144 hours on a RPI 4 if not even more.
