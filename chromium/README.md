@@ -29,7 +29,7 @@ dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * Internet access (for downloading toolchain bins)
 
 # Optional dependencies to build:
-* llvm >= 16.0.x (Is avalible throught slack package or my [clang](https://github.com/mostman/Slackbuilds/tree/Slackware-15.0/llvm) buildscript or prebuilt [clang slackware ARM](https://github.com/mostman/Slackbuilds/releases/tag/18.0.1) package).
+* llvm >= 16.0.x (Is avalible throught slack package or my [clang](https://github.com/mostman/Slackbuilds/tree/Slackware-15.0/llvm) buildscript or prebuilt [clang slackware ARM](https://github.com/mostman/Slackbuilds/releases/tag/21.1.0) package).
 To speed up the build and not having to build Chromiums internal llvm/clang everytime, to get around this issue you can install my llvm/clang package for Slackware Arm 15.0.
 By doing this you save about a day comping time on a RPI4.
 
