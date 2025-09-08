@@ -909,6 +909,9 @@ cat $SRCDIR/patches/chromium_glibc241_map_droppable.patch \
 cat $SRCDIR/patches/chromium-138-nodejs-version-check.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+cat $SRCDIR/patches/gentoo/chromium-140-__rust_no_alloc_shim_is_unstable.patch \
+  | patch -p1 --verbose \
+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # https://issues.chromium.org/issues/424424323
 #cat $SRCDIR/patches/rust_lifetime_424424323.patch \
 #  | patch -p1 --verbose \
