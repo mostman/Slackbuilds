@@ -932,6 +932,10 @@ if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
   #cat $SRCDIR/patches/compiler-rt-adjust-paths.patch | patch -p1 --verbose \
   cat $SRCDIR/patches/compiler-rt-adjust-paths-139.patch | patch -p1 --verbose \
     2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+  # Aarch64 fix broken compiler-rt builtin path 
+  sed -i build/config/clang/BUILD.gn \
+    -e "s/aarch64-unknown-linux-gnu/linux/"
+
   sed -i build/config/clang/BUILD.gn \
     -e "s,clang_base_path/lib/clang/,clang_base_path/lib${LIBDIRSUFFIX}/clang/,"
   sed  -i build/rust/rust_bindgen.gni \
