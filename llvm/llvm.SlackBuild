@@ -66,7 +66,7 @@ OUTPUT=${OUTPUT:-/tmp}
 # Use system´s clang, for a faster build
 # and make the binaries smaller.
 USE_CLANG=${USE_CLANG:-1}
-USE_CUSTCLANG=${USE_CLANG:-1}
+USE_CUSTCLANG=${USE_CUSTCLANG:-1}
 
 if [ "$ARCH" = "i586" ]; then
   SLKCFLAGS="-O2 -march=i586 -mtune=i686"
