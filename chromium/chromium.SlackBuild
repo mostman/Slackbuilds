@@ -491,6 +491,10 @@
 #                   * Update to M140.
 #                   07/sep/2025 by Minime <slackware[at]slackwarelinux[dot]se>
 #                   * Fixed build for ARM and AArch64
+# 140.0.7339.127-1: 10/sep/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+#                   11/sep/2025 by Minime <slackware[at]slackwarelinux[dot]se>
+#                   * Fixed build for ARM and AArch64
 #
 # -----------------------------------------------------------------------------
 #
@@ -514,8 +518,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-140.0.7339.80}
-UNGOOGLED=${UNGOOGLED:-140.0.7339.80-1}
+VERSION=${VERSION:-140.0.7339.127}
+UNGOOGLED=${UNGOOGLED:-140.0.7339.127-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
@@ -907,6 +911,14 @@ cat $SRCDIR/patches/chromium_glibc241_map_droppable.patch \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # Gentoo contribution:
 cat $SRCDIR/patches/chromium-138-nodejs-version-check.patch \
+  | patch -p1 --verbose \
+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+# NixOS contribution:
+cat $SRCDIR/patches/chromium140_rust.patch \
+  | patch -p1 --verbose \
+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+# Fix build using rust 1.89:
+cat $SRCDIR/patches/chromium_rust189_mismatched_lifetime_syntaxes.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 cat $SRCDIR/patches/gentoo/chromium-140-__rust_no_alloc_shim_is_unstable.patch \
