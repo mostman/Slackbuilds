@@ -1,5 +1,5 @@
 --- chromium.SlackBuild.orig	2025-09-05 07:50:59.000000000 +0200
-+++ chromium.SlackBuild	2025-09-07 17:10:39.423211841 +0200
++++ chromium.SlackBuild	2025-09-11 16:33:33.922849558 +0200
 @@ -1,10 +1,10 @@
  #!/bin/bash
 -# $Id: chromium.SlackBuild,v 1.494 2025/09/05 05:50:36 root Exp root $
@@ -692,15 +692,14 @@
  
  # Cross-compiling 32bit binaries on 64bit Slackware; set to "YES":
  CROSS32=${CROSS32:-"NO"}
-@@ -837,8 +606,16 @@
+@@ -837,9 +606,17 @@
  USE_CLANG=${USE_CLANG:-1}
  
  # Prefer using Google's custom clang as pre-built binaries or compile ourselves?
 -# Possible values: 'src' or 'bin':
--GOOGLE_CLANG=${GOOGLE_CLANG:-"bin"}
 +# Possible values: 'src', 'bin' or 'armbin':
-+GOOGLE_CLANG=${GOOGLE_CLANG:-"armbin"}
-+
+ GOOGLE_CLANG=${GOOGLE_CLANG:-"bin"}
+ 
 +# If set GOOGLE_CLANG to 'src' and it's a ARM system
 +# we will need to tell where we have our already bootstraped clang
 +BOOTSTRAP_PATH="/opt/bootstrap-llvm"
@@ -708,9 +707,10 @@
 +# If set GOOGLE_CLANG to 'armbin' and it's a ARM system
 +# We will need to tell where we have our precompiled clang for ARM
 +ARMBIN_PATH="/opt/llvm"
- 
++
  # Build a custom clang or use the system clang?
  # CLANG_MIN is the minimal clang version needed to compile chromium,
+ # see 'CLANG_REVISION' in ./tools/clang/scripts/update.py :
 @@ -964,14 +741,26 @@
               #DSSE="0"
               DSSE="1"
@@ -777,22 +777,25 @@
  # https://bugs.gentoo.org/949654 - 'Aw,snap!' on certain pages with glibc-2.41
  cat $SRCDIR/patches/chromium_glibc241_map_droppable.patch \
    | patch -p1 --verbose \
-@@ -1106,16 +909,28 @@
+@@ -1106,17 +909,39 @@
  cat $SRCDIR/patches/chromium-138-nodejs-version-check.patch \
    | patch -p1 --verbose \
    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 -## Fix build using rust 1.89:
 -#cat $SRCDIR/patches/chromium_rust189_mismatched_lifetime_syntaxes.patch \
++cat $SRCDIR/patches/gentoo/chromium-140-__rust_no_alloc_shim_is_unstable.patch \
++  | patch -p1 --verbose \
++  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 +# https://issues.chromium.org/issues/424424323
 +#cat $SRCDIR/patches/rust_lifetime_424424323.patch \
- #  | patch -p1 --verbose \
- #  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
- 
-+# Needed for chromium 135-136
-+#cat $SRCDIR/patches/gentoo/fix_build_with_gperf.patch \
 +#  | patch -p1 --verbose \
 +#  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 +
++# Needed for chromium 135-136
++#cat $SRCDIR/patches/gentoo/fix_build_with_gperf.patch \
+ #  | patch -p1 --verbose \
+ #  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+ 
 +# archlinux contribution:
 +# Fixes widevine support for arm
 +cat $SRCDIR/patches/arch/widevine_support_for_arm.patch \
@@ -805,11 +808,32 @@
 -  cat $SRCDIR/patches/compiler-rt-adjust-paths.patch | patch -p1 --verbose \
 +  # Was for chromium 137
 +  #cat $SRCDIR/patches/compiler-rt-adjust-paths.patch | patch -p1 --verbose \
-+  cat $SRCDIR/patches/compiler-rt-adjust-paths-139.patch | patch -p1 --verbose \
++  # Was for chromium 139
++  #cat $SRCDIR/patches/compiler-rt-adjust-paths-139.patch | patch -p1 --verbose \
++  cat $SRCDIR/patches/compiler-rt-adjust-paths-140.patch | patch -p1 --verbose \
      2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
++  # Aarch64 fix compiler-rt builtin path
++  if [ "$ARCH" == "aarch64" ]; then
++    sed -i build/config/clang/BUILD.gn \
++      -e "s/aarch64-unknown-linux-gnu/linux/"
++  fi
    sed -i build/config/clang/BUILD.gn \
      -e "s,clang_base_path/lib/clang/,clang_base_path/lib${LIBDIRSUFFIX}/clang/,"
-@@ -1309,14 +1124,29 @@
+   sed  -i build/rust/rust_bindgen.gni \
+@@ -1287,7 +1112,11 @@
+ fi
+ 
+ # When compiling google's clang, we want 32bit too - don't limit us, devs:
+-sed -i tools/clang/scripts/build.py -e "s/x86_64-unknown-linux-gnu/${SYSROOT_TARGET}/g"
++if [[ "$ARCH" =~ arm.* ]]; then
++  sed -i tools/clang/scripts/build.py -e "s/x86_64-unknown-linux-gnu/${TARGET}/g"
++else
++  sed -i tools/clang/scripts/build.py -e "s/x86_64-unknown-linux-gnu/${SYSROOT_TARGET}/g"
++fi
+ if [ "$ARCH" == "i586" ] || [ "${CROSS32}" = "YES" ]; then
+   sed -i tools/clang/scripts/build.py \
+       -e "s/sysroot_amd64\([,)]\)/sysroot_i386\1/"
+@@ -1309,14 +1138,29 @@
  #sed -i tools/clang/scripts/update.py -e "s/RELEASE_VERSION = '16'/RELEASE_VERSION = '16.0.0'/"
  
  # ARM platform specifics:
@@ -818,8 +842,8 @@
 +# One of many reasons i built chromium's llvm package separately.
  if [[ "$ARCH" =~ arm.* ]]; then
 +  # Can't run tests on x86 host.
-+  sed -i tools/clang/scripts/build.py \
-+      -e "s/sysroot_amd64,/sysroot_arm, \n            \x27LLVM_INCLUDE_TESTS=OFF\x27,/"
++  #sed -i tools/clang/scripts/build.py \
++  #    -e "s/sysroot_amd64,/sysroot_arm, \n            \x27LLVM_INCLUDE_TESTS=OFF\x27,/"
 +  # We want to compile for ARM and not AMD64
 +  sed -i tools/clang/scripts/build.py \
 +      -e "s/sysroot_amd64\([,)]\)/sysroot_arm\1/"
@@ -842,7 +866,7 @@
  fi
  
  ## When compiling google's clang, use the system cmake
-@@ -1376,7 +1206,8 @@
+@@ -1376,7 +1220,8 @@
  [ ${USE_SYSROOT} -eq 1 ] && do_syslibs=false || do_syslibs=true
  [ ${USE_VAAPI} -eq 1 ] && do_vaapi=true || do_vaapi=false
  [ ${USE_WAYLAND} -eq 1 ] && do_wayland=true || do_wayland=false
@@ -852,7 +876,7 @@
  
  export LDFLAGS="$SLKLDFLAGS"
  export CXXFLAGS="$SLKCFLAGS -Wno-unknown-warning-option"
-@@ -1384,7 +1215,11 @@
+@@ -1384,7 +1229,11 @@
  export PATH="$TMP/tmp-$PRGNAM/privatebin:$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/third_party/depot_tools:$PATH"
  
  if [ ${USE_SYSROOT} -eq 1 ]; then
@@ -865,7 +889,7 @@
    export CFLAGS="$CFLAGS -I$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/build/linux/${SYSROOTDIR}/usr/include/${SYSROOT_TARGET}/qt5"
    export CXXFLAGS="$CXXFLAGS -I$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/build/linux/${SYSROOTDIR}/usr/include/${SYSROOT_TARGET}/qt5"
  else
-@@ -1462,7 +1297,7 @@
+@@ -1462,7 +1311,7 @@
    'dcheck_always_on=false'
  )
  
@@ -874,7 +898,7 @@
    # Speed up the build:
    _chromium_conf+=(
      'use_thin_lto=true'
-@@ -1472,7 +1307,8 @@
+@@ -1472,7 +1321,8 @@
  else
    # Thin LTO requires more than 4 GB of RAM, skip it on 32bit:
    _chromium_conf+=(
@@ -884,7 +908,7 @@
    )
  fi
  
-@@ -1520,6 +1356,9 @@
+@@ -1520,6 +1370,9 @@
  if [[ "$ARCH" =~ arm.* ]]; then
    _chromium_conf+=( 'target_cpu="arm"' 'v8_target_cpu="arm"' 'target_os="linux"' )
  fi
@@ -894,7 +918,7 @@
  
      # Change this back when CRBUG 592268 is fixed (error during final link:
      # undefined reference to `base::i18n::GetRawIcuMemory())
-@@ -1597,8 +1436,13 @@
+@@ -1597,8 +1450,13 @@
  
  if [ ${USE_SYSROOT} -eq 1 ]; then
    # Take care of Debian/Ubuntu related missing header issues:
@@ -909,7 +933,7 @@
    ln -s ../../lib/${SYSROOT_TARGET}/glib-2.0/include/glibconfig.h \
      build/linux/${SYSROOTDIR}/usr/include/glib-2.0/glibconfig.h
    ln -s ../../../lib/${SYSROOT_TARGET}/dbus-1.0/include/dbus/dbus-arch-deps.h \
-@@ -1606,9 +1450,6 @@
+@@ -1606,9 +1464,6 @@
    ln -s ../../lib/${SYSROOT_TARGET}/graphene-1.0/include/graphene-config.h \
      build/linux/${SYSROOTDIR}/usr/include/graphene-1.0/graphene-config.h
  
@@ -919,7 +943,7 @@
    for SOFILE in build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}/nss/*.so ;
    do
      ln -sf nss/$(basename $SOFILE) \
-@@ -1625,17 +1466,6 @@
+@@ -1625,17 +1480,6 @@
    fi
  
    unset SYSROOTDIR
@@ -937,7 +961,7 @@
  fi
  
  # Do not make the build fail on stripping chromedriver,
-@@ -1691,23 +1521,46 @@
+@@ -1691,23 +1535,47 @@
    export CFLAGS=""
    export CXXFLAGS=""
    export LDFLAGS=""
@@ -965,11 +989,12 @@
 +  # to bootstrap clang onece again, so we jump this step.
 +  # And wile we are at it, we also drop compiling clang with pic enabled.
 +  if [[ "$ARCH" =~ arm.* ]]; then
++    BSP_PATH="${BOOTSTRAP_PATH}/bin"
 +    python3 tools/clang/scripts/build.py \
 +      --skip-checkout \
 +      --disable-asserts \
-+      --host-cc ${BOOTSTRAP_PATH}/clang \
-+      --host-cxx ${BOOTSTRAP_PATH}/clang++ \
++      --host-cc ${BSP_PATH}/clang \
++      --host-cxx ${BSP_PATH}/clang++ \
 +      --use-system-cmake \
 +      --no-tools \
 +      --without-android \
@@ -1001,11 +1026,32 @@
  
    # Building gn for Chromium 110 fails when this file is not present:
    if [ ! -f third_party/llvm-build/Release+Asserts/cr_build_revision ]; then
-@@ -1748,6 +1601,21 @@
+@@ -1748,6 +1616,42 @@
    # Ensure that only this new rust is used, ignoring the system version:
    MYRUST_PATH="$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/third_party/rust-toolchain"
    export PATH="$MYRUST_PATH:$PATH"
 + elif [ "${GOOGLE_CLANG}" == "armbin" ]; then
++  # Taken from gentoo
++  # We need to symlink the toolchain into the expected location
++  echo "Symlinking Clang toolchain to expected location ..."
++  if [ ! -d third_party/llvm-build ]; then
++    mkdir -p third_party/llvm-build
++  fi
++  # the 'Chromium Linux Tarballs' seem to already have 'Release+Asserts/{lib,bin}'; not sure if this is an
++  # upstream change - we're using the same scripts to build, theoretically. We'll still attempt to create
++  # llvm-build, but we'll rm Release+Asserts and symlink directly.
++  if [ -d third_party/llvm-build/Release+Asserts ]; then
++    rm -r third_party/llvm-build/Release+Asserts
++  fi
++  ln -s "${ARMBIN_PATH}" third_party/llvm-build/Release+Asserts
++
++  # Building gn for Chromium 110 fails when this file is not present:
++  if [ ! -f ${ARMBIN_PATH}/cr_build_revision ]; then
++    CLANG_REVISION=$(grep ^CLANG_REVISION tools/clang/scripts/update.py |cut -d= -f2 |tr -d " '")
++    CLANG_SUB_REVISION=$(grep ^CLANG_SUB_REVISION tools/clang/scripts/update.py |cut -d= -f2 |tr -d " '")
++    echo "${CLANG_REVISION}-${CLANG_SUB_REVISION}" > ${ARMBIN_PATH}/cr_build_revision
++  fi
++
 +  # Ensure that only this new clang is used, ignoring the system version:
 +  MYCLANG_PATH="$ARMBIN_PATH/bin"
 +  export PATH="$MYCLANG_PATH:$PATH"
@@ -1023,7 +1069,7 @@
   else
    # Download prebuilt llvm and rust binaries instead of compiling them:
    python3 tools/rust/update_rust.py
-@@ -1885,6 +1753,14 @@
+@@ -1885,6 +1789,14 @@
        "rustc_version=\"$(rustc --version |cut -d' ' -f2)\""
      )
  
@@ -1038,7 +1084,7 @@
  fi
  
  if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 1 ]; then
-@@ -1930,8 +1806,7 @@
+@@ -1930,8 +1842,7 @@
    chrome chrome_sandbox chromedriver \
    2>&1 | tee $OUTPUT/ninja-${PRGNAM}.log
  
@@ -1048,7 +1094,7 @@
    # ungoogled-chromium has crash-reporting disabled:
    LIBCLANG_PATH="/usr/lib${LIBDIRSUFFIX}" \
    LDFLAGS="$LDFLAGS" \
-@@ -2069,6 +1944,17 @@
+@@ -2069,6 +1980,17 @@
  install -D -m0644 out/Release/${PRGNAM}.desktop \
    $PKG/usr/share/applications/${PRGNAM}.desktop
  
@@ -1066,7 +1112,7 @@
  # Install desktop icons:
  for size in 16 32; do
    install -D -m0644 \
-@@ -2113,7 +1999,7 @@
+@@ -2113,7 +2035,7 @@
    -e "s/@CRFLAGS@/${CRFLAGS}/g" \
    -e "s/@CRUSERFLAGS@/${CRUSERFLAGS}/g" \
    -e "s/@LIBDIRSUFFIX@/${LIBDIRSUFFIX}/g" \
@@ -1075,7 +1121,7 @@
    > $PKG/etc/${PRGNAM}/00-default.conf.new
  
  if [ $USE_UNGOOGLED -eq 0 ]; then
-@@ -2216,5 +2102,15 @@
+@@ -2216,5 +2138,15 @@
  cd -
  cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
  
