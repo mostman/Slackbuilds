@@ -4,6 +4,7 @@ My Slackbuilds for Slackwarea arch64 Current
 Most of the slackbuilds i have written my self, some are rewritten slackbuilds to suite my needs.
 
 chromium-ungoogled package compiled for Slackware Current Aarch64 (15.1) (RPI 4 & 5)<br />
+Latest build from Mr drmozes (Platform Architect & Developer - Slackware ARM / AArch64) can be found here: https://slackware.uk/slackwarearm/experimental/slackwareaarch64-current/chromium/  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/140.0.7339.127/chromium-ungoogled-140.0.7339.127-aarch64-1SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/140.0.7339.127/)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/140.0.7339.80/chromium-ungoogled-140.0.7339.80-aarch64-1SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/140.0.7339.80/)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/139.0.7258.154/chromium-ungoogled-139.0.7258.154-aarch64-1SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/139.0.7258.154/)  
