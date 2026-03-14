@@ -1,10 +1,10 @@
 #!/bin/bash
-# $Id: chromium.SlackBuild,v 1.469 2025/05/02 14:36:30 root Exp root $
-# Copyright 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025  Eric Hameleers, Eindhoven, NL
+# $Id: chromium.SlackBuild,v 1.542 2026/03/13 08:04:25 root Exp root $
+# Copyright 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026  Eric Hameleers, Eindhoven, NL
 # All rights reserved.
 #
 #   Permission to use, copy, modify, and distribute this software for
-######"""#   any purpose with or without fee is hereby granted, provided that
+#   any purpose with or without fee is hereby granted, provided that
 #   the above copyright notice and this permission notice appear in all
 #   copies.
 #
@@ -21,480 +21,72 @@
 #   OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 #   SUCH DAMAGE.
 #
-# Modified by Martin Östman (Minime) for slackware ARM (SARPI).
-#
 # -----------------------------------------------------------------------------
 #
 # Slackware SlackBuild script 
 # ===========================
 # By:              Eric Hameleers <alien@slackware.com>
 # Modified by      Martin Östman (Minime) <slackware[at]slackwarelinux[dot]se>
-# For:             chromium/chromium-ungoogled
+# For:             chromium and chromium-ungoogled
 # Descr:           Open Source version of Chrome Web Browser
 # URL:             http://www.chromium.org/
-# Build needs:     - ninja;
-#                  - nodejs >= 20.13.0
-#                  - gcc >= 8 , llvm >= 16 for bootstrapping gn;
-#                  - nasm >= 2.14 (yasm no longer being used);
-#                  - cmake >= 3.30.1
-#                  - python3 >= 3.7, python3-setuptools;
+# Build needs:     - ninja > 1.13.2
+#                  - meson >= 1.10.0
+#                  - nodejs >= 22.22.0
+#                  - gcc >= 8 , llvm >= 21 for bootstrapping gn
+#                  - rust >= 1.93.0, rust-bindgen >= 1.72.0
+#                  - nasm >= 2.14 (yasm no longer being used)
+#                  - cmake >= 3.31.3
+#                  - python3 >= 3.10, python3-setuptools
+#                  - /usr/bin/python symlink pointing to python3.x
 #                  - java runtime
 #                  - Internet access (for downloading toolchain bins)
 # Needs:       
-# Changelog:
-# 92.0.4515.107-1: 22/jul/2021 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M92.
-# 92.0.4515.131-1: 05/aug/2021 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 92.0.4515.159-1: 17/aug/2021 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-#                  30/aug/2021 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Added lates patchset "92.0.4515.x"
-#                  * Repatched clang.toolchains.arm_i586.triple for ARM.
-#                  * Fixed chromium_conf for ARM
-#                  * Fixed target triple for arm.
-#                  * Fixed ARM sysroot path to libsqlite3.so, glibconfig.h,
-#                    dbus-arch-deps.h, graphene-config.h and incorrect
-#                    conf file "(arch)-linux-gnu.conf" in ARM system.
-#                  * Fixed compiling google's internal clang for ARM.
-#                  31/aug/2021 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Fixed missing link to debias readelf for ARM.
-#                  2/sep/2021 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Alienbob thought the code is messy, and i agree.
-#                    Started on some code cleanup.
-#                  * Removed eu-strip patch and rebuild of eu-strip as this
-#                    not needed.
-#                  * Cleaned up duplicate entries in chromium config array.
-# 93.0.4577.63-1:  01/sep/2021 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M93. Add some mods that hopefully make building
-#                    on ARM platforms easier.
-# 93.0.4577.82-1:  13/sep/2021 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 93.0.4577.82-1:  20/sep/2021 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Update to M93.
-#                  * Added latest patchsets for chromium-93.0.4577.8
-#                  * Fixed incorrect/missing softlink
-#                  * Added softlink cleanup
-#                  * Fixed Widevine support patch for ARM
-#                    https://www.linuxquestions.org/questions/slackware-arm-108/how-to-get-widevine-4-10-2252-0-working-on-slackware-arm-4175700846/
-#                  22/sep/2021 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Fixed custom clang option, set default
-#                    to systems clang version
-#                  27/sep/2021 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Merged script with AlienBOB´s slackbuild
-#                  * Fixed and adjusted script to my llvm build.
-#                  * Note: There will be an issue with Slackware ARMs
-#                          llvm/clang version as its missing lld.
-#                          This is one reason i make a custom llvm/clang package.
-#                  * cleared changelog history as its kind of irrelevant and old...
-# 94.0.4606.71-1:  02/oct/2021 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M94.
-# 94.0.4606.81-1:  12/oct/2021 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Update to M94.
-#                  * Needs llvm/clang 13, so system clang is no longer an option.
-#                  * Will build with python 3.9, but if upgraded to python 3.10
-#                    there will be issues. Need to revert package python 3.10 to 3.9.
-# 95.0.4638.69-1:  28/oct/2021 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M95.
-# 96.0.4664.45-1:  15/nov/2021 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M96.
-#                  06/dec/2021 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Fixed chromium/ungoogled for ARM
-# 96.0.4664.93-1:  09/dec/2021 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 96.0.4664.110-1: 14/dec/2021 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 96.0.4664.110-1  21/dec/2021 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * bump version to 96.0.4664.110.
-# 97.0.4692.71-1:  05/jan/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M97.
-# 97.0.4692.71-1:  09/jan/2022 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * bump version to 97.0.4692.71.
-# 97.0.4692.99-1:  20/jan/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-#                  27/jan/2022 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Bump version fix chromium/ungoogled for ARM
-# 98.0.4758.80-1:  02/feb/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M98.
-#                  04/feb/2022 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Bump version fix chromium/ungoogled for ARM
-# 98.0.4758.102-1: 16/feb/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-#                  17/feb/2022 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Bump version fix chromium/ungoogled for ARM
-# 99.0.4844.51-1:  02/mar/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M99.
-# 99.0.4844.51-1:  09/mar/2022 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Update to M99 fix chromium/ungoogled for ARM
-# 99.0.4844.74-1:  16/mar/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-#                  17/mar/2022 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Bump version fix chromium/ungoogled for ARM
-# 99.0.4844.82-1:  24/mar/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 99.0.4844.84-1:  27/mar/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Emergency update.
-# 100.0.4896.60-1: 30/mar/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M100.
-# 100.0.4896.75-1: 05/apr/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 100.0.4896.88-1: 12/apr/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 100.0.4896.127-1:15/apr/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Emergency update.
-# 101.0.4951.41-1: 28/apr/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M101.
-# 101.0.4951.54-1: 02/may/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 101.0.4951.64-1: 11/may/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-#                  18/may/2022 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Bump version fix chromium/ungoogled for ARM
-# 102.0.5005.61-1: 25/may/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M102.
-#                  27/may/2022 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Bump version fix chromium/ungoogled for ARM.
-# 102.0.5005.61-3: 02/jun/2022 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Ungoogled update.
-#                  - Fix bypassing ssl errors not being possible anymore (see #1976)
-#                  - Properly bump revision to 3 (see #1980)
-#                  - Fix the browser crashing when adding a search engine entry (see #1970)
-#                  - Add two flags to allow looking more like the tor browser (see #1920)
-# 102.0.5005.115-1:10/jun/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-#                  12/jun/2022 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Bump version fix chromium/ungoogled for ARM
-# 103.0.5060.53-1 :22/jun/2022 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Update to M103 version fix chromium/ungoogled for ARM
-# 103.0.5060.53-1: 25/jun/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M103.
-# 103.0.5060.114-1 :12/jul/2022 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Bump version fix chromium/ungoogled for ARM
-# 103.0.5060.134-1 :20/jul/2022 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Bump version fix chromium/ungoogled for ARM
-# 103.0.5060.134-1:20/jul/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 104.0.5112.79-1: 02/aug/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M104.
-#                  05/aug/2022 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Update to M104 version fix chromium/ungoogled for ARM.
-# 104.0.5112.101-1:17/aug/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-#                  19/aug/2022 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Update version fix chromium/ungoogled for ARM.
-# 105.0.5195.52-1: 02/aug/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M105.
-# 105.0.5195.102-1:04/aug/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 105.0.5195.125-1:21/sep/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 106.0.5249.61-1: 28/sep/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M106.
-# 106.0.5249.91-1: 02/oct/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 106.0.5249.103-1:09/oct/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 106.0.5249.119-1:18/oct/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 107.0.5304.68-1: 26/oct/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M107.
-# 107.0.5304.87-1: 28/oct/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 107.0.5304.110-1: 09/nov/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-#                   15/nov/2022 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Update version fix chromium/ungoogled for ARM. (Failed to build)
-# 107.0.5304.121-1: 25/nov/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 108.0.5359.71-1: 02/dec/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M108.
-# 108.0.5359.94-1: 02/dec/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 108.0.5359.94-2: 06/dec/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Fix undefined symbol "gbm_bo_get_modifier" on 14.2.
-# 108.0.5359.98-1: 08/dec/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 108.0.5359.124-1: 17/dec/2022 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 109.0.5414.74-1: 15/jan/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M109.
-# 109.0.5414.74-2: 17/jan/2023 by Eric Hameleers <alien@slackware.com>
-#                  * System libdrm on Slackware 14.2 is too old.
-# 109.0.5414.119-1: 25/jan/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-#                  30/jan/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Update version fix chromium/ungoogled for ARM.
-# 110.0.5481.77-1: 09/feb/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M110.
-#                  09/feb/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Update M110, version fix chromium/ungoogled for ARM.
-# 110.0.5481.100-1:15/feb/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-#                  19/feb/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Update, version fix chromium/ungoogled for ARM.
-# 110.0.5481.177-1:26/feb/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-#                  26/feb/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Update, version fix chromium/ungoogled for ARM.
-# 111.0.5563.64-1: 09/mar/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M111.
-#                  09/mar/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * version fix chromium/ungoogled for ARM.
-# 111.0.5563.110-1:23/mar/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-#                  23/mar/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * version fix chromium/ungoogled for ARM.
-# 111.0.5563.147-1:29/mar/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-#                  01/apr/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * version fix chromium/ungoogled for ARM.
-# 112.0.5615.49-1: 05/apr/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M112.
-#                  07/apr/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * version fix chromium/ungoogled for ARM.
-# 112.0.5615.121-1:15/apr/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-#                  16/apr/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * version fix chromium/ungoogled for ARM.
-# 112.0.5615.165-1:20/apr/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-#                  20/apr/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * version fix chromium/ungoogled for ARM.
-# 113.0.5672.63-1: 03/may/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M113.
-#                  03/may/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * version fix chromium/ungoogled for ARM.
-# 113.0.5672.92-1: 10/may/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Update.
-#                  * version fix chromium/ungoogled for ARM.
-#                  15/may/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 113.0.5672.126-1:16/may/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-#                  18/may/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * version fix chromium/ungoogled for ARM.
-# 114.0.5735.45-1: 27/may/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M114.
-# 114.0.5735.90-1: 31/may/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 114.0.5735.106-1:06/jun/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-#                  15/jun/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * version fix chromium/ungoogled for ARM. (Trying again)
-# 114.0.5735.133-1:13/jun/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-#                  17/jun/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * version fix chromium/ungoogled for ARM.
-# 114.0.5735.198-1:27/jun/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Update version fix chromium/ungoogled for ARM.
-#                  01/jul/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-#                  01/jul/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Fixed build for ARM of google's internal llvm/clang from source.
-#                     Should be possible to build now.
-#                  09/jul/2023 by Minime <slackware[at]slackwarelinux[dot]se>
-#                  * Fixed build for AArch64.
-# 115.0.5790.170-1:03/aug/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M115.
-# 116.0.5845.96-1: 16/aug/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M116. In remembrance of Bram Molenaar (Vim BDFL)
-#                    whose burial I attended today.
-# 116.0.5845.110-1:23/aug/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 116.0.5845.140-1:30/aug/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 116.0.5845.179-1:05/sep/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 116.0.5845.187-1:12/sep/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 117.0.5938.62-1: 14/sep/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M117.
-# 117.0.5938.92-1: 27/sep/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 117.0.5938.132-1:28/sep/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 117.0.5938.149-1:04/oct/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 118.0.5993.70-1: 12/oct/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M118.
-# 118.0.5993.88-1: 18/oct/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 119.0.6045.105-1: 01/nov/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M119.
-# 119.0.6045.123-1: 01/nov/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 119.0.6045.159-1: 16/nov/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 119.0.6045.199-1: 29/nov/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 120.0.6099.109-1: 13/dec/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update to M120.
-# 120.0.6099.129-1: 21/dec/2023 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 120.0.6099.199-1: 03/jan/2024 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 120.0.6099.216-1: 09/jan/2024 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 120.0.6099.224-1: 17/jan/2024 by Eric Hameleers <alien@slackware.com>
-#                  * Update.
-# 121.0.6167.85-1:  28/jan/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update to M121.
-# 121.0.6167.139-1: 31/jan/2024 by Eric Hameleers <alien@slackware.com>
+# Old Changelog:    chromium.buildhistory
+# Changelog:   
+# 142.0.7444.134-1: 06/nov/2025 by Eric Hameleers <alien@slackware.com>
 #                   * Update.
-# 122.0.6261.57-1:  21/feb/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update to M122.
-# 122.0.6261.128-1: 12/mar/2024 by Eric Hameleers <alien@slackware.com>
+# 142.0.7444.162-1: 15/nov/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update. Make building chromium-ungoogled the default.
+#                     Improved ARM/AArch64 support by Martin Ostman (Minime).
+#                     Compiling Google's clang/rust is still not working.
+#                     Removed support for my old armv7hl port.
+#                     Moved old Changelog entries to a separate file
+#                     chromium.buildhistory
+# 142.0.7444.175-1: 21/nov/2025 by Eric Hameleers <alien@slackware.com>
 #                   * Update.
-# 123.0.6312.58-1:  19/mar/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update to M123.
-# 123.0.6312.86-1:  26/mar/2024 by Eric Hameleers <alien@slackware.com>
+# 143.0.7499.40-1:  02/dec/2025 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M143.
+# 143.0.7499.109-1: 11/dec/2025 by Eric Hameleers <alien@slackware.com>
 #                   * Update.
-# 123.0.6312.105-1: 04/apr/2024 by Eric Hameleers <alien@slackware.com>
+# 143.0.7499.146-1: 17/dec/2025 by Eric Hameleers <alien@slackware.com>
 #                   * Update.
-# 123.0.6312.122-1: 10/apr/2024 by Eric Hameleers <alien@slackware.com>
+# 143.0.7499.192-1: 07/jan/2026 by Eric Hameleers <alien@slackware.com>
 #                   * Update.
-# 124.0.6367.60-1:  17/apr/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update to M124.
-# 124.0.6367.118-1: 02/may/2024 by Eric Hameleers <alien@slackware.com>
+# 144.0.7559.59-1:  14/jan/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M144.
+# 144.0.7559.96-1:  21/jan/2026 by Eric Hameleers <alien@slackware.com>
 #                   * Update.
-# 124.0.6367.201-1: 10/may/2024 by Eric Hameleers <alien@slackware.com>
+# 144.0.7559.109-1: 27/jan/2026 by Eric Hameleers <alien@slackware.com>
 #                   * Update.
-# 124.0.6367.207-1: 14/may/2024 by Eric Hameleers <alien@slackware.com>
+# 144.0.7559.132-1: 05/feb/2026 by Eric Hameleers <alien@slackware.com>
 #                   * Update.
-# 125.0.6422.60-1:  17/may/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update to M125.
-# 125.0.6422.112-1: 25/may/2024 by Eric Hameleers <alien@slackware.com>
+# 145.0.7632.67-1:  13/feb/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M145.
+# 145.0.7632.75-1:  13/feb/2026 by Eric Hameleers <alien@slackware.com>
 #                   * Update.
-# 125.0.6422.141-1: 01/jun/2024 by Eric Hameleers <alien@slackware.com>
+# 145.0.7632.109-1: 19/feb/2026 by Eric Hameleers <alien@slackware.com>
 #                   * Update.
-# 126.0.6478.55-1:  13/jun/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update to M126.
-# 126.0.6478.61-1:  15/jun/2024 by Eric Hameleers <alien@slackware.com>
+# 145.0.7632.116-1: 25/feb/2026 by Eric Hameleers <alien@slackware.com>
 #                   * Update.
-# 126.0.6478.114-1: 19/jun/2024 by Eric Hameleers <alien@slackware.com>
+# 145.0.7632.159-1: 06/mar/2026 by Eric Hameleers <alien@slackware.com>
 #                   * Update.
-# 126.0.6478.126-1: 25/jun/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 126.0.6478.182-1: 17/jul/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update. MH17 10 years.
-# 127.0.6533.72-1:  24/jul/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update to M127.
-# 127.0.6533.88-1:  31/jul/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 127.0.6533.99-1:  06/aug/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 127.0.6533.119-1: 13/aug/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 128.0.6613.84-1:  22/aug/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update to M128.
-# 128.0.6613.113-1: 29/aug/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 128.0.6613.119-1: 02/sep/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 128.0.6613.137-1: 11/sep/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 129.0.6668.58-1:  18/sep/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update to M129.
-# 129.0.6668.70-1:  24/sep/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 129.0.6668.89-1:  04/oct/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 129.0.6668.100-1: 09/oct/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 130.0.6723.58-1:  16/oct/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update to M130.
-# 130.0.6723.69-1:  26/oct/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 130.0.6723.91-1:  30/oct/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 130.0.6723.116-1: 05/nov/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 131.0.6778.69-1:  13/nov/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update to M131.
-# 131.0.6778.85-1:  20/nov/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 131.0.6778.108-1: 03/dec/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 131.0.6778.139-1: 11/dec/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 131.0.6778.204-1: 19/dec/2024 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 131.0.6778.264-1: 08/jan/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 132.0.6834.83-1:  15/jan/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update to M132.
-# 132.0.6834.110-1: 23/jan/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 132.0.6834.159-1: 29/jan/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 133.0.6943.53-1:  04/feb/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update to M133.
-# 133.0.6943.98-1:  15/feb/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 133.0.6943.126-1: 19/feb/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 133.0.6943.141-1: 25/feb/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 134.0.6998.35-1:  05/mar/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update to M134.
-# 134.0.6998.88-1:  11/mar/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 134.0.6998.165-1: 27/mar/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 135.0.7049.84-1:  13/apr/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update to M135.
-# 135.0.7049.114-1: 24/apr/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 136.0.7103.59-1:  01/may/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update to M136.
-# 136.0.7103.113-1:  16/May/2025 by Minime <slackware[at]slackwarelinux[dot]se>
+# 146.0.7680.71-1:  11/mar/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M146.
+#                   14/mar/2026 by Minime <slackware[at]slackwarelinux[dot]se>
+#                   * As there are issues compiling rust for ARM32.
+#                     Removed all ARM32 build fixes.
 #                   * Fixed build for AArch64
-#                   * Fixed build for ARM.
-# 137.0.7151.55-1:  27/may/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update to M137.
-#                   28/May/2025 by Minime <slackware[at]slackwarelinux[dot]se>
-#                   * Fixed build for AArch64
-# 137.0.7151.68-1:  03/jun/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 137.0.7151.103-1: 12/jun/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 137.0.7151.119-1: 19/jun/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 138.0.7204.49-1:  25/jun/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update to M138.
-# 138.0.7204.96-1:  01/jul/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 138.0.7204.100-1: 09/jul/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 138.0.7204.157-1: 15/jul/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 138.0.7204.168-1: 23/jul/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 138.0.7204.183-1: 31/jul/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-# 139.0.7258.66-1:  07/aug/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update to M139.
-# 139.0.7258.127-1: 15/aug/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-#                   18/aug/2025 by Minime <slackware[at]slackwarelinux[dot]se>
-#                   * Could not compile due to rust 1.89.0
-# 139.0.7258.138-1: 21/aug/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-#                   22/aug/2025 by Minime <slackware[at]slackwarelinux[dot]se>
-#                   * rust downgraded from 1.89.0 to 1.88.0
-#                   * Fixed build for AArch64
-# 139.0.7258.154-1: 27/aug/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-#                   28/aug/2025 by Minime <slackware[at]slackwarelinux[dot]se>
-#                   * Fixed build for AArch64
-# 140.0.7339.80-1:  04/sep/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update to M140.
-#                   07/sep/2025 by Minime <slackware[at]slackwarelinux[dot]se>
-#                   * Fixed build for ARM and AArch64
-# 140.0.7339.127-1: 10/sep/2025 by Eric Hameleers <alien@slackware.com>
-#                   * Update.
-#                   11/sep/2025 by Minime <slackware[at]slackwarelinux[dot]se>
-#                   * Fixed build for ARM and AArch64
 #
 # -----------------------------------------------------------------------------
 #
@@ -503,7 +95,6 @@
 # Install it using 'installpkg'. 
 #
 # -----------------------------------------------------------------------------
-
 
 # Build an ungoogled chromium package (default yes):
 USE_UNGOOGLED=${USE_UNGOOGLED:-1}
@@ -518,11 +109,12 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-140.0.7339.127}
-UNGOOGLED=${UNGOOGLED:-140.0.7339.127-1}
+VERSION=${VERSION:-146.0.7680.71}
+UNGOOGLED=${UNGOOGLED:-146.0.7680.71-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
+# It's recommended to build 32bit binaries in a 32bit chroot on a 64bit OS.
 # Cross-compiling 32bit binaries on 64bit Slackware; set to "YES":
 CROSS32=${CROSS32:-"NO"}
 
@@ -574,7 +166,9 @@ if [ $USE_CUSTOMCXX -eq 1 ]; then
 fi
 
 # Enable Qt6 UI when we do not need a debian sysroot.
-if [ ${USE_SYSROOT} -eq 0 ]; then
+# Note: on aarch64 the build will fail when Qt6 support is enabled,
+#       so there we always disable it:
+if [ ${USE_SYSROOT} -eq 0 ] &&  [ "$ARCH" != "aarch64" ]; then
   if pkg-config --exists "Qt6Core >= 6.7.2" ; then
     USE_QT6=${USE_QT6:-1}
   else
@@ -610,21 +204,13 @@ FFMPEG_HEVC=${FFMPEG_HEVC:-0}
 USE_CLANG=${USE_CLANG:-1}
 
 # Prefer using Google's custom clang as pre-built binaries or compile ourselves?
-# Possible values: 'src', 'bin' or 'armbin':
+# Possible values: 'src' or 'bin':
 GOOGLE_CLANG=${GOOGLE_CLANG:-"bin"}
-
-# If set GOOGLE_CLANG to 'src' and it's a ARM system
-# we will need to tell where we have our already bootstraped clang
-BOOTSTRAP_PATH="/opt/bootstrap-llvm"
-
-# If set GOOGLE_CLANG to 'armbin' and it's a ARM system
-# We will need to tell where we have our precompiled clang for ARM
-ARMBIN_PATH="/opt/llvm"
 
 # Build a custom clang or use the system clang?
 # CLANG_MIN is the minimal clang version needed to compile chromium,
 # see 'CLANG_REVISION' in ./tools/clang/scripts/update.py :
-CLANG_MIN=20
+CLANG_MIN=21
 if [ $(clang -dumpversion |cut -d. -f1) -ge ${CLANG_MIN} ]; then
   BUILD_CLANG=${BUILD_CLANG:-0}
 else
@@ -646,6 +232,9 @@ if which magick 1>/dev/null 2>/dev/null ; then
 else
   MAGICK=""
 fi
+
+# Slackware branding:
+BUILDER="by Minime for Slackware"
 
 # Where do we look for sources?
 SRCDIR=$(cd $(dirname $0); pwd)
@@ -709,7 +298,6 @@ MARCH=$( uname -m )
 if [ -z "$ARCH" ]; then
   case "$MARCH" in
     i?86)    export ARCH=i586 ;;
-    armv7*)  export ARCH=$MARCH ;;
     arm*)    export ARCH=arm ;;
     # Unless $ARCH is already set, use uname -m for all other archs:
     *)       export ARCH=$MARCH ;;
@@ -749,23 +337,19 @@ case "$ARCH" in
              SLKLDFLAGS="-L/usr/lib64"; LIBDIRSUFFIX="64"
              DSSE="1"
              # VAAPI not supported:
-             USE_VAAPI=0
+             #USE_VAAPI=0
              FFMPEG_ARCH="arm64"
              SYSROOT_ARCH="arm64"
              SYSROOT_TARGET="aarch64-linux-gnu"
              PKGARCH="$ARCH"
              ;;
-  armv7*)    SLKCFLAGS="-O2 -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard"
+  arm)       SLKCFLAGS="-O2 -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard"
              SLKLDFLAGS="-Wl,-z,notext"; LIBDIRSUFFIX=""
              DSSE="1"
-             # Widevine not supported (no binary library available):
-             # However there are workarounds so why deny this?
-             # Added patch that enables widevine support for armv7
-             #USE_CDM=0
              # VAAPI not supported:
              USE_VAAPI=0
              FFMPEG_ARCH="arm-neon"
-             SYSROOT_ARCH="arm"
+             SYSROOT_ARCH="armhf"
              SYSROOT_TARGET="arm-linux-gnueabihf"
              PKGARCH="$ARCH"
              ;;
@@ -783,8 +367,10 @@ case "$ARCH" in
              ;;
 esac
 
+# arm     = ARMv7 hard float 32bit
+# aarch64 = ARM 64bit
 case "$ARCH" in
-    arm*)    TARGET=${SYSROOT_ARCH}-slackware-linux-gnueabihf ;;
+    arm)     TARGET=$ARCH-slackware-linux-gnueabihf ;;
     aarch64) TARGET=$ARCH-slackware-linux-gnu ;;
     *)       TARGET=$ARCH-slackware-linux ;;
 esac
@@ -885,55 +471,65 @@ if [ ${USE_UNGOOGLED} -ne 0 ]; then
   done
 fi
 
-if [ ${USE_SYSROOT} -eq 1 ] && [[ "$ARCH" =~ arm.* ]]; then
-  # Download a sysroot image to build Chromium:
-  echo "-- Downloading sysroot image for ${SYSROOT_ARCH}"
-  python3 build/linux/sysroot_scripts/install-sysroot.py --arch=${SYSROOT_ARCH}
-fi
-
 # Allow building against system libraries in official builds:
 sed -e 's/OFFICIAL_BUILD/GOOGLE_CHROME_BUILD/' \
   -i tools/generate_shim_headers/generate_shim_headers.py
 
 # Patches and bug fixes:
 touch $OUTPUT/patch-${PRGNAM}.log
-# Upstream Patches 137
-#cat $SRCDIR/patches/arch/disable-clang-fextend-variable-liveness.patch \
-#  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-#cat $SRCDIR/patches/chromium-137-pdfium-system-libpng.patch \
-#  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-#cat $SRCDIR/patches/chromium-137-openh264-include-path.patch \
-#  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-
-# https://bugs.gentoo.org/949654 - 'Aw,snap!' on certain pages with glibc-2.41
-cat $SRCDIR/patches/chromium_glibc241_map_droppable.patch \
+# Arch contributions:
+cat $SRCDIR/patches/chromium_widevine_arm.patch \
+  | patch -p1 --verbose \
+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+# LLVM 23 added a new compiler flag, so we get: "clang++: error:
+# unknown argument: '-fsanitize-ignore-for-ubsan-feature=array-bounds'"
+cat $SRCDIR/patches/chromium146_drop-unknown-clang-flag.patch  \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # Gentoo contribution:
 cat $SRCDIR/patches/chromium-138-nodejs-version-check.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-# NixOS contribution:
-cat $SRCDIR/patches/chromium140_rust.patch \
+cat $SRCDIR/patches/chromium-141-cssstylesheet-iwyu.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-# Fix build using rust 1.89:
-cat $SRCDIR/patches/chromium_rust189_mismatched_lifetime_syntaxes.patch \
+# NixOS contributions:
+cat $SRCDIR/patches/chromium141_rust.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-cat $SRCDIR/patches/gentoo/chromium-140-__rust_no_alloc_shim_is_unstable.patch \
-  | patch -p1 --verbose \
-  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-# https://issues.chromium.org/issues/424424323
-#cat $SRCDIR/patches/rust_lifetime_424424323.patch \
+#cat $SRCDIR/patches/chromium-142-crabbyavif-rust-no_sanitize.patch \
 #  | patch -p1 --verbose \
 #  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-
-# Needed for chromium 135-136
-#cat $SRCDIR/patches/gentoo/fix_build_with_gperf.patch \
+#cat $SRCDIR/patches/chromium-142-Revert-rust-Remove-the-old-__rust_alloc_error_handler_should_panic-symbol.patch \
+#  | patch --reverse -p1 --verbose \
+#  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+# Fix building Chromium 140 by defining missing rust symbol:
+cat $SRCDIR/patches/chromium-142-crabbyavif-Revert-Enable-disable_cfi-feature.patch \
+  | patch --reverse -p1 --verbose \
+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+# Fix building Chromium 140 by defining missing rust symbol:
+cat $SRCDIR/patches/rust_no_alloc_shim_is_unstable.patch \
+  | patch -p1 --verbose \
+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+# Fix building Chromium 143 by reverting a commit (thanks selfisekai/copium):
+cat $SRCDIR/patches/cr142-rust-pre1.90.patch \
+  | patch -p1 --verbose \
+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+## Fix build using rust 1.89:
+#cat $SRCDIR/patches/chromium_rust189_mismatched_lifetime_syntaxes.patch \
 #  | patch -p1 --verbose \
 #  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-
+# Fix building chromium 143 by adding include for re2:
+cat $SRCDIR/patches/include-re2-in-build-gn.patch \
+  | patch -p1 --verbose \
+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+# Fix building using Python 3.9 on Slackware 15.0, error is:
+# TypeError: unsupported operand type(s) for |: 'type' and 'NoneType'
+sed -i ./tools/metrics/histograms/extract_histograms.py \
+  -e "1 i\from __future__ import annotations\n\n"
+# Fix typo in recent commit causing 'unbound variable' error:
+sed -e 's/TMPINCL/TMPLINCL/g' \
+  -i remoting/host/installer/linux/installer.include
 # archlinux contribution:
 # Fixes widevine support for arm
 cat $SRCDIR/patches/arch/widevine_support_for_arm.patch \
@@ -943,17 +539,10 @@ if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
   # Adjust expectations about where to find the clang libs on Slackware:
   cat $SRCDIR/patches/chromium-134-bindgen-custom-toolchain.patch \
     | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-  # Was for chromium 137
-  #cat $SRCDIR/patches/compiler-rt-adjust-paths.patch | patch -p1 --verbose \
-  # Was for chromium 139
-  #cat $SRCDIR/patches/compiler-rt-adjust-paths-139.patch | patch -p1 --verbose \
-  cat $SRCDIR/patches/compiler-rt-adjust-paths-140.patch | patch -p1 --verbose \
+  cat $SRCDIR/patches/compiler-rt-adjust-paths.patch | patch -p1 --verbose \
     2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-  # Aarch64 fix compiler-rt builtin path
-  if [ "$ARCH" == "aarch64" ]; then
-    sed -i build/config/clang/BUILD.gn \
-      -e "s/aarch64-unknown-linux-gnu/linux/"
-  fi
+  sed -i buildtools/third_party/libc++/modules.gni \
+    -e "s,/lib/,/lib${LIBDIRSUFFIX}/,"
   sed -i build/config/clang/BUILD.gn \
     -e "s,clang_base_path/lib/clang/,clang_base_path/lib${LIBDIRSUFFIX}/clang/,"
   sed  -i build/rust/rust_bindgen.gni \
@@ -1124,11 +713,7 @@ EOT
 fi
 
 # When compiling google's clang, we want 32bit too - don't limit us, devs:
-if [[ "$ARCH" =~ arm.* ]]; then
-  sed -i tools/clang/scripts/build.py -e "s/x86_64-unknown-linux-gnu/${TARGET}/g"
-else
-  sed -i tools/clang/scripts/build.py -e "s/x86_64-unknown-linux-gnu/${SYSROOT_TARGET}/g"
-fi
+sed -i tools/clang/scripts/build.py -e "s/x86_64-unknown-linux-gnu/${SYSROOT_TARGET}/g"
 if [ "$ARCH" == "i586" ] || [ "${CROSS32}" = "YES" ]; then
   sed -i tools/clang/scripts/build.py \
       -e "s/sysroot_amd64\([,)]\)/sysroot_i386\1/"
@@ -1150,29 +735,14 @@ sed -i tools/clang/scripts/build.py -e "s/ldflags = \[\]/ldflags = \['-latomic',
 #sed -i tools/clang/scripts/update.py -e "s/RELEASE_VERSION = '16'/RELEASE_VERSION = '16.0.0'/"
 
 # ARM platform specifics:
-# If ARM, then try to force the build script to build clang for arm instead of x86
-# Note: This will most likely fail as it does not detect the correct target architecture.
-# One of many reasons i built chromium's llvm package separately.
-if [[ "$ARCH" =~ arm.* ]]; then
-  # Can't run tests on x86 host.
-  #sed -i tools/clang/scripts/build.py \
-  #    -e "s/sysroot_amd64,/sysroot_arm, \n            \x27LLVM_INCLUDE_TESTS=OFF\x27,/"
-  # We want to compile for ARM and not AMD64
-  sed -i tools/clang/scripts/build.py \
-      -e "s/sysroot_amd64\([,)]\)/sysroot_arm\1/"
-
-  # Non-functional vpython in the 32bit depot_tools:
-  #export VPYTHON_BYPASS="manually managed python not supported by chrome operations"
-
-  # We are compiling bootstrap for ARM and not X86.
+if [ "$ARCH" == "arm" ]; then
   # Fix the hard-coded bootstrap target 'X86':
   sed -i tools/clang/scripts/build.py \
     -e "s/bootstrap_targets = 'X86'/bootstrap_targets = 'ARM'/"
-  # We are using ARM, so to speed things up we only build the relevant back-ends
-  # (ARM,AArch64 and x86), since it’s very unlikely that we will cross-compile to other arches.
-  # x86 is also needed for Compiler-RT tests.
+
+  # Compile only the relevant back-ends (ARM, AArch64 and X86):
   sed -i tools/clang/scripts/build.py \
-    -e "s/targets = 'AArch64;ARM;LoongArch;Mips;PowerPC;RISCV;SystemZ;WebAssembly;X86'/targets = 'ARM;X86;AArch64'/"
+    -e "s/\(^ *targets = \).*$/\1'ARM;X86;AArch64'/"
 fi
 
 ## When compiling google's clang, use the system cmake
@@ -1234,18 +804,13 @@ echo Building ...
 [ ${USE_WAYLAND} -eq 1 ] && do_wayland=true || do_wayland=false
 [ ${FFMPEG_HEVC} -eq 1 ] && do_hevc=true || do_hevc=false
 
-
 export LDFLAGS="$SLKLDFLAGS"
 export CXXFLAGS="$SLKCFLAGS -Wno-unknown-warning-option"
 export CFLAGS="$SLKCFLAGS -Wno-unused-local-typedefs -Wno-unknown-warning-option"
 export PATH="$TMP/tmp-$PRGNAM/privatebin:$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/third_party/depot_tools:$PATH"
 
 if [ ${USE_SYSROOT} -eq 1 ]; then
-  if [[ "$ARCH" =~ arm.* ]]; then
-    SYSROOTDIR=$(basename $(ls $TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/build/linux/ |grep ${SYSROOT_ARCH}hf-sysroot))
-  else
-    SYSROOTDIR=$(basename $(ls $TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/build/linux/ |grep ${SYSROOT_ARCH}-sysroot))
-  fi
+  SYSROOTDIR=$(basename $(ls $TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/build/linux/ |grep ${SYSROOT_ARCH}-sysroot))
   export CFLAGS="$CFLAGS -I$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/build/linux/${SYSROOTDIR}/usr/include/${SYSROOT_TARGET}/qt5"
   export CXXFLAGS="$CXXFLAGS -I$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/build/linux/${SYSROOTDIR}/usr/include/${SYSROOT_TARGET}/qt5"
 else
@@ -1379,7 +944,7 @@ fi
 if [ "$ARCH" == "i586" ] || [ "${CROSS32}" = "YES" ]; then
   _chromium_conf+=( 'target_cpu="x86"' 'v8_target_cpu="x86"' )
 fi
-if [[ "$ARCH" =~ arm.* ]]; then
+if [ "$ARCH" == "arm" ]; then
   _chromium_conf+=( 'target_cpu="arm"' 'v8_target_cpu="arm"' 'target_os="linux"' )
 fi
 if [[ "$ARCH" == "aarch64" ]]; then
@@ -1462,13 +1027,8 @@ fi
 
 if [ ${USE_SYSROOT} -eq 1 ]; then
   # Take care of Debian/Ubuntu related missing header issues:
-  if [[ "$ARCH" =~ arm.* ]]; then
-    SYSROOTDIR=$(basename $(ls build/linux/ |grep ${SYSROOT_ARCH}hf-sysroot))
-  else
-    SYSROOTDIR=$(basename $(ls build/linux/ |grep ${SYSROOT_ARCH}-sysroot))
-  fi
+  SYSROOTDIR=$(basename $(ls build/linux/ |grep ${SYSROOT_ARCH}-sysroot))
 
-  # Take care of Debian/Ubuntu related linker issues:
   ln -s ../../lib/${SYSROOT_TARGET}/glib-2.0/include/glibconfig.h \
     build/linux/${SYSROOTDIR}/usr/include/glib-2.0/glibconfig.h
   ln -s ../../../lib/${SYSROOT_TARGET}/dbus-1.0/include/dbus/dbus-arch-deps.h \
@@ -1476,6 +1036,9 @@ if [ ${USE_SYSROOT} -eq 1 ]; then
   ln -s ../../lib/${SYSROOT_TARGET}/graphene-1.0/include/graphene-config.h \
     build/linux/${SYSROOTDIR}/usr/include/graphene-1.0/graphene-config.h
 
+  # Take care of Debian/Ubuntu related linker issues:
+  #echo "/usr/lib/${SYSROOT_TARGET}/nss" >> \
+  #  build/linux/${SYSROOTDIR}/etc/ld.so.conf.d/${SYSROOT_TARGET}.conf
   for SOFILE in build/linux/${SYSROOTDIR}/usr/lib/${SYSROOT_TARGET}/nss/*.so ;
   do
     ln -sf nss/$(basename $SOFILE) \
@@ -1547,47 +1110,23 @@ if [ ${USE_CLANG} -eq 1 ] && [  ${BUILD_CLANG} -eq 1 ]; then
   export CFLAGS=""
   export CXXFLAGS=""
   export LDFLAGS=""
-  # As it's not possible to compile clang with gcc since version 12.x
-  # and its not possble to compile clang version 21.x with clang version 13.x
-  # (Slackware ARM's systems clang version).
-  # We will have to use our own bootstraped clang 18.x, then it's no need
-  # to bootstrap clang onece again, so we jump this step.
-  # And wile we are at it, we also drop compiling clang with pic enabled.
-  if [[ "$ARCH" =~ arm.* ]]; then
-    BSP_PATH="${BOOTSTRAP_PATH}/bin"
-    python3 tools/clang/scripts/build.py \
-      --skip-checkout \
-      --disable-asserts \
-      --host-cc ${BSP_PATH}/clang \
-      --host-cxx ${BSP_PATH}/clang++ \
-      --use-system-cmake \
-      --no-tools \
-      --without-android \
-      --without-fuchsia \
-      --without-zstd \
-      2>&1 | tee $OUTPUT/clang_build-${PRGNAM}.log
-  # If arch is not ARM then we proceed as usual
-  # Note, this will not work as it isn't possible to compile
-  # clang with gcc since clang 12.x
-  else
-    python3 tools/clang/scripts/build.py \
-      --bootstrap \
-      --skip-checkout \
-      --pic \
-      --disable-asserts \
-      --host-cc /usr/bin/gcc \
-      --host-cxx /usr/bin/g++ \
-      --use-system-cmake \
-      --no-tools \
-      --without-android \
-      --without-fuchsia \
-      --without-zstd \
-      2>&1 | tee $OUTPUT/clang_build-${PRGNAM}.log
-      #--llvm-force-head-revision \
-      #--gcc-toolchain /usr \
-      #--host-cc /usr/bin/clang \
-      #--host-cxx /usr/bin/clang++ \
-  fi
+  python3 tools/clang/scripts/build.py \
+    --bootstrap \
+    --skip-checkout \
+    --pic \
+    --disable-asserts \
+    --host-cc /usr/bin/gcc \
+    --host-cxx /usr/bin/g++ \
+    --use-system-cmake \
+    --no-tools \
+    --without-android \
+    --without-fuchsia \
+    --without-zstd \
+    2>&1 | tee $OUTPUT/clang_build-${PRGNAM}.log
+    #--llvm-force-head-revision \
+    #--gcc-toolchain /usr \
+    #--host-cc /usr/bin/clang \
+    #--host-cxx /usr/bin/clang++ \
 
   # Building gn for Chromium 110 fails when this file is not present:
   if [ ! -f third_party/llvm-build/Release+Asserts/cr_build_revision ]; then
@@ -1617,42 +1156,6 @@ if [ ${USE_CLANG} -eq 1 ] && [  ${BUILD_CLANG} -eq 1 ]; then
   # - disable removing that openssl directory in build_rust.py
   # - ... and possibly lots more crap to fix
   ### END NOTE ###
-
-  # Next, build Rust against our custom compiler:
-  LDFLAGS="$LDFLAGS" \
-  python3 tools/rust/build_rust.py \
-    --skip-llvm-build \
-    --use-system-cmake \
-    2>&1 | tee $OUTPUT/rust_build-${PRGNAM}.log
-
-  # Ensure that only this new rust is used, ignoring the system version:
-  MYRUST_PATH="$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/third_party/rust-toolchain"
-  export PATH="$MYRUST_PATH:$PATH"
- elif [ "${GOOGLE_CLANG}" == "armbin" ]; then
-  # Taken from gentoo
-  # We need to symlink the toolchain into the expected location
-  echo "Symlinking Clang toolchain to expected location ..."
-  if [ ! -d third_party/llvm-build ]; then
-    mkdir -p third_party/llvm-build
-  fi
-  # the 'Chromium Linux Tarballs' seem to already have 'Release+Asserts/{lib,bin}'; not sure if this is an
-  # upstream change - we're using the same scripts to build, theoretically. We'll still attempt to create
-  # llvm-build, but we'll rm Release+Asserts and symlink directly.
-  if [ -d third_party/llvm-build/Release+Asserts ]; then
-    rm -r third_party/llvm-build/Release+Asserts
-  fi
-  ln -s "${ARMBIN_PATH}" third_party/llvm-build/Release+Asserts
-
-  # Building gn for Chromium 110 fails when this file is not present:
-  if [ ! -f ${ARMBIN_PATH}/cr_build_revision ]; then
-    CLANG_REVISION=$(grep ^CLANG_REVISION tools/clang/scripts/update.py |cut -d= -f2 |tr -d " '")
-    CLANG_SUB_REVISION=$(grep ^CLANG_SUB_REVISION tools/clang/scripts/update.py |cut -d= -f2 |tr -d " '")
-    echo "${CLANG_REVISION}-${CLANG_SUB_REVISION}" > ${ARMBIN_PATH}/cr_build_revision
-  fi
-
-  # Ensure that only this new clang is used, ignoring the system version:
-  MYCLANG_PATH="$ARMBIN_PATH/bin"
-  export PATH="$MYCLANG_PATH:$PATH"
 
   # Next, build Rust against our custom compiler:
   LDFLAGS="$LDFLAGS" \
@@ -1800,15 +1303,6 @@ if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
       'rust_bindgen_root="/usr"'
       "rustc_version=\"$(rustc --version |cut -d' ' -f2)\""
     )
-
-    # Make bindgen find the gcc includes:
-    # Should fix aarch64 bindgen error like:
-    # FAILED: gen/third_party/crabbyavif/crabbyavif_dav1d_bindings/dav1d_bindgen.rs
-    #if [ "$ARCH" == "aarch64" ]; then
-    #  export BINDGEN_EXTRA_CLANG_ARGS="-I/usr/include -I/usr/lib${LIBDIRSUFFIX}/gcc/${TARGET}/$(gcc -dumpversion)/include"
-    #else
-    #  export BINDGEN_EXTRA_CLANG_ARGS="-I/usr/include -I/usr/lib/gcc/${TARGET}/$(gcc -dumpversion)/include"
-    #fi
 fi
 
 if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 1 ]; then
@@ -1843,6 +1337,12 @@ echo "-- Generating ninja build files."
 out/Release/gn gen out/Release -v --args="${_chromium_conf[*]}" \
   2>&1 | tee -a $OUTPUT/gyp-${PRGNAM}.log
 
+# Results in an 'aw, snap' when opening chrome://settings/help ...
+## Brand the build information (about chromium) for Slackware;
+#sed -i components/version_ui_strings.grdp \
+#    -e '/Official Build/s/$/ ${BUILDER}/' \
+#    -e '/Developer Build/s/$/ ${BUILDER}/'
+
 # Compile everything:
 echo "-- Compiling the lot."
 
@@ -1854,7 +1354,8 @@ ninja -C out/Release \
   chrome chrome_sandbox chromedriver \
   2>&1 | tee $OUTPUT/ninja-${PRGNAM}.log
 
-if [ $USE_UNGOOGLED -eq 0 ] &&  [ ! -f out/Release/chrome_crashpad_handler ]; then
+if [ $USE_UNGOOGLED -eq 0 ] &&  [ ! -f out/Release/chrome_crashpad_handler ]
+then
   # ungoogled-chromium has crash-reporting disabled:
   LIBCLANG_PATH="/usr/lib${LIBDIRSUFFIX}" \
   LDFLAGS="$LDFLAGS" \
@@ -1928,10 +1429,16 @@ do
 done
 
 # Install appdata:
+# This file provides the 'process_template' function:
+if [ -f chrome/installer/linux/common/installer.include ]; then
+  source chrome/installer/linux/common/installer.include 
+else
+  source remoting/host/installer/linux/installer.include 
+fi
+source chrome/installer/linux/common/chromium-browser.info 
+
 mkdir -p $PKG/usr/share/metainfo
 if [ $USE_UNGOOGLED -eq 0 ]; then
-  source chrome/installer/linux/common/installer.include 
-  source chrome/installer/linux/common/chromium-browser.info 
   process_template chrome/installer/linux/common/appdata.xml.template \
     $PKG/usr/share/metainfo/${PRGNAM}.appdata.xml
   # Remove text with relevance to Google only:
@@ -1970,17 +1477,20 @@ ln -s locales $PKG/usr/lib${LIBDIRSUFFIX}/${PRGNAM}/remoting_locales
 # Add resource files:
 cp -a out/Release/resources $PKG/usr/lib${LIBDIRSUFFIX}/${PRGNAM}/
 
-# This step used to be done for us, now we need to do it manually.
-# First, fix an incompatibility with the 'date' command in Slackware before 15.0:
-sed -e 's/--rfc-email/-R/g' \
-  -i $TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/chrome/installer/linux/common/installer.include
-# We source this script since its 'process_template' function is needed,
-# in order to generate man page and desktop file:
-source $TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/chrome/installer/linux/common/installer.include
-PACKAGE=${PRGNAM}
-PROGNAME=${PRGNAM}
+# This step used to be done for us, now we need to do it manually. We use
+# the 'process_template' function from an earlier sourced script:
+EXTRA_DESKTOP_ENTRIES=""
+extra_desktop_entries=""
 MENUNAME="${PRGNAM^} Web Browser"
+menuname="${PRGNAM^} Web Browser"
+PACKAGE=${PRGNAM}
+package=${PRGNAM}
+PROGNAME=${PRGNAM}
+progname=${PRGNAM}
 USR_BIN_SYMLINK_NAME=${PRGNAM}
+usr_bin_symlink_name=${PRGNAM}
+URI_SCHEME=""
+uri_scheme=""
 
 # Install a man page:
 process_template chrome/app/resources/manpage.1.in out/Release/${PRGNAM}.1
@@ -1992,8 +1502,8 @@ process_template chrome/installer/linux/common/desktop.template \
 install -D -m0644 out/Release/${PRGNAM}.desktop \
   $PKG/usr/share/applications/${PRGNAM}.desktop
 
-# Fix user-agent for ARM and aarch64
-if [[ "$ARCH" =~ arm.* ]] || [ "$ARCH" == "aarch64" ]; then
+# Fix user-agent for aarch64
+if [ "$ARCH" == "aarch64" ]; then
   MAJOR_VER="$(echo ${VERSION} | cut -d. -f1)"
   cp out/Release/${PRGNAM}.desktop out/Release/${PRGNAM}-netflix.desktop
   sed -i out/Release/${PRGNAM}-netflix.desktop \
@@ -2047,8 +1557,8 @@ cat $SRCDIR/${SRCNAM}.default | sed \
   -e "s/@CRFLAGS@/${CRFLAGS}/g" \
   -e "s/@CRUSERFLAGS@/${CRUSERFLAGS}/g" \
   -e "s/@LIBDIRSUFFIX@/${LIBDIRSUFFIX}/g" \
-  -e "s/@BUILDER@/Built by Minime for Slackware ${ARCH}/g" \
-  > $PKG/etc/${PRGNAM}/00-default.conf.new
+  -e "s/@BUILDER@/${BUILDER}/g" \
+  > $PKG/etc/${PRGNAM}/00-default.conf
 
 if [ $USE_UNGOOGLED -eq 0 ]; then
   if [ -z "$_google_api_key" ]; then
@@ -2082,7 +1592,7 @@ config() {
   done
 }
 
-config etc/${PRGNAM}/00-default.conf.new
+#config etc/${PRGNAM}/00-default.conf.new
 
 # Update the desktop database:
 if [ -x usr/bin/update-desktop-database ]; then
@@ -2155,9 +1665,6 @@ if [ "${GOOGLE_CLANG}" == "src" ] && [  ${BUILD_CLANG} -eq 1 ]; then
   if  [ -f ${MYCLANG_PATH}/ld ]; then
     rm ${MYCLANG_PATH}/ld
   fi
-fi
-if [ -f /usr/bin/${SYSROOT_TARGET}-readelf ]; then
-  rm /usr/bin/${SYSROOT_TARGET}-readelf
 fi
 
 # Restore the original umask:
