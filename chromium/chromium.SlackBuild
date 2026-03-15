@@ -530,10 +530,6 @@ sed -i ./tools/metrics/histograms/extract_histograms.py \
 # Fix typo in recent commit causing 'unbound variable' error:
 sed -e 's/TMPINCL/TMPLINCL/g' \
   -i remoting/host/installer/linux/installer.include
-# archlinux contribution:
-# Fixes widevine support for arm
-cat $SRCDIR/patches/arch/widevine_support_for_arm.patch \
-  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 
 if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
   # Adjust expectations about where to find the clang libs on Slackware:
