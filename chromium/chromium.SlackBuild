@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: chromium.SlackBuild,v 1.542 2026/03/13 08:04:25 root Exp root $
+# $Id: chromium.SlackBuild,v 1.543 2026/03/13 18:13:29 root Exp root $
 # Copyright 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026  Eric Hameleers, Eindhoven, NL
 # All rights reserved.
 #
@@ -23,7 +23,7 @@
 #
 # -----------------------------------------------------------------------------
 #
-# Slackware SlackBuild script 
+# Slackware SlackBuild script
 # ===========================
 # By:              Eric Hameleers <alien@slackware.com>
 # Modified by      Martin Östman (Minime) <slackware[at]slackwarelinux[dot]se>
@@ -41,9 +41,9 @@
 #                  - /usr/bin/python symlink pointing to python3.x
 #                  - java runtime
 #                  - Internet access (for downloading toolchain bins)
-# Needs:       
+# Needs:
 # Old Changelog:    chromium.buildhistory
-# Changelog:   
+# Changelog:
 # 142.0.7444.134-1: 06/nov/2025 by Eric Hameleers <alien@slackware.com>
 #                   * Update.
 # 142.0.7444.162-1: 15/nov/2025 by Eric Hameleers <alien@slackware.com>
@@ -83,6 +83,8 @@
 #                   * Update.
 # 146.0.7680.71-1:  11/mar/2026 by Eric Hameleers <alien@slackware.com>
 #                   * Update to M146.
+# 146.0.7680.75-1:  13/mar/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
 #                   14/mar/2026 by Minime <slackware[at]slackwarelinux[dot]se>
 #                   * As there are issues compiling rust for ARM32.
 #                     Removed all ARM32 build fixes.
@@ -92,7 +94,7 @@
 #
 # Run 'sh chromium.SlackBuild' to build a Slackware package.
 # The package (.txz) and .txt file as well as build logs are created in /tmp .
-# Install it using 'installpkg'. 
+# Install it using 'installpkg'.
 #
 # -----------------------------------------------------------------------------
 
@@ -109,8 +111,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-146.0.7680.71}
-UNGOOGLED=${UNGOOGLED:-146.0.7680.71-1}
+VERSION=${VERSION:-146.0.7680.75}
+UNGOOGLED=${UNGOOGLED:-146.0.7680.75-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
@@ -254,7 +256,7 @@ OUTPUT=${OUTPUT:-/tmp}
 # If you rebuild this package, you can use your own API keys. See:
 #   http://www.chromium.org/developers/how-tos/api-keys
 # This browser is now compiled without API keys. This will disable stuff like
-# browser sync and other functionality which accesses Google APIs. 
+# browser sync and other functionality which accesses Google APIs.
 # The following variables must be set to access Google's public APIs:
 #   _google_api_key
 #   _google_default_client_id
@@ -495,6 +497,9 @@ cat $SRCDIR/patches/chromium-141-cssstylesheet-iwyu.patch \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # NixOS contributions:
 cat $SRCDIR/patches/chromium141_rust.patch \
+  | patch -p1 --verbose \
+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+cat $SRCDIR/patches/chromium146_backport-Remove-now-obsolete-invalid-patch-on-bytemuck-v1.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 #cat $SRCDIR/patches/chromium-142-crabbyavif-rust-no_sanitize.patch \
@@ -848,7 +853,7 @@ _chromium_conf=(
     "ozone_platform_wayland=${do_wayland}"
     #"rtc_use_pipewire=${do_wayland}"
     #"rtc_link_pipewire=${do_wayland}"
-    #'rtc_pipewire_version="0.3"' # Otherwise chromium tries to link absent 0.2 
+    #'rtc_pipewire_version="0.3"' # Otherwise chromium tries to link absent 0.2
     'proprietary_codecs=true'
     'remove_webcore_debug_symbols=true'
     'symbol_level=0'
@@ -1201,7 +1206,7 @@ if [ ${FFMPEG_HEVC} -eq 1 ] && [ "${FFMPEG_ARCH}" != "ia32" ]; then
   fi
   cd third_party/ffmpeg
     ## To prevent error on x86_64:
-    ## "clang-5.0: error: invalid linker name in argument '-fuse-ld=lld'" 
+    ## "clang-5.0: error: invalid linker name in argument '-fuse-ld=lld'"
     ## in third_party/ffmpeg/build.x64.linux/ChromeOS/ffbuild/config.log
     #sed -e "s/--extra-ldflags=-fuse-ld=lld/--extra-ldflags=''/" \
     #    -i chromium/scripts/build_ffmpeg.py
@@ -1435,11 +1440,11 @@ done
 # Install appdata:
 # This file provides the 'process_template' function:
 if [ -f chrome/installer/linux/common/installer.include ]; then
-  source chrome/installer/linux/common/installer.include 
+  source chrome/installer/linux/common/installer.include
 else
-  source remoting/host/installer/linux/installer.include 
+  source remoting/host/installer/linux/installer.include
 fi
-source chrome/installer/linux/common/chromium-browser.info 
+source chrome/installer/linux/common/chromium-browser.info
 
 mkdir -p $PKG/usr/share/metainfo
 if [ $USE_UNGOOGLED -eq 0 ]; then
