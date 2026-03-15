@@ -1,0 +1,161 @@
+--- chromium.SlackBuild.orgi	2026-03-13 19:23:21.000000000 +0100
++++ chromium.SlackBuild	2026-03-15 02:58:14.571461800 +0100
+@@ -23,9 +23,10 @@
+ #
+ # -----------------------------------------------------------------------------
+ #
+-# Slackware SlackBuild script 
++# Slackware SlackBuild script
+ # ===========================
+ # By:              Eric Hameleers <alien@slackware.com>
++# Modified by      Martin Östman (Minime) <slackware[at]slackwarelinux[dot]se>
+ # For:             chromium and chromium-ungoogled
+ # Descr:           Open Source version of Chrome Web Browser
+ # URL:             http://www.chromium.org/
+@@ -40,9 +41,9 @@
+ #                  - /usr/bin/python symlink pointing to python3.x
+ #                  - java runtime
+ #                  - Internet access (for downloading toolchain bins)
+-# Needs:       
++# Needs:
+ # Old Changelog:    chromium.buildhistory
+-# Changelog:   
++# Changelog:
+ # 142.0.7444.134-1: 06/nov/2025 by Eric Hameleers <alien@slackware.com>
+ #                   * Update.
+ # 142.0.7444.162-1: 15/nov/2025 by Eric Hameleers <alien@slackware.com>
+@@ -84,12 +85,16 @@
+ #                   * Update to M146.
+ # 146.0.7680.75-1:  13/mar/2026 by Eric Hameleers <alien@slackware.com>
+ #                   * Update.
+-# 
++#                   14/mar/2026 by Minime <slackware[at]slackwarelinux[dot]se>
++#                   * As there are issues compiling rust for ARM32.
++#                     Removed all ARM32 build fixes.
++#                   * Fixed build for AArch64
++#
+ # -----------------------------------------------------------------------------
+-# 
++#
+ # Run 'sh chromium.SlackBuild' to build a Slackware package.
+ # The package (.txz) and .txt file as well as build logs are created in /tmp .
+-# Install it using 'installpkg'. 
++# Install it using 'installpkg'.
+ #
+ # -----------------------------------------------------------------------------
+ 
+@@ -109,7 +114,7 @@
+ VERSION=${VERSION:-146.0.7680.75}
+ UNGOOGLED=${UNGOOGLED:-146.0.7680.75-1}
+ BUILD=${BUILD:-1}
+-TAG=${TAG:-alien}
++TAG=${TAG:-SLse}
+ 
+ # It's recommended to build 32bit binaries in a 32bit chroot on a 64bit OS.
+ # Cross-compiling 32bit binaries on 64bit Slackware; set to "YES":
+@@ -231,7 +236,7 @@
+ fi
+ 
+ # Slackware branding:
+-BUILDER="by alienBOB for Slackware"
++BUILDER="by Minime for Slackware"
+ 
+ # Where do we look for sources?
+ SRCDIR=$(cd $(dirname $0); pwd)
+@@ -251,7 +256,7 @@
+ # If you rebuild this package, you can use your own API keys. See:
+ #   http://www.chromium.org/developers/how-tos/api-keys
+ # This browser is now compiled without API keys. This will disable stuff like
+-# browser sync and other functionality which accesses Google APIs. 
++# browser sync and other functionality which accesses Google APIs.
+ # The following variables must be set to access Google's public APIs:
+ #   _google_api_key
+ #   _google_default_client_id
+@@ -334,7 +339,7 @@
+              SLKLDFLAGS="-L/usr/lib64"; LIBDIRSUFFIX="64"
+              DSSE="1"
+              # VAAPI not supported:
+-             USE_VAAPI=0
++             #USE_VAAPI=0
+              FFMPEG_ARCH="arm64"
+              SYSROOT_ARCH="arm64"
+              SYSROOT_TARGET="aarch64-linux-gnu"
+@@ -848,7 +853,7 @@
+     "ozone_platform_wayland=${do_wayland}"
+     #"rtc_use_pipewire=${do_wayland}"
+     #"rtc_link_pipewire=${do_wayland}"
+-    #'rtc_pipewire_version="0.3"' # Otherwise chromium tries to link absent 0.2 
++    #'rtc_pipewire_version="0.3"' # Otherwise chromium tries to link absent 0.2
+     'proprietary_codecs=true'
+     'remove_webcore_debug_symbols=true'
+     'symbol_level=0'
+@@ -1061,6 +1066,14 @@
+   fi
+ fi
+ 
++# Fix missing cfi file for aarch64
++if [ "$ARCH" == "aarch64" ]; then
++  if  [ ! -f /usr/lib64/clang/22/share/cfi_ignorelist.txt ]; then
++    mkdir -p /usr/lib64/clang/22/share/
++    touch /usr/lib64/clang/22/share/cfi_ignorelist.txt
++  fi
++fi
++
+ # --- Compile --- #
+ 
+ # Final link uses lots of file descriptors.
+@@ -1193,7 +1206,7 @@
+   fi
+   cd third_party/ffmpeg
+     ## To prevent error on x86_64:
+-    ## "clang-5.0: error: invalid linker name in argument '-fuse-ld=lld'" 
++    ## "clang-5.0: error: invalid linker name in argument '-fuse-ld=lld'"
+     ## in third_party/ffmpeg/build.x64.linux/ChromeOS/ffbuild/config.log
+     #sed -e "s/--extra-ldflags=-fuse-ld=lld/--extra-ldflags=''/" \
+     #    -i chromium/scripts/build_ffmpeg.py
+@@ -1427,11 +1440,11 @@
+ # Install appdata:
+ # This file provides the 'process_template' function:
+ if [ -f chrome/installer/linux/common/installer.include ]; then
+-  source chrome/installer/linux/common/installer.include 
++  source chrome/installer/linux/common/installer.include
+ else
+-  source remoting/host/installer/linux/installer.include 
++  source remoting/host/installer/linux/installer.include
+ fi
+-source chrome/installer/linux/common/chromium-browser.info 
++source chrome/installer/linux/common/chromium-browser.info
+ 
+ mkdir -p $PKG/usr/share/metainfo
+ if [ $USE_UNGOOGLED -eq 0 ]; then
+@@ -1498,6 +1511,17 @@
+ install -D -m0644 out/Release/${PRGNAM}.desktop \
+   $PKG/usr/share/applications/${PRGNAM}.desktop
+ 
++# Fix user-agent for aarch64
++if [ "$ARCH" == "aarch64" ]; then
++  MAJOR_VER="$(echo ${VERSION} | cut -d. -f1)"
++  cp out/Release/${PRGNAM}.desktop out/Release/${PRGNAM}-netflix.desktop
++  sed -i out/Release/${PRGNAM}-netflix.desktop \
++    -e "s/Name\=Chromium-ungoogled Web Browser/Name\=Chromium-ungoogled Netflix/" \
++    -e "s/\/${PRGNAM}/\/${PRGNAM} \-\-user-agent=\"Mozilla\/5.0 \(X11; CrOS ${ARCH} 10895.56.0\) AppleWebKit\/537.36 \(KHTML, like Gecko\) Chrome\/${MAJOR_VER}.0.0.0 Safari\/537.36\"/"
++  install -D -m0644 out/Release/${PRGNAM}-netflix.desktop \
++    $PKG/usr/share/applications/${PRGNAM}-netflix.desktop
++fi
++
+ # Install desktop icons:
+ for size in 16 32; do
+   install -D -m0644 \
+@@ -1645,5 +1669,12 @@
+ cd -
+ cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
+ 
++# Cleanup
++if [ "${GOOGLE_CLANG}" == "src" ] && [  ${BUILD_CLANG} -eq 1 ]; then
++  if  [ -f ${MYCLANG_PATH}/ld ]; then
++    rm ${MYCLANG_PATH}/ld
++  fi
++fi
++
+ # Restore the original umask:
+ umask ${_UMASK_}
