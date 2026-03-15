@@ -1061,6 +1061,14 @@ if [ "$ARCH" != "x86_64" ]; then
   fi
 fi
 
+# Fix missing cfi file for aarch64
+if [ "$ARCH" == "aarch64" ]; then
+  if  [ ! -f /usr/lib64/clang/22/share/cfi_ignorelist.txt ]; then
+    mkdir -p /usr/lib64/clang/22/share/
+    touch /usr/lib64/clang/22/share/cfi_ignorelist.txt
+  fi
+fi
+
 # --- Compile --- #
 
 # Final link uses lots of file descriptors.
