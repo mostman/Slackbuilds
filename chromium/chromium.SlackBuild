@@ -483,6 +483,10 @@ touch $OUTPUT/patch-${PRGNAM}.log
 cat $SRCDIR/patches/chromium_widevine_arm.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+# Arch fix rust bytemuck error
+cat $SRCDIR/patches/arch/chromium-146-apply-upstream-libmuck-fix.patch \
+  | patch -p1 --verbose \
+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # LLVM 23 added a new compiler flag, so we get: "clang++: error:
 # unknown argument: '-fsanitize-ignore-for-ubsan-feature=array-bounds'"
 cat $SRCDIR/patches/chromium146_drop-unknown-clang-flag.patch  \
@@ -1067,12 +1071,12 @@ if [ "$ARCH" != "x86_64" ]; then
 fi
 
 # Fix missing cfi file for aarch64
-if [ "$ARCH" == "aarch64" ]; then
-  if  [ ! -f /usr/lib64/clang/22/share/cfi_ignorelist.txt ]; then
-    mkdir -p /usr/lib64/clang/22/share/
-    touch /usr/lib64/clang/22/share/cfi_ignorelist.txt
-  fi
-fi
+#if [ "$ARCH" == "aarch64" ]; then
+#  if  [ ! -f /usr/lib64/clang/22/share/cfi_ignorelist.txt ]; then
+#    mkdir -p /usr/lib64/clang/22/share/
+#    touch /usr/lib64/clang/22/share/cfi_ignorelist.txt
+#  fi
+#fi
 
 # --- Compile --- #
 
