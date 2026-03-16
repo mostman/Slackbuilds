@@ -88,7 +88,11 @@
 #                   14/mar/2026 by Minime <slackware[at]slackwarelinux[dot]se>
 #                   * As there are issues compiling rust for ARM32.
 #                     Removed all ARM32 build fixes.
+# 146.0.7680.80-1:  14/mar/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+#                   16/mar/2026 by Minime <slackware[at]slackwarelinux[dot]se>
 #                   * Fixed build for AArch64
+#                   * Added fix for rust bytemuck error
 #
 # -----------------------------------------------------------------------------
 #
@@ -111,8 +115,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-146.0.7680.75}
-UNGOOGLED=${UNGOOGLED:-146.0.7680.75-1}
+VERSION=${VERSION:-146.0.7680.80}
+UNGOOGLED=${UNGOOGLED:-146.0.7680.80-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
