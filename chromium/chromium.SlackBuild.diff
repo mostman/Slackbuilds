@@ -1,5 +1,5 @@
 --- chromium.SlackBuild.orgi	2026-03-13 19:23:21.000000000 +0100
-+++ chromium.SlackBuild	2026-03-15 02:58:14.571461800 +0100
++++ chromium.SlackBuild	2026-03-16 19:00:48.241627371 +0100
 @@ -23,9 +23,10 @@
  #
  # -----------------------------------------------------------------------------
@@ -80,7 +80,18 @@
               FFMPEG_ARCH="arm64"
               SYSROOT_ARCH="arm64"
               SYSROOT_TARGET="aarch64-linux-gnu"
-@@ -848,7 +853,7 @@
+@@ -478,6 +483,10 @@
+ cat $SRCDIR/patches/chromium_widevine_arm.patch \
+   | patch -p1 --verbose \
+   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
++# Arch fix rust bytemuck error
++cat $SRCDIR/patches/arch/chromium-146-apply-upstream-libmuck-fix.patch \
++  | patch -p1 --verbose \
++  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+ # LLVM 23 added a new compiler flag, so we get: "clang++: error:
+ # unknown argument: '-fsanitize-ignore-for-ubsan-feature=array-bounds'"
+ cat $SRCDIR/patches/chromium146_drop-unknown-clang-flag.patch  \
+@@ -848,7 +857,7 @@
      "ozone_platform_wayland=${do_wayland}"
      #"rtc_use_pipewire=${do_wayland}"
      #"rtc_link_pipewire=${do_wayland}"
@@ -89,22 +100,22 @@
      'proprietary_codecs=true'
      'remove_webcore_debug_symbols=true'
      'symbol_level=0'
-@@ -1061,6 +1066,14 @@
+@@ -1061,6 +1070,14 @@
    fi
  fi
  
 +# Fix missing cfi file for aarch64
-+if [ "$ARCH" == "aarch64" ]; then
-+  if  [ ! -f /usr/lib64/clang/22/share/cfi_ignorelist.txt ]; then
-+    mkdir -p /usr/lib64/clang/22/share/
-+    touch /usr/lib64/clang/22/share/cfi_ignorelist.txt
-+  fi
-+fi
++#if [ "$ARCH" == "aarch64" ]; then
++#  if  [ ! -f /usr/lib64/clang/22/share/cfi_ignorelist.txt ]; then
++#    mkdir -p /usr/lib64/clang/22/share/
++#    touch /usr/lib64/clang/22/share/cfi_ignorelist.txt
++#  fi
++#fi
 +
  # --- Compile --- #
  
  # Final link uses lots of file descriptors.
-@@ -1193,7 +1206,7 @@
+@@ -1193,7 +1210,7 @@
    fi
    cd third_party/ffmpeg
      ## To prevent error on x86_64:
@@ -113,7 +124,7 @@
      ## in third_party/ffmpeg/build.x64.linux/ChromeOS/ffbuild/config.log
      #sed -e "s/--extra-ldflags=-fuse-ld=lld/--extra-ldflags=''/" \
      #    -i chromium/scripts/build_ffmpeg.py
-@@ -1427,11 +1440,11 @@
+@@ -1427,11 +1444,11 @@
  # Install appdata:
  # This file provides the 'process_template' function:
  if [ -f chrome/installer/linux/common/installer.include ]; then
@@ -128,7 +139,7 @@
  
  mkdir -p $PKG/usr/share/metainfo
  if [ $USE_UNGOOGLED -eq 0 ]; then
-@@ -1498,6 +1511,17 @@
+@@ -1498,6 +1515,17 @@
  install -D -m0644 out/Release/${PRGNAM}.desktop \
    $PKG/usr/share/applications/${PRGNAM}.desktop
  
@@ -146,7 +157,7 @@
  # Install desktop icons:
  for size in 16 32; do
    install -D -m0644 \
-@@ -1645,5 +1669,12 @@
+@@ -1645,5 +1673,12 @@
  cd -
  cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
  
