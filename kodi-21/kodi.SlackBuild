@@ -1,8 +1,8 @@
 #!/bin/sh
 
-# Slackware build script for kodi 21.2
+# Slackware build script for kodi 21.3
 
-# Copyright 2020-2025 Minime <slackware[at]slackwarelinux[dot]se>
+# Copyright 2020-2026 Minime <slackware[at]slackwarelinux[dot]se>
 # All rights reserved.
 #
 # Redistribution and use of this script, with or without modification, is
@@ -57,7 +57,7 @@
 PRGNAM=kodi
 SRCNAM=xbmc
 CODNAM=Omega
-VERSION=${VERSION:-21.2}
+VERSION=${VERSION:-21.3}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SLse}
 
@@ -69,7 +69,7 @@ USE_CLANG=${USE_CLANG:-1}
 SYS_CLANG=${SYS_CLANG:-1}
 
 # Path to custom llvm/clang
-CUST_CLANG_PATH="/opt/llvm/bin"
+#CUST_CLANG_PATH="/opt/llvm/bin"
 
 MARCH=$( uname -m )
 if [ -z "$ARCH" ]; then
@@ -84,6 +84,7 @@ fi
 CWD=$(pwd)
 TMP=${TMP:-/tmp/SLse}
 PKG=$TMP/package-$PRGNAM
+# Addons
 ADDPKG=$TMP/package-$PRGNAM-addons
 KODIBUILD=$TMP/$PRGNAM-build
 OUTPUT=${OUTPUT:-/tmp}
@@ -105,7 +106,7 @@ case "$ARCH" in
              DO_VAAPI=ON
              DO_VDPAU=ON
              ;;
-  aarch64)    SLKCFLAGS="-O2 -fPIC -march=armv8-a -mtune=cortex-a72"
+  aarch64)    SLKCFLAGS="-O2 -fPIC"
              SARCH=aarch64
              LIBDIRSUFFIX="64"
              CORE_PLATFORM="x11 gbm" #Change this to "gbm" if you want to use gbm instead of x11
@@ -195,8 +196,30 @@ find -L . \
 # kodi might not build all the addons.
 if [ "${FFMPEG:-yes}" == "yes" ]; then
   OPT_FFMPEG="ON"
+  FFMPEG_VER="6.1.4"
+  if [ -f ${CWD}/ffmpeg/ffmpeg-${FFMPEG_VER}.tar.xz ]; then
+    echo "++"
+    echo "|| FFMPEG ${FFMPEG_VER} in chache..."
+    echo "++"
+  else
+    echo "++"
+    echo "|| Downloading FFMPEG ${FFMPEG_VER}"
+    echo "++"
+    wget https://ffmpeg.org/releases/ffmpeg-${FFMPEG_VER}.tar.xz -P ${CWD}/ffmpeg/
+  fi
+  # As ffmpeg 6.0.1 is not working on Slackware current (15.1)
+  # We tell kodi to use a newer version we know works.
+  # Plus side is that ffmpeg v6.1.4 also can decode hevc/h265 in GMB (Without X11)
+  # Thanks to Ponce Slackbuilds scripts for current.
+  echo 'LIBNAME=ffmpeg' > tools/depends/target/ffmpeg/FFMPEG-VERSION
+  echo 'VERSION=${FFMPEG_VER}' >> tools/depends/target/ffmpeg/FFMPEG-VERSION
+  echo 'ARCHIVE=$(LIBNAME)-$(VERSION).tar.xz' >> tools/depends/target/ffmpeg/FFMPEG-VERSION
+  # FFMPEG v6.1.4 SHA512 checksum
+  echo 'SHA512=0d7d29fb170947805eb531f6c66641d0977d18831923d5a9c0442c160b02f94b890ccd04ecf350bb3dce59fe7bb64a426cab02bd65c05416c0d153f50104065f' >> tools/depends/target/ffmpeg/FFMPEG-VERSION
+  FFMPEGURL="-DFFMPEG_URL=$CWD/ffmpeg/ffmpeg-${FFMPEG_VER}.tar.xz"
 else
   OPT_FFMPEG="OFF"
+  FFMPEGURL=""
 fi
 
 # Build webserver. Requires libmicrohttpd.
@@ -244,6 +267,7 @@ cmake ../$SRCNAM-$VERSION-$CODNAM \
    -DENABLE_VAAPI=$DO_VAAPI \
    -DENABLE_VDPAU=$DO_VDPAU \
    -DENABLE_LLD=ON \
+   $FFMPEGURL \
    -DCMAKE_BUILD_TYPE=Release \
    2>&1 | tee $OUTPUT/$PRGNAM-$PLATFORMS-configure.log
 
@@ -258,6 +282,7 @@ make install DESTDIR=$PKG \
 # Compile and install the addons
 cd ../$SRCNAM-$VERSION-$CODNAM
 
+# Addons
 # As we will get an error when building addons with llvm/clang
 # we want to change compiler to gcc/g++
 if [ ${USE_CLANG} -eq 1 ]; then
@@ -266,6 +291,7 @@ if [ ${USE_CLANG} -eq 1 ]; then
   export LD="ld"
 fi
 
+# Addons
 # Compile only inputstream.adaptive addon
 #make -j$(getconf _NPROCESSORS_ONLN) -C tools/depends/target/binary-addons PREFIX=$ADDPKG/usr ADDONS="inputstream.adaptive pvr.vuplus" \
 #   2>&1 | tee $OUTPUT/$PRGNAM-addon-build.log
@@ -281,9 +307,10 @@ make -j$(getconf _NPROCESSORS_ONLN) -C tools/depends/target/binary-addons PREFIX
 if [ "$LIBDIRSUFFIX" = "64" ]; then
   mkdir -p $ADDPKG/usr/lib$LIBDIRSUFFIX/$PRGNAM
   mv $PKG/usr/lib/$PRGNAM/addons $PKG/usr/lib$LIBDIRSUFFIX/$PRGNAM
+  # Addons
   mv $ADDPKG/usr/lib/$PRGNAM/addons $ADDPKG/usr/lib$LIBDIRSUFFIX/$PRGNAM
   rm -rf $PKG/usr/lib/$PRGNAM
-  rm -rf $ADDPKG/usr/lib/$PRGNAM
+#  rm -rf $ADDPKG/usr/lib/$PRGNAM
 fi
 
 # Install manpages.
@@ -306,6 +333,7 @@ cd $PKG
 /sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$SARCH-$BUILD$TAG.${PKGTYPE:-tgz} \
    2>&1 | tee $OUTPUT/makepkg-$PRGNAM.log
 
+# Addons
 cd $ADDPKG
 /sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-addons-$VERSION-$SARCH-$BUILD$TAG.${PKGTYPE:-tgz} \
    2>&1 | tee $OUTPUT/makepkg-$PRGNAM-addons.log
