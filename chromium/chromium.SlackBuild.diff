@@ -1,13 +1,13 @@
---- chromium.SlackBuild.orgi	2026-03-14 21:27:47.000000000 +0100
-+++ chromium.SlackBuild	2026-03-16 19:12:50.110749534 +0100
+--- chromium.SlackBuild.orig	2026-03-24 09:24:36.000000000 +0100
++++ chromium.SlackBuild	2026-03-31 18:21:42.870112462 +0200
 @@ -1,5 +1,5 @@
  #!/bin/bash
--# $Id: chromium.SlackBuild,v 1.545 2026/03/14 20:27:32 root Exp root $
+-# $Id: chromium.SlackBuild,v 1.548 2026/03/24 08:24:22 root Exp root $
 +# $Id: chromium.SlackBuild,v 1.543 2026/03/13 18:13:29 root Exp root $
  # Copyright 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026  Eric Hameleers, Eindhoven, NL
  # All rights reserved.
  #
-@@ -23,9 +23,10 @@
+@@ -23,26 +23,27 @@
  #
  # -----------------------------------------------------------------------------
  #
@@ -19,7 +19,16 @@
  # For:             chromium and chromium-ungoogled
  # Descr:           Open Source version of Chrome Web Browser
  # URL:             http://www.chromium.org/
-@@ -40,9 +41,9 @@
+ # Build needs:     - ninja > 1.13.2
+ #                  - meson >= 1.10.0
+ #                  - nodejs >= 22.22.0
+-#                  - gcc >= 8 , llvm >= 22 for bootstrapping gn
+-#                  - rust >= 1.94, rust-bindgen >= 0.72
++#                  - gcc >= 8 , llvm >= 21 for bootstrapping gn
++#                  - rust >= 1.93.0, rust-bindgen >= 1.72.0
+ #                  - nasm >= 2.14 (yasm no longer being used)
+ #                  - cmake >= 3.31.3
+ #                  - python3 >= 3.10, python3-setuptools
  #                  - /usr/bin/python symlink pointing to python3.x
  #                  - java runtime
  #                  - Internet access (for downloading toolchain bins)
@@ -31,7 +40,7 @@
  # 142.0.7444.134-1: 06/nov/2025 by Eric Hameleers <alien@slackware.com>
  #                   * Update.
  # 142.0.7444.162-1: 15/nov/2025 by Eric Hameleers <alien@slackware.com>
-@@ -84,14 +85,20 @@
+@@ -84,18 +85,26 @@
  #                   * Update to M146.
  # 146.0.7680.75-1:  13/mar/2026 by Eric Hameleers <alien@slackware.com>
  #                   * Update.
@@ -40,10 +49,16 @@
 +#                     Removed all ARM32 build fixes.
  # 146.0.7680.80-1:  14/mar/2026 by Eric Hameleers <alien@slackware.com>
  #                   * Update.
--# 
 +#                   16/mar/2026 by Minime <slackware[at]slackwarelinux[dot]se>
 +#                   * Fixed build for AArch64
 +#                   * Added fix for rust bytemuck error
+ # 146.0.7680.153-1: 18/mar/2026 by Eric Hameleers <alien@slackware.com>
+ #                   * Update.
+ # 146.0.7680.164-1: 24/mar/2026 by Eric Hameleers <alien@slackware.com>
+ #                   * Update.
+-# 
++#                   31/mar/2026 by Minime <slackware[at]slackwarelinux[dot]se>
++#                   * Fixed build for AArch64
 +#
  # -----------------------------------------------------------------------------
 -# 
@@ -55,16 +70,25 @@
  #
  # -----------------------------------------------------------------------------
  
-@@ -111,7 +118,7 @@
- VERSION=${VERSION:-146.0.7680.80}
- UNGOOGLED=${UNGOOGLED:-146.0.7680.80-1}
+@@ -115,7 +124,7 @@
+ VERSION=${VERSION:-146.0.7680.164}
+ UNGOOGLED=${UNGOOGLED:-146.0.7680.164-1}
  BUILD=${BUILD:-1}
 -TAG=${TAG:-alien}
 +TAG=${TAG:-SLse}
  
  # It's recommended to build 32bit binaries in a 32bit chroot on a 64bit OS.
  # Cross-compiling 32bit binaries on 64bit Slackware; set to "YES":
-@@ -233,7 +240,7 @@
+@@ -213,7 +222,7 @@
+ # Build a custom clang or use the system clang?
+ # CLANG_MIN is the minimal clang version needed to compile chromium,
+ # see 'CLANG_REVISION' in ./tools/clang/scripts/update.py :
+-CLANG_MIN=22
++CLANG_MIN=21
+ if [ $(clang -dumpversion |cut -d. -f1) -ge ${CLANG_MIN} ]; then
+   BUILD_CLANG=${BUILD_CLANG:-0}
+ else
+@@ -237,7 +246,7 @@
  fi
  
  # Slackware branding:
@@ -73,7 +97,7 @@
  
  # Where do we look for sources?
  SRCDIR=$(cd $(dirname $0); pwd)
-@@ -253,7 +260,7 @@
+@@ -257,7 +266,7 @@
  # If you rebuild this package, you can use your own API keys. See:
  #   http://www.chromium.org/developers/how-tos/api-keys
  # This browser is now compiled without API keys. This will disable stuff like
@@ -82,27 +106,18 @@
  # The following variables must be set to access Google's public APIs:
  #   _google_api_key
  #   _google_default_client_id
-@@ -336,7 +343,7 @@
-              SLKLDFLAGS="-L/usr/lib64"; LIBDIRSUFFIX="64"
-              DSSE="1"
-              # VAAPI not supported:
--             USE_VAAPI=0
-+             #USE_VAAPI=0
-              FFMPEG_ARCH="arm64"
-              SYSROOT_ARCH="arm64"
-              SYSROOT_TARGET="aarch64-linux-gnu"
-@@ -480,6 +487,10 @@
+@@ -484,6 +493,10 @@
  cat $SRCDIR/patches/chromium_widevine_arm.patch \
    | patch -p1 --verbose \
    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-+# Arch fix rust bytemuck error
++# Arch fix rust error
 +cat $SRCDIR/patches/arch/chromium-146-apply-upstream-libmuck-fix.patch \
 +  | patch -p1 --verbose \
 +  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
  # LLVM 23 added a new compiler flag, so we get: "clang++: error:
  # unknown argument: '-fsanitize-ignore-for-ubsan-feature=array-bounds'"
  cat $SRCDIR/patches/chromium146_drop-unknown-clang-flag.patch  \
-@@ -850,7 +861,7 @@
+@@ -854,7 +867,7 @@
      "ozone_platform_wayland=${do_wayland}"
      #"rtc_use_pipewire=${do_wayland}"
      #"rtc_link_pipewire=${do_wayland}"
@@ -111,7 +126,7 @@
      'proprietary_codecs=true'
      'remove_webcore_debug_symbols=true'
      'symbol_level=0'
-@@ -1063,6 +1074,14 @@
+@@ -1067,6 +1080,14 @@
    fi
  fi
  
@@ -126,7 +141,7 @@
  # --- Compile --- #
  
  # Final link uses lots of file descriptors.
-@@ -1195,7 +1214,7 @@
+@@ -1199,7 +1220,7 @@
    fi
    cd third_party/ffmpeg
      ## To prevent error on x86_64:
@@ -135,7 +150,7 @@
      ## in third_party/ffmpeg/build.x64.linux/ChromeOS/ffbuild/config.log
      #sed -e "s/--extra-ldflags=-fuse-ld=lld/--extra-ldflags=''/" \
      #    -i chromium/scripts/build_ffmpeg.py
-@@ -1429,11 +1448,11 @@
+@@ -1433,11 +1454,11 @@
  # Install appdata:
  # This file provides the 'process_template' function:
  if [ -f chrome/installer/linux/common/installer.include ]; then
@@ -150,7 +165,7 @@
  
  mkdir -p $PKG/usr/share/metainfo
  if [ $USE_UNGOOGLED -eq 0 ]; then
-@@ -1500,6 +1519,17 @@
+@@ -1504,6 +1525,17 @@
  install -D -m0644 out/Release/${PRGNAM}.desktop \
    $PKG/usr/share/applications/${PRGNAM}.desktop
  
@@ -168,7 +183,7 @@
  # Install desktop icons:
  for size in 16 32; do
    install -D -m0644 \
-@@ -1647,5 +1677,12 @@
+@@ -1651,5 +1683,12 @@
  cd -
  cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
  
