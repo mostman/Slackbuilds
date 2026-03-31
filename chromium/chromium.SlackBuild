@@ -93,6 +93,12 @@
 #                   16/mar/2026 by Minime <slackware[at]slackwarelinux[dot]se>
 #                   * Fixed build for AArch64
 #                   * Added fix for rust bytemuck error
+# 146.0.7680.153-1: 18/mar/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 146.0.7680.164-1: 24/mar/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+#                   31/mar/2026 by Minime <slackware[at]slackwarelinux[dot]se>
+#                   * Fixed build for AArch64
 #
 # -----------------------------------------------------------------------------
 #
@@ -115,8 +121,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-146.0.7680.80}
-UNGOOGLED=${UNGOOGLED:-146.0.7680.80-1}
+VERSION=${VERSION:-146.0.7680.164}
+UNGOOGLED=${UNGOOGLED:-146.0.7680.164-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
@@ -343,7 +349,7 @@ case "$ARCH" in
              SLKLDFLAGS="-L/usr/lib64"; LIBDIRSUFFIX="64"
              DSSE="1"
              # VAAPI not supported:
-             #USE_VAAPI=0
+             USE_VAAPI=0
              FFMPEG_ARCH="arm64"
              SYSROOT_ARCH="arm64"
              SYSROOT_TARGET="aarch64-linux-gnu"
@@ -487,7 +493,7 @@ touch $OUTPUT/patch-${PRGNAM}.log
 cat $SRCDIR/patches/chromium_widevine_arm.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-# Arch fix rust bytemuck error
+# Arch fix rust error
 cat $SRCDIR/patches/arch/chromium-146-apply-upstream-libmuck-fix.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
