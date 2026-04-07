@@ -99,6 +99,10 @@
 #                   * Update.
 #                   31/mar/2026 by Minime <slackware[at]slackwarelinux[dot]se>
 #                   * Fixed build for AArch64
+# 146.0.7680.177-1: 01/apr/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+#                   07/apr/2026 by Minime <slackware[at]slackwarelinux[dot]se>
+#                   * Fixed build for AArch64
 #
 # -----------------------------------------------------------------------------
 #
@@ -121,8 +125,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-146.0.7680.164}
-UNGOOGLED=${UNGOOGLED:-146.0.7680.164-1}
+VERSION=${VERSION:-146.0.7680.177}
+UNGOOGLED=${UNGOOGLED:-146.0.7680.177-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
