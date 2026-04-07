@@ -1,8 +1,8 @@
---- chromium.SlackBuild.orig	2026-03-24 09:24:36.000000000 +0100
-+++ chromium.SlackBuild	2026-03-31 18:21:42.870112462 +0200
+--- chromium.SlackBuild.orig	2026-04-01 21:46:03.000000000 +0200
++++ chromium.SlackBuild	2026-04-07 18:15:20.330710144 +0200
 @@ -1,5 +1,5 @@
  #!/bin/bash
--# $Id: chromium.SlackBuild,v 1.548 2026/03/24 08:24:22 root Exp root $
+-# $Id: chromium.SlackBuild,v 1.549 2026/04/01 19:45:48 root Exp root $
 +# $Id: chromium.SlackBuild,v 1.543 2026/03/13 18:13:29 root Exp root $
  # Copyright 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026  Eric Hameleers, Eindhoven, NL
  # All rights reserved.
@@ -40,7 +40,7 @@
  # 142.0.7444.134-1: 06/nov/2025 by Eric Hameleers <alien@slackware.com>
  #                   * Update.
  # 142.0.7444.162-1: 15/nov/2025 by Eric Hameleers <alien@slackware.com>
-@@ -84,18 +85,26 @@
+@@ -84,20 +85,30 @@
  #                   * Update to M146.
  # 146.0.7680.75-1:  13/mar/2026 by Eric Hameleers <alien@slackware.com>
  #                   * Update.
@@ -56,8 +56,12 @@
  #                   * Update.
  # 146.0.7680.164-1: 24/mar/2026 by Eric Hameleers <alien@slackware.com>
  #                   * Update.
--# 
 +#                   31/mar/2026 by Minime <slackware[at]slackwarelinux[dot]se>
++#                   * Fixed build for AArch64
+ # 146.0.7680.177-1: 01/apr/2026 by Eric Hameleers <alien@slackware.com>
+ #                   * Update.
+-# 
++#                   07/apr/2026 by Minime <slackware[at]slackwarelinux[dot]se>
 +#                   * Fixed build for AArch64
 +#
  # -----------------------------------------------------------------------------
@@ -70,16 +74,16 @@
  #
  # -----------------------------------------------------------------------------
  
-@@ -115,7 +124,7 @@
- VERSION=${VERSION:-146.0.7680.164}
- UNGOOGLED=${UNGOOGLED:-146.0.7680.164-1}
+@@ -117,7 +128,7 @@
+ VERSION=${VERSION:-146.0.7680.177}
+ UNGOOGLED=${UNGOOGLED:-146.0.7680.177-1}
  BUILD=${BUILD:-1}
 -TAG=${TAG:-alien}
 +TAG=${TAG:-SLse}
  
  # It's recommended to build 32bit binaries in a 32bit chroot on a 64bit OS.
  # Cross-compiling 32bit binaries on 64bit Slackware; set to "YES":
-@@ -213,7 +222,7 @@
+@@ -215,7 +226,7 @@
  # Build a custom clang or use the system clang?
  # CLANG_MIN is the minimal clang version needed to compile chromium,
  # see 'CLANG_REVISION' in ./tools/clang/scripts/update.py :
@@ -88,7 +92,7 @@
  if [ $(clang -dumpversion |cut -d. -f1) -ge ${CLANG_MIN} ]; then
    BUILD_CLANG=${BUILD_CLANG:-0}
  else
-@@ -237,7 +246,7 @@
+@@ -239,7 +250,7 @@
  fi
  
  # Slackware branding:
@@ -97,7 +101,7 @@
  
  # Where do we look for sources?
  SRCDIR=$(cd $(dirname $0); pwd)
-@@ -257,7 +266,7 @@
+@@ -259,7 +270,7 @@
  # If you rebuild this package, you can use your own API keys. See:
  #   http://www.chromium.org/developers/how-tos/api-keys
  # This browser is now compiled without API keys. This will disable stuff like
@@ -106,7 +110,7 @@
  # The following variables must be set to access Google's public APIs:
  #   _google_api_key
  #   _google_default_client_id
-@@ -484,6 +493,10 @@
+@@ -486,6 +497,10 @@
  cat $SRCDIR/patches/chromium_widevine_arm.patch \
    | patch -p1 --verbose \
    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
@@ -117,7 +121,7 @@
  # LLVM 23 added a new compiler flag, so we get: "clang++: error:
  # unknown argument: '-fsanitize-ignore-for-ubsan-feature=array-bounds'"
  cat $SRCDIR/patches/chromium146_drop-unknown-clang-flag.patch  \
-@@ -854,7 +867,7 @@
+@@ -856,7 +871,7 @@
      "ozone_platform_wayland=${do_wayland}"
      #"rtc_use_pipewire=${do_wayland}"
      #"rtc_link_pipewire=${do_wayland}"
@@ -126,7 +130,7 @@
      'proprietary_codecs=true'
      'remove_webcore_debug_symbols=true'
      'symbol_level=0'
-@@ -1067,6 +1080,14 @@
+@@ -1069,6 +1084,14 @@
    fi
  fi
  
@@ -141,7 +145,7 @@
  # --- Compile --- #
  
  # Final link uses lots of file descriptors.
-@@ -1199,7 +1220,7 @@
+@@ -1201,7 +1224,7 @@
    fi
    cd third_party/ffmpeg
      ## To prevent error on x86_64:
@@ -150,7 +154,7 @@
      ## in third_party/ffmpeg/build.x64.linux/ChromeOS/ffbuild/config.log
      #sed -e "s/--extra-ldflags=-fuse-ld=lld/--extra-ldflags=''/" \
      #    -i chromium/scripts/build_ffmpeg.py
-@@ -1433,11 +1454,11 @@
+@@ -1435,11 +1458,11 @@
  # Install appdata:
  # This file provides the 'process_template' function:
  if [ -f chrome/installer/linux/common/installer.include ]; then
@@ -165,7 +169,7 @@
  
  mkdir -p $PKG/usr/share/metainfo
  if [ $USE_UNGOOGLED -eq 0 ]; then
-@@ -1504,6 +1525,17 @@
+@@ -1506,6 +1529,17 @@
  install -D -m0644 out/Release/${PRGNAM}.desktop \
    $PKG/usr/share/applications/${PRGNAM}.desktop
  
@@ -183,7 +187,7 @@
  # Install desktop icons:
  for size in 16 32; do
    install -D -m0644 \
-@@ -1651,5 +1683,12 @@
+@@ -1653,5 +1687,12 @@
  cd -
  cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
  
