@@ -58,7 +58,7 @@ PRGNAM=kodi
 SRCNAM=xbmc
 CODNAM=Omega
 VERSION=${VERSION:-21.3}
-BUILD=${BUILD:-1}
+BUILD=${BUILD:-2}
 TAG=${TAG:-_SLse}
 
 # Use llvm/clang, for a faster build
@@ -111,7 +111,8 @@ case "$ARCH" in
              LIBDIRSUFFIX="64"
              CORE_PLATFORM="x11 gbm" #Change this to "gbm" if you want to use gbm instead of x11
              RENDER_SYSTEM="gles"
-             DO_VAAPI=ON # Does not support Intel, AMD and Nvidia. (Pi uses Broadcom chips)
+             #DO_VAAPI=ON # Does not support Intel, AMD and Nvidia. (Pi uses Broadcom chips)
+             DO_VAAPI=OFF # Does not support Intel, AMD and Nvidia. (Pi uses Broadcom chips)
              DO_VDPAU=OFF # Does not support NVIDIA GPU. (Pi uses Broadcom chips)
              PLATFORMS="x11_gbm"
              ;;
@@ -190,13 +191,17 @@ find -L . \
  \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \
   -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
 
+# patch for fixing hardcoded version giflib version >= 5
+# thanks to ponce Slackbuilds
+patch -p1 < $CWD/giflib6.patch
+
 # Optional ffmpeg is still available but is turned off by default.
 # This means that the script will use kodis own optimized version of ffmpeg.
 # Note: If compiling ffmpeg with Slackware-Currents own package
 # kodi might not build all the addons.
 if [ "${FFMPEG:-yes}" == "yes" ]; then
   OPT_FFMPEG="ON"
-  FFMPEG_VER="6.1.4"
+  FFMPEG_VER="6.1.6"
   if [ -f ${CWD}/ffmpeg/ffmpeg-${FFMPEG_VER}.tar.xz ]; then
     echo "++"
     echo "|| FFMPEG ${FFMPEG_VER} in chache..."
@@ -209,13 +214,13 @@ if [ "${FFMPEG:-yes}" == "yes" ]; then
   fi
   # As ffmpeg 6.0.1 is not working on Slackware current (15.1)
   # We tell kodi to use a newer version we know works.
-  # Plus side is that ffmpeg v6.1.4 also can decode hevc/h265 in GMB (Without X11)
+  # Plus side is that ffmpeg v6.1.6 also can decode hevc/h265 in GMB (Without X11)
   # Thanks to Ponce Slackbuilds scripts for current.
   echo 'LIBNAME=ffmpeg' > tools/depends/target/ffmpeg/FFMPEG-VERSION
   echo 'VERSION=${FFMPEG_VER}' >> tools/depends/target/ffmpeg/FFMPEG-VERSION
   echo 'ARCHIVE=$(LIBNAME)-$(VERSION).tar.xz' >> tools/depends/target/ffmpeg/FFMPEG-VERSION
-  # FFMPEG v6.1.4 SHA512 checksum
-  echo 'SHA512=0d7d29fb170947805eb531f6c66641d0977d18831923d5a9c0442c160b02f94b890ccd04ecf350bb3dce59fe7bb64a426cab02bd65c05416c0d153f50104065f' >> tools/depends/target/ffmpeg/FFMPEG-VERSION
+  # FFMPEG v6.1.6 SHA512 checksum
+  echo 'SHA512=3fdc98fb582d8ffc537848277e603917920d300a91b095a87190f89d8a6ba6f0d3e6a76172393662a38a26a58b42da0bd4843c2bd3d990ebf136b7b7084d5864' >> tools/depends/target/ffmpeg/FFMPEG-VERSION
   FFMPEGURL="-DFFMPEG_URL=$CWD/ffmpeg/ffmpeg-${FFMPEG_VER}.tar.xz"
 else
   OPT_FFMPEG="OFF"
