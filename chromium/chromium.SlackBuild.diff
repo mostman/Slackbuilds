@@ -1,5 +1,5 @@
 --- chromium.SlackBuild.orig	2026-08-07 16:18:07.974705079 +0200
-+++ chromium.SlackBuild	2026-08-08 02:43:08.174517680 +0200
++++ chromium.SlackBuild	2026-08-08 03:27:40.781073429 +0200
 @@ -1,5 +1,5 @@
  #!/bin/bash
 -# $Id: chromium.SlackBuild,v 1.576 2026/08/05 14:52:51 root Exp root $
@@ -150,21 +150,24 @@
      ## in third_party/ffmpeg/build.x64.linux/ChromeOS/ffbuild/config.log
      #sed -e "s/--extra-ldflags=-fuse-ld=lld/--extra-ldflags=''/" \
      #    -i chromium/scripts/build_ffmpeg.py
-@@ -1416,9 +1432,10 @@
+@@ -1416,9 +1432,13 @@
  export AS=as
  
  # Dawn needs our system go:
 -rm -rf third_party/dawn/tools/golang/linux-amd64
 -#ln -s ${GOROOT} third_party/dawn/tools/golang/linux-${SYSROOT_ARCH}
 -ln -s ${GOROOT} third_party/dawn/tools/golang/linux-amd64
-+#rm -rf third_party/dawn/tools/golang/linux-amd64
-+#ln -s ${GOROOT} third_party/dawn/tools/golang/linux-amd64
-+rm -rf third_party/dawn/tools/golang/linux-${SYSROOT_ARCH}
-+ln -s ${GOROOT} third_party/dawn/tools/golang/linux-${SYSROOT_ARCH}
++if [ "$ARCH" == "aarch64" ]; then
++  rm -rf third_party/dawn/tools/golang/linux-${SYSROOT_ARCH}
++  ln -s ${GOROOT} third_party/dawn/tools/golang/linux-${SYSROOT_ARCH}
++else
++  rm -rf third_party/dawn/tools/golang/linux-amd64
++  ln -s ${GOROOT} third_party/dawn/tools/golang/linux-amd64
++fi
  
  echo "-- Generating ninja build files."
  out/Release/gn gen out/Release -v --args="${_chromium_conf[*]}" \
-@@ -1518,11 +1535,11 @@
+@@ -1518,11 +1538,11 @@
  # Install appdata:
  # This file provides the 'process_template' function:
  if [ -f chrome/installer/linux/common/installer.include ]; then
@@ -179,7 +182,7 @@
  
  mkdir -p $PKG/usr/share/metainfo
  if [ $USE_UNGOOGLED -eq 0 ]; then
-@@ -1591,6 +1608,17 @@
+@@ -1591,6 +1611,17 @@
  install -D -m0644 out/Release/${PRGNAM}.desktop \
    $PKG/usr/share/applications/${PRGNAM}.desktop
  
@@ -197,7 +200,7 @@
  # Install desktop icons:
  for size in 16 32; do
    install -D -m0644 \
-@@ -1738,5 +1766,12 @@
+@@ -1738,5 +1769,12 @@
  cd -
  cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
  
