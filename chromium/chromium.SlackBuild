@@ -1432,10 +1432,13 @@ fi
 export AS=as
 
 # Dawn needs our system go:
-#rm -rf third_party/dawn/tools/golang/linux-amd64
-#ln -s ${GOROOT} third_party/dawn/tools/golang/linux-amd64
-rm -rf third_party/dawn/tools/golang/linux-${SYSROOT_ARCH}
-ln -s ${GOROOT} third_party/dawn/tools/golang/linux-${SYSROOT_ARCH}
+if [ "$ARCH" == "aarch64" ]; then
+  rm -rf third_party/dawn/tools/golang/linux-${SYSROOT_ARCH}
+  ln -s ${GOROOT} third_party/dawn/tools/golang/linux-${SYSROOT_ARCH}
+else
+  rm -rf third_party/dawn/tools/golang/linux-amd64
+  ln -s ${GOROOT} third_party/dawn/tools/golang/linux-amd64
+fi
 
 echo "-- Generating ninja build files."
 out/Release/gn gen out/Release -v --args="${_chromium_conf[*]}" \
