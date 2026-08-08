@@ -33,8 +33,8 @@
 # Build needs:     - ninja > 1.13.2
 #                  - meson >= 1.10.0
 #                  - nodejs >= 22.22.0
-#                  - gcc >= 8 , llvm >= 21 for bootstrapping gn
-#                  - rust >= 1.93.0, rust-bindgen >= 1.72.0
+#                  - gcc >= 8 , llvm >= 22 for bootstrapping gn
+#                  - rust >= 1.94, rust-bindgen >= 0.72
 #                  - nasm >= 2.14 (yasm no longer being used)
 #                  - cmake >= 3.31.3
 #                  - python3 >= 3.10, python3-setuptools
@@ -103,6 +103,45 @@
 #                   * Update.
 #                   07/apr/2026 by Minime <slackware[at]slackwarelinux[dot]se>
 #                   * Fixed build for AArch64
+# 147.0.7727.55-1:  08/apr/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M147.
+#                   14/apr/2026 by Minime <slackware[at]slackwarelinux[dot]se>
+#                   * Fixed build for AArch64
+# 147.0.7727.101-1: 16/apr/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 147.0.7727.116-1: 23/apr/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 147.0.7727.137-1: 01/may/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 148.0.7778.96-1:  06/may/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M148.
+# 148.0.7778.167-1: 13/may/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 148.0.7778.178-1: 20/may/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 148.0.7778.215-1: 28/may/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 149.0.7827.53-1:  04/jun/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M149.
+# 149.0.7827.102-1: 09/jun/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 149.0.7827.155-1: 20/jun/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 150.0.7871.46-1:  01/jul/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M150.
+# 150.0.7871.100-1: 07/jul/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 150.0.7871.128-1: 18/jul/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 150.0.7871.181-1: 22/jul/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 151.0.7922.71-1:  01/aug/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M151.
+# 151.0.7922.75-1:  04/aug/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 151.0.7922.108-1:  07/aug/2026 by Minime <slackware[at]slackwarelinux[dot]se>
+#                   * Update.
+#                   * Fixed build for AArch64
 #
 # -----------------------------------------------------------------------------
 #
@@ -125,8 +164,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-146.0.7680.177}
-UNGOOGLED=${UNGOOGLED:-146.0.7680.177-1}
+VERSION=${VERSION:-151.0.7922.108}
+UNGOOGLED=${UNGOOGLED:-151.0.7922.108-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
@@ -226,7 +265,7 @@ GOOGLE_CLANG=${GOOGLE_CLANG:-"bin"}
 # Build a custom clang or use the system clang?
 # CLANG_MIN is the minimal clang version needed to compile chromium,
 # see 'CLANG_REVISION' in ./tools/clang/scripts/update.py :
-CLANG_MIN=21
+CLANG_MIN=22
 if [ $(clang -dumpversion |cut -d. -f1) -ge ${CLANG_MIN} ]; then
   BUILD_CLANG=${BUILD_CLANG:-0}
 else
@@ -494,70 +533,98 @@ sed -e 's/OFFICIAL_BUILD/GOOGLE_CHROME_BUILD/' \
 # Patches and bug fixes:
 touch $OUTPUT/patch-${PRGNAM}.log
 # Arch contributions:
-cat $SRCDIR/patches/chromium_widevine_arm.patch \
+echo "-- chromium_widevine_arm.patch --"
+cat $SRCDIR/patches/arch/enable-widevine-arm64.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-# Arch fix rust error
-cat $SRCDIR/patches/arch/chromium-146-apply-upstream-libmuck-fix.patch \
+echo "-- chromium147_revert-clang-no-lifetime-dse-flag.patch --"
+cat $SRCDIR/patches/chromium147_revert-clang-no-lifetime-dse-flag.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-# LLVM 23 added a new compiler flag, so we get: "clang++: error:
-# unknown argument: '-fsanitize-ignore-for-ubsan-feature=array-bounds'"
-cat $SRCDIR/patches/chromium146_drop-unknown-clang-flag.patch  \
+# LLVM 23 added new compiler flags, so we get:
+# "clang++: error: unknown argument: '-fsanitize-ignore-for-ubsan-feature=array-bounds'"
+# clang++: error: unknown argument: '-fdiagnostics-show-inlining-chain'
+echo "-- chromium151_drop-unknown-clang-flag.patch --"
+cat $SRCDIR/patches/chromium151_drop-unknown-clang-flag.patch  \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # Gentoo contribution:
+echo "-- chromium-138-nodejs-version-check.patch --"
 cat $SRCDIR/patches/chromium-138-nodejs-version-check.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+echo "-- chromium-141-cssstylesheet-iwyu.patch --"
 cat $SRCDIR/patches/chromium-141-cssstylesheet-iwyu.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # NixOS contributions:
-cat $SRCDIR/patches/chromium141_rust.patch \
-  | patch -p1 --verbose \
-  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-cat $SRCDIR/patches/chromium146_backport-Remove-now-obsolete-invalid-patch-on-bytemuck-v1.patch \
-  | patch -p1 --verbose \
-  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-#cat $SRCDIR/patches/chromium-142-crabbyavif-rust-no_sanitize.patch \
+#echo "-- chromium141_rust.patch --"
+#cat $SRCDIR/patches/chromium141_rust.patch \
 #  | patch -p1 --verbose \
 #  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-#cat $SRCDIR/patches/chromium-142-Revert-rust-Remove-the-old-__rust_alloc_error_handler_should_panic-symbol.patch \
-#  | patch --reverse -p1 --verbose \
-#  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-# Fix building Chromium 140 by defining missing rust symbol:
+# Debian contributions:
+echo "-- chromium149_bytemuck.patch --"
+cat $SRCDIR/patches/chromium149_bytemuck.patch \
+  | patch -p1 --verbose \
+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+echo "-- chromium-142-crabbyavif-Revert-Enable-disable_cfi-feature.patch --"
 cat $SRCDIR/patches/chromium-142-crabbyavif-Revert-Enable-disable_cfi-feature.patch \
   | patch --reverse -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # Fix building Chromium 140 by defining missing rust symbol:
+echo "-- rust_no_alloc_shim_is_unstable.patch --"
 cat $SRCDIR/patches/rust_no_alloc_shim_is_unstable.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # Fix building Chromium 143 by reverting a commit (thanks selfisekai/copium):
+echo "-- cr142-rust-pre1.90.patch --"
 cat $SRCDIR/patches/cr142-rust-pre1.90.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-## Fix build using rust 1.89:
-#cat $SRCDIR/patches/chromium_rust189_mismatched_lifetime_syntaxes.patch \
-#  | patch -p1 --verbose \
-#  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # Fix building chromium 143 by adding include for re2:
+echo "-- include-re2-in-build-gn.patch --"
 cat $SRCDIR/patches/include-re2-in-build-gn.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-# Fix building using Python 3.9 on Slackware 15.0, error is:
+# Fix building chromium 149 error:
+# ld.lld: error: undefined symbol: __sanitizer_set_death_callback
+echo "-- chromium149_v8-sandbox-sanitizer-death-callback-weak.patch --"
+cat $SRCDIR/patches/chromium149_v8-sandbox-sanitizer-death-callback-weak.patch \
+  | patch -p1 --verbose \
+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+## Fixes for new behavior regarding 'ar' while unbundling:
+#echo "-- chromium150_explicit_ar.patch --"
+#cat $SRCDIR/patches/chromium150_explicit_ar.patch \
+#  | patch -p1 --verbose \
+#  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+#echo "-- chromium150_empty_ar.patch --"
+#cat $SRCDIR/patches/chromium150_empty_ar.patch \
+#  | patch -p1 --verbose \
+#  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+# Dealing with the error:
 # TypeError: unsupported operand type(s) for |: 'type' and 'NoneType'
-sed -i ./tools/metrics/histograms/extract_histograms.py \
-  -e "1 i\from __future__ import annotations\n\n"
+# Fix building using Python 3.9 on Slackware 15.0 by placing
+# the future import right above the first actual module import:
+ sed -i ./tools/metrics/histograms/extract_histograms.py \
+  -e "/^import bisect/i from __future__ import annotations\n"
+# Chromium 151's copy of tools/metrics/BUILD.gn appears to be taken in the
+# midst of a multi-stage rafactor. Fix by adding the missing second part
+# which is already found in git master:
+sed -i tools/metrics/BUILD.gn \
+  -e 's/if (generate_location_tags) {/if (path_exists("\/\/.git")) {/'
 # Fix typo in recent commit causing 'unbound variable' error:
-sed -e 's/TMPINCL/TMPLINCL/g' \
-  -i remoting/host/installer/linux/installer.include
+sed -i remoting/host/installer/linux/installer.include \
+  -e 's/TMPINCL/TMPLINCL/g'
+# Fix architecture detection in dawn:
+sed -i third_party/dawn/tools/python/cipd_deps.py \
+  -e "/native_x86 = platform.machine().lower()/s/'x86'/'i686', 'x86'/"
 
 if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
   # Adjust expectations about where to find the clang libs on Slackware:
+  echo "-- chromium-134-bindgen-custom-toolchain.patch --"
   cat $SRCDIR/patches/chromium-134-bindgen-custom-toolchain.patch \
     | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+  echo "-- compiler-rt-adjust-paths.patch --"
   cat $SRCDIR/patches/compiler-rt-adjust-paths.patch | patch -p1 --verbose \
     2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
   sed -i buildtools/third_party/libc++/modules.gni \
@@ -583,6 +650,7 @@ sed -e '/ldflags /s/-m32/&", "-Wl,-z,notext/' \
 if [ "$ARCH" == "i586" ] ; then
   # Don't complain about unsupported flags when we add
   # "--disable-seccomp-sandbox" on 32bit OS:
+  echo "-- chromium_slax_nobadflagsmessage.patch --"
   cat $SRCDIR/patches/chromium_slax_nobadflagsmessage.patch \
     | patch -p1 --verbose \
     2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
@@ -778,9 +846,14 @@ mkdir -p third_party/node/linux/node-linux-x64/bin
 rm -f third_party/node/linux/node-linux-x64/bin/node
 ln -s /usr/bin/node third_party/node/linux/node-linux-x64/bin/
 # Other binaries we need to provide ourselves:
+mkdir -p third_party/jdk/current/bin/
 ln -s /usr/lib${LIBDIRSUFFIX}/java/bin/java third_party/jdk/current/bin/
+# The provided 'ninja' is 64bit which won't work for 32bit build:
 rm -f third_party/ninja/ninja
 ln -s /usr/bin/ninja third_party/ninja/ninja
+# The provided 'gperf' is 64bit which won't work for 32bit build:
+rm -f third_party/gperf/cipd/bin/gperf
+ln -s /usr/bin/gperf third_party/gperf/cipd/bin/gperf
 
 if [ "$PRGNAM" != "$SRCNAM" ]; then
   # Save configuration in ~/.config/$PRGNAM:
@@ -925,6 +998,9 @@ fi
 
 if [ ${USE_UNGOOGLED} -ne 0 ]; then
   # Add ungoogled flags if requested:
+  if [ "$ARCH" == "i586" ] || [ "${CROSS32}" = "YES" ]; then
+    sed -i '/^v8_enable_drumbrake=true/d' ${UGDIR}/flags.gn
+  fi
   readarray -t -O ${#_chromium_conf[@]} _chromium_conf < ${UGDIR}/flags.gn
 else
   # Add remainder of standard chromium flags:
@@ -1083,14 +1159,6 @@ if [ "$ARCH" != "x86_64" ]; then
     install -D -m0755 -t $TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/buildtools/third_party/eu-strip/bin /usr/bin/eu-strip
   fi
 fi
-
-# Fix missing cfi file for aarch64
-#if [ "$ARCH" == "aarch64" ]; then
-#  if  [ ! -f /usr/lib64/clang/22/share/cfi_ignorelist.txt ]; then
-#    mkdir -p /usr/lib64/clang/22/share/
-#    touch /usr/lib64/clang/22/share/cfi_ignorelist.txt
-#  fi
-#fi
 
 # --- Compile --- #
 
@@ -1302,8 +1370,11 @@ fi
 if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
   # Use system toolchain:
 
-  rm -rf third_party/rust-toolchain
   rm -rf third_party/llvm-build
+  rm -rf third_party/rust-toolchain
+  # The build does want to see a 'rustc' binary here regardless:
+  mkdir -p third_party/rust-toolchain/bin
+  ln -s /usr/bin/rustc third_party/rust-toolchain/bin/rustc
 
   # Use system toolchain:
   _chromium_conf+=(
@@ -1359,6 +1430,12 @@ else
   echo "-- Setting LIBCLANG_PATH to '$LIBCLANG_PATH'."
 fi
 export AS=as
+
+# Dawn needs our system go:
+#rm -rf third_party/dawn/tools/golang/linux-amd64
+#ln -s ${GOROOT} third_party/dawn/tools/golang/linux-amd64
+rm -rf third_party/dawn/tools/golang/linux-${SYSROOT_ARCH}
+ln -s ${GOROOT} third_party/dawn/tools/golang/linux-${SYSROOT_ARCH}
 
 echo "-- Generating ninja build files."
 out/Release/gn gen out/Release -v --args="${_chromium_conf[*]}" \
@@ -1514,10 +1591,12 @@ PACKAGE=${PRGNAM}
 package=${PRGNAM}
 PROGNAME=${PRGNAM}
 progname=${PRGNAM}
-USR_BIN_SYMLINK_NAME=${PRGNAM}
-usr_bin_symlink_name=${PRGNAM}
+StartupWMClass="${PRGNAM}"
+startup_wm_class="${PRGNAM}"
 URI_SCHEME=""
 uri_scheme=""
+USR_BIN_SYMLINK_NAME=${PRGNAM}
+usr_bin_symlink_name=${PRGNAM}
 
 # Install a man page:
 process_template chrome/app/resources/manpage.1.in out/Release/${PRGNAM}.1
