@@ -139,9 +139,11 @@
 #                   * Update to M151.
 # 151.0.7922.75-1:  04/aug/2026 by Eric Hameleers <alien@slackware.com>
 #                   * Update.
-# 151.0.7922.108-1:  07/aug/2026 by Minime <slackware[at]slackwarelinux[dot]se>
+# 151.0.7922.108-1: 07/aug/2026 by Minime <slackware[at]slackwarelinux[dot]se>
 #                   * Update.
 #                   * Fixed build for AArch64
+#                   10/aug/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
 #
 # -----------------------------------------------------------------------------
 #
@@ -605,7 +607,7 @@ cat $SRCDIR/patches/chromium149_v8-sandbox-sanitizer-death-callback-weak.patch \
 # TypeError: unsupported operand type(s) for |: 'type' and 'NoneType'
 # Fix building using Python 3.9 on Slackware 15.0 by placing
 # the future import right above the first actual module import:
- sed -i ./tools/metrics/histograms/extract_histograms.py \
+sed -i ./tools/metrics/histograms/extract_histograms.py \
   -e "/^import bisect/i from __future__ import annotations\n"
 # Chromium 151's copy of tools/metrics/BUILD.gn appears to be taken in the
 # midst of a multi-stage rafactor. Fix by adding the missing second part
@@ -1433,8 +1435,8 @@ export AS=as
 
 # Dawn needs our system go:
 if [ "$ARCH" == "aarch64" ]; then
-  rm -rf third_party/dawn/tools/golang/linux-${SYSROOT_ARCH}
-  ln -s ${GOROOT} third_party/dawn/tools/golang/linux-${SYSROOT_ARCH}
+  rm -rf third_party/dawn/tools/golang/linux-arm64
+  ln -s ${GOROOT} third_party/dawn/tools/golang/linux-arm64
 else
   rm -rf third_party/dawn/tools/golang/linux-amd64
   ln -s ${GOROOT} third_party/dawn/tools/golang/linux-amd64
