@@ -1,8 +1,8 @@
---- chromium.SlackBuild.orig	2026-08-07 16:18:07.974705079 +0200
-+++ chromium.SlackBuild	2026-08-08 03:27:40.781073429 +0200
+--- chromium.SlackBuild.1	2026-08-10 10:18:50.000000000 +0200
++++ chromium.SlackBuild	2026-08-11 04:08:25.370005570 +0200
 @@ -1,5 +1,5 @@
  #!/bin/bash
--# $Id: chromium.SlackBuild,v 1.576 2026/08/05 14:52:51 root Exp root $
+-# $Id: chromium.SlackBuild,v 1.577 2026/08/10 08:18:43 root Exp root $
 +# $Id: chromium.SlackBuild,v 1.543 2026/03/13 18:13:29 root Exp root $
  # Copyright 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026  Eric Hameleers, Eindhoven, NL
  # All rights reserved.
@@ -60,14 +60,17 @@
  # 147.0.7727.101-1: 16/apr/2026 by Eric Hameleers <alien@slackware.com>
  #                   * Update.
  # 147.0.7727.116-1: 23/apr/2026 by Eric Hameleers <alien@slackware.com>
-@@ -126,12 +139,15 @@
+@@ -126,14 +139,17 @@
  #                   * Update to M151.
  # 151.0.7922.75-1:  04/aug/2026 by Eric Hameleers <alien@slackware.com>
  #                   * Update.
+-# 151.0.7922.108-1: 10/aug/2026 by Eric Hameleers <alien@slackware.com>
++# 151.0.7922.108-1: 07/aug/2026 by Minime <slackware[at]slackwarelinux[dot]se>
+ #                   * Update.
 -# 
-+# 151.0.7922.108-1:  07/aug/2026 by Minime <slackware[at]slackwarelinux[dot]se>
-+#                   * Update.
 +#                   * Fixed build for AArch64
++#                   10/aug/2026 by Eric Hameleers <alien@slackware.com>
++#                   * Update.
 +#
  # -----------------------------------------------------------------------------
 -# 
@@ -79,21 +82,16 @@
  #
  # -----------------------------------------------------------------------------
  
-@@ -148,10 +164,10 @@
- 
- SRCNAM=chromium
- PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
--VERSION=${VERSION:-151.0.7922.75}
--UNGOOGLED=${UNGOOGLED:-151.0.7922.75-1}
-+VERSION=${VERSION:-151.0.7922.108}
-+UNGOOGLED=${UNGOOGLED:-151.0.7922.108-1}
+@@ -153,7 +169,7 @@
+ VERSION=${VERSION:-151.0.7922.108}
+ UNGOOGLED=${UNGOOGLED:-151.0.7922.108-1}
  BUILD=${BUILD:-1}
 -TAG=${TAG:-alien}
 +TAG=${TAG:-SLse}
  
  # It's recommended to build 32bit binaries in a 32bit chroot on a 64bit OS.
  # Cross-compiling 32bit binaries on 64bit Slackware; set to "YES":
-@@ -273,7 +289,7 @@
+@@ -275,7 +291,7 @@
  fi
  
  # Slackware branding:
@@ -102,7 +100,7 @@
  
  # Where do we look for sources?
  SRCDIR=$(cd $(dirname $0); pwd)
-@@ -293,7 +309,7 @@
+@@ -295,7 +311,7 @@
  # If you rebuild this package, you can use your own API keys. See:
  #   http://www.chromium.org/developers/how-tos/api-keys
  # This browser is now compiled without API keys. This will disable stuff like
@@ -111,7 +109,7 @@
  # The following variables must be set to access Google's public APIs:
  #   _google_api_key
  #   _google_default_client_id
-@@ -518,7 +534,7 @@
+@@ -520,7 +536,7 @@
  touch $OUTPUT/patch-${PRGNAM}.log
  # Arch contributions:
  echo "-- chromium_widevine_arm.patch --"
@@ -120,19 +118,16 @@
    | patch -p1 --verbose \
    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
  echo "-- chromium147_revert-clang-no-lifetime-dse-flag.patch --"
-@@ -587,9 +603,9 @@
+@@ -589,7 +605,7 @@
  #  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
  # Dealing with the error:
  # TypeError: unsupported operand type(s) for |: 'type' and 'NoneType'
 -# Fix building using Python 3.9 on Slackware 15.0 by placing 
 +# Fix building using Python 3.9 on Slackware 15.0 by placing
  # the future import right above the first actual module import:
--sed -i ./tools/metrics/histograms/extract_histograms.py \
-+ sed -i ./tools/metrics/histograms/extract_histograms.py \
+ sed -i ./tools/metrics/histograms/extract_histograms.py \
    -e "/^import bisect/i from __future__ import annotations\n"
- # Chromium 151's copy of tools/metrics/BUILD.gn appears to be taken in the
- # midst of a multi-stage rafactor. Fix by adding the missing second part
-@@ -928,7 +944,7 @@
+@@ -930,7 +946,7 @@
      "ozone_platform_wayland=${do_wayland}"
      #"rtc_use_pipewire=${do_wayland}"
      #"rtc_link_pipewire=${do_wayland}"
@@ -141,7 +136,7 @@
      'proprietary_codecs=true'
      'remove_webcore_debug_symbols=true'
      'symbol_level=0'
-@@ -1276,7 +1292,7 @@
+@@ -1278,7 +1294,7 @@
    fi
    cd third_party/ffmpeg
      ## To prevent error on x86_64:
@@ -150,7 +145,7 @@
      ## in third_party/ffmpeg/build.x64.linux/ChromeOS/ffbuild/config.log
      #sed -e "s/--extra-ldflags=-fuse-ld=lld/--extra-ldflags=''/" \
      #    -i chromium/scripts/build_ffmpeg.py
-@@ -1416,9 +1432,13 @@
+@@ -1418,9 +1434,13 @@
  export AS=as
  
  # Dawn needs our system go:
@@ -158,8 +153,8 @@
 -#ln -s ${GOROOT} third_party/dawn/tools/golang/linux-${SYSROOT_ARCH}
 -ln -s ${GOROOT} third_party/dawn/tools/golang/linux-amd64
 +if [ "$ARCH" == "aarch64" ]; then
-+  rm -rf third_party/dawn/tools/golang/linux-${SYSROOT_ARCH}
-+  ln -s ${GOROOT} third_party/dawn/tools/golang/linux-${SYSROOT_ARCH}
++  rm -rf third_party/dawn/tools/golang/linux-arm64
++  ln -s ${GOROOT} third_party/dawn/tools/golang/linux-arm64
 +else
 +  rm -rf third_party/dawn/tools/golang/linux-amd64
 +  ln -s ${GOROOT} third_party/dawn/tools/golang/linux-amd64
@@ -167,7 +162,7 @@
  
  echo "-- Generating ninja build files."
  out/Release/gn gen out/Release -v --args="${_chromium_conf[*]}" \
-@@ -1518,11 +1538,11 @@
+@@ -1520,11 +1540,11 @@
  # Install appdata:
  # This file provides the 'process_template' function:
  if [ -f chrome/installer/linux/common/installer.include ]; then
@@ -182,7 +177,7 @@
  
  mkdir -p $PKG/usr/share/metainfo
  if [ $USE_UNGOOGLED -eq 0 ]; then
-@@ -1591,6 +1611,17 @@
+@@ -1593,6 +1613,17 @@
  install -D -m0644 out/Release/${PRGNAM}.desktop \
    $PKG/usr/share/applications/${PRGNAM}.desktop
  
@@ -200,7 +195,7 @@
  # Install desktop icons:
  for size in 16 32; do
    install -D -m0644 \
-@@ -1738,5 +1769,12 @@
+@@ -1740,5 +1771,12 @@
  cd -
  cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
  
