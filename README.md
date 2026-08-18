@@ -14,6 +14,8 @@ Latest build from Mr drmozes (Platform Architect & Developer - Slackware ARM / A
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/137.0.7151.55/chromium-ungoogled-137.0.7151.55-aarch64-1SLse.txz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/137.0.7151.55/)  
 
 Kodi package compiled for Slackware AArch64 Current (RPI 4 & 5)  
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.3/kodi-21.3-aarch64-4_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.3/)  
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.3/kodi-addons-21.4-aarch64-3_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.3/)   
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.3/kodi-21.3-aarch64-3_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.3/)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.3/kodi-addons-21.3-aarch64-3_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.3/)   
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.3/jdk-8u491-aarch64-1_SBo.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.3/)    
