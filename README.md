@@ -30,6 +30,8 @@ Kodi package compiled for Slackware ARM 15.0 (RPI 4)
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.2/tinyxml2-11.0.0-arm-1_SBo.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.2/)   
 
 Kodi package compiled for Slackware AArch64 Current (RPI 4 & 5)  
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.3/kodi-21.3-aarch64-4_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.3/)  
+[![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.3/kodi-addons-21.3-aarch64-4_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.3/)   
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.3/kodi-21.3-aarch64-3_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.3/)  
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.3/kodi-addons-21.3-aarch64-3_SLse.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.3/)   
 [![GitHub release (latest by date)](https://img.shields.io/github/downloads/mostman/Slackbuilds/21.3/jdk-8u491-aarch64-1_SBo.tgz?style=plastic)](https://github.com/mostman/Slackbuilds/releases/tag/21.3/)    
