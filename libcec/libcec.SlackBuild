@@ -26,7 +26,7 @@
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 PRGNAM=libcec
-VERSION=${VERSION:-8.1.4}
+VERSION=${VERSION:-8.1.7}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SLse}
 
@@ -58,6 +58,7 @@ elif [ "$ARCH" = "x86_64" ]; then
   SARCH=x86_64
 elif [ "$ARCH" = "aarch64" ]; then
   SLKCFLAGS="-O2 -fPIC -march=armv8-a -mtune=cortex-a72"
+  #SLKCFLAGS="-O2"
   LIBDIRSUFFIX="64"
   SARCH=aarch64
 elif [ "$ARCH" = "armv7l" ]; then
@@ -109,7 +110,9 @@ cd -
 find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
   | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
 
-install -D -m 0644 debian/cec-client.1 $PKG/usr/man/man1/cec-client.1
+# change after 8.1.4
+#install -D -m 0644 debian/cec-client.1 $PKG/usr/man/man1/cec-client.1
+install -D -m 0644 debian/man/cec-client.1 $PKG/usr/man/man1/cec-client.1
 find $PKG/usr/man -type f -exec gzip -9 {} \;
 
 mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
