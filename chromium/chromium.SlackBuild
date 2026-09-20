@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: chromium.SlackBuild,v 1.543 2026/03/13 18:13:29 root Exp root $
+# $Id: chromium.SlackBuild,v 1.586 2026/09/11 18:59:32 root Exp root $
 # Copyright 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026  Eric Hameleers, Eindhoven, NL
 # All rights reserved.
 #
@@ -144,6 +144,23 @@
 #                   * Fixed build for AArch64
 #                   10/aug/2026 by Eric Hameleers <alien@slackware.com>
 #                   * Update.
+# 151.0.7922.137-1: 12/aug/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 151.0.7922.169-1: 19/aug/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 151.0.7922.173-1: 24/aug/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 152.0.7977.64-1:  25/aug/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M152.
+# 152.0.7977.75-1:  03/sep/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 152.0.7977.82-1:  04/sep/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+# 153.0.8010.36-1:  09/sep/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update to M153.
+# 153.0.8010.52-1:  20/sep/2026 by Minime <slackware[at]slackwarelinux[dot]se>
+#                   * Update.
+#                   * Fixed build for AArch64
 #
 # -----------------------------------------------------------------------------
 #
@@ -166,8 +183,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-151.0.7922.108}
-UNGOOGLED=${UNGOOGLED:-151.0.7922.108-1}
+VERSION=${VERSION:-153.0.8010.52}
+UNGOOGLED=${UNGOOGLED:-153.0.8010.52-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
@@ -289,6 +306,9 @@ if which magick 1>/dev/null 2>/dev/null ; then
 else
   MAGICK=""
 fi
+
+# Use a precompiled 'gn' binary?
+GNBIN=${GNBIN:-/usr/local/bin/gn}
 
 # Slackware branding:
 BUILDER="by Minime for Slackware"
@@ -560,10 +580,10 @@ cat $SRCDIR/patches/chromium-141-cssstylesheet-iwyu.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # NixOS contributions:
-#echo "-- chromium141_rust.patch --"
-#cat $SRCDIR/patches/chromium141_rust.patch \
-#  | patch -p1 --verbose \
-#  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+echo "-- chromium152_dawn-llvm-22.patch --"
+cat $SRCDIR/patches/chromium152_dawn-llvm-22.patch \
+  | patch -p1 --verbose \
+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # Debian contributions:
 echo "-- chromium149_bytemuck.patch --"
 cat $SRCDIR/patches/chromium149_bytemuck.patch \
@@ -592,6 +612,11 @@ cat $SRCDIR/patches/include-re2-in-build-gn.patch \
 # ld.lld: error: undefined symbol: __sanitizer_set_death_callback
 echo "-- chromium149_v8-sandbox-sanitizer-death-callback-weak.patch --"
 cat $SRCDIR/patches/chromium149_v8-sandbox-sanitizer-death-callback-weak.patch \
+  | patch -p1 --verbose \
+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+# Ungoogled contributions:
+echo "-- chromium152_crubit.patch --"
+cat $SRCDIR/patches/chromium152_crubit.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 ## Fixes for new behavior regarding 'ar' while unbundling:
@@ -1269,12 +1294,61 @@ if [ ${USE_CLANG} -eq 1 ] && [  ${BUILD_CLANG} -eq 1 ]; then
   python3 tools/rust/update_rust.py
   python3 tools/clang/scripts/update.py
 
+  # --- M152+: let the prebuilt cc_bindings_from_rs run on Slackware's glibc ---
+  # It needs glibc 2.34; Slackware 15.0 ships 2.33. It is a host x64 tool, so
+  # this applies to 64-bit and CROSS32 builds alike. GLIBC_COMPAT must hold a
+  # complete x64 slackware-current glibc runtime (ld-linux + libc.so.6 + ...).
+  GLIBC_COMPAT=${GLIBC_COMPAT:-/opt/glibc-current/lib64}
+  RUSTTC="$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/third_party/rust-toolchain"
+  CBFR="${RUSTTC}/bin/cc_bindings_from_rs"
+  if [ -x "$CBFR" ] && ! "$CBFR" --help >/dev/null 2>&1 ; then
+    echo "-- Wrapping cc_bindings_from_rs to use $GLIBC_COMPAT."
+    mv "$CBFR" "$CBFR.real"
+    cat > "$CBFR" <<EOF
+#!/bin/bash
+exec $GLIBC_COMPAT/ld-linux-x86-64.so.2 \\
+  --library-path $GLIBC_COMPAT:$RUSTTC/lib \\
+  "$CBFR.real" "\$@"
+EOF
+    chmod +x "$CBFR"
+    "$CBFR" --help >/dev/null 2>&1 && echo "-- cc_bindings_from_rs OK." \
+      || { echo "-- ERROR: cc_bindings_from_rs still not runnable." ; exit 1 ; }
+  fi
+
   # Ensure that only this new clang is used, ignoring the system version:
   MYCLANG_ROOT="$TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/third_party/llvm-build/Release+Asserts"
   MYCLANG_PATH="${MYCLANG_ROOT}/bin"
   export PATH="$MYCLANG_PATH:$PATH"
  fi
 fi
+
+if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 1 ]; then
+  # Use the clang that we build in-tree or downloaded,
+  # instead of using the system version:
+  echo "-- Using custom clang."
+  export CC="$MYCLANG_PATH/clang"
+  export CXX="$MYCLANG_PATH/clang++"
+  export LD="$MYCLANG_PATH/lld"
+  export AR="$MYCLANG_PATH/llvm-ar"
+  export NM="$MYCLANG_PATH/llvm-nm"
+elif [ "$USE_CLANG" = "0" ]; then
+  # Be careful not to override CC and CXX (may have been set by gcc5):
+  echo "-- Using gcc/g++ compilers."
+  export CC=${CC:-"gcc"}
+  export CXX=${CXX:-"g++"}
+else
+  # Use the system clang:
+  echo "-- Using the system clang."
+  export CC=clang
+  export CXX=clang++
+  export CPP="clang++ -E"
+  export LD=lld
+  export AR=llvm-ar
+  export NM=llvm-nm
+  export LIBCLANG_PATH="/usr/lib${LIBDIRSUFFIX}"
+  echo "-- Setting LIBCLANG_PATH to '$LIBCLANG_PATH'."
+fi
+export AS=as
 
 # For Chromium 92, disable ffmpeg re-configuration on 32bit OS,
 # to avoid linking errors like:
@@ -1332,29 +1406,37 @@ fi
 # Generate the ninja build files:
 echo "-- Bootstrapping 'gn'."
 
-if [ "${GOOGLE_CLANG}" == "src" ] && [  ${BUILD_CLANG} -eq 1 ]; then
-  # Symlink ld to lld to make gn linking stage succeed:
-  cd $MYCLANG_PATH ; ln -s lld ld ; cd - 1>/dev/null
-fi
+if [ ! -x $GNBIN 1>/dev/null 2>/dev/null ; then
+  echo "-- Bootstrapping 'gn'."
 
-if [ -e tools/gn/build/gen.py ]; then
-  # Build the embedded version:
-  LDFLAGS="$LDFLAGS" python3 tools/gn/bootstrap/bootstrap.py \
-    2>&1 | tee $OUTPUT/gyp-${PRGNAM}.log
-    #--use-custom-libcxx \
+  if [ "${GOOGLE_CLANG}" == "src" ] && [  ${BUILD_CLANG} -eq 1 ]; then
+    # Symlink ld to lld to make gn linking stage succeed:
+    cd $MYCLANG_PATH ; ln -s lld ld ; cd - 1>/dev/null
+  fi
+
+  if [ -e tools/gn/build/gen.py ]; then
+    # Build the embedded version:
+    LDFLAGS="$LDFLAGS" python3 tools/gn/bootstrap/bootstrap.py \
+      2>&1 | tee $OUTPUT/gyp-${PRGNAM}.log
+      #--use-custom-libcxx \
+  else
+    # Download and build the latest:
+    git clone https://gn.googlesource.com/gn gn.git
+    pushd gn.git
+      # We'll use the gn version referenced in the Chromium source:
+      GNREV=$(sed -En "s/^ +'gn_version': 'git_revision:([^']+)',/\1/p" $TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/DEPS)
+      git reset --hard $GNREV
+      git clean -ffdx
+      echo "-- Building externally downloaded gn version 0.$(git rev-list --count initial-commit..).$(git rev-parse --short=8 HEAD)"
+      ./build/gen.py 2>&1 | tee /$OUTPUT/gyp-${PRGNAM}.log
+      ninja -C out 2>&1 | tee -a /$OUTPUT/gyp-${PRGNAM}.log
+    popd
+    install -m0755 -D -t out/Release gn.git/out/gn
+  fi
+
 else
-  # Download and build the latest:
-  git clone https://gn.googlesource.com/gn gn.git
-  pushd gn.git
-    # We'll use the gn version referenced in the Chromium source:
-    GNREV=$(sed -En "s/^ +'gn_version': 'git_revision:([^']+)',/\1/p" $TMP/tmp-$PRGNAM/${SRCNAM}-${VERSION}/DEPS)
-    git reset --hard $GNREV
-    git clean -ffdx
-    echo "-- Building externally downloaded gn version 0.$(git rev-list --count initial-commit..).$(git rev-parse --short=8 HEAD)"
-    ./build/gen.py 2>&1 | tee /$OUTPUT/gyp-${PRGNAM}.log
-    ninja -C out 2>&1 | tee -a /$OUTPUT/gyp-${PRGNAM}.log
-  popd
-  install -m0755 -D -t out/Release gn.git/out/gn
+   mkdir -p out/Release
+   ln -s ${GNBIN} out/Release/
 fi
 
 #if [ "${GOOGLE_CLANG}" == "src" ] && [  ${BUILD_CLANG} -eq 1 ]; then
@@ -1404,34 +1486,6 @@ if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
       "rustc_version=\"$(rustc --version |cut -d' ' -f2)\""
     )
 fi
-
-if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 1 ]; then
-  # Use the clang that we build in-tree or downloaded,
-  # instead of using the system version:
-  echo "-- Using custom clang."
-  export CC="$MYCLANG_PATH/clang"
-  export CXX="$MYCLANG_PATH/clang++"
-  export LD="$MYCLANG_PATH/lld"
-  export AR="$MYCLANG_PATH/llvm-ar"
-  export NM="$MYCLANG_PATH/llvm-nm"
-elif [ "$USE_CLANG" = "0" ]; then
-  # Be careful not to override CC and CXX (may have been set by gcc5):
-  echo "-- Using gcc/g++ compilers."
-  export CC=${CC:-"gcc"}
-  export CXX=${CXX:-"g++"}
-else
-  # Use the system clang:
-  echo "-- Using the system clang."
-  export CC=clang
-  export CXX=clang++
-  export CPP="clang++ -E"
-  export LD=lld
-  export AR=llvm-ar
-  export NM=llvm-nm
-  export LIBCLANG_PATH="/usr/lib${LIBDIRSUFFIX}"
-  echo "-- Setting LIBCLANG_PATH to '$LIBCLANG_PATH'."
-fi
-export AS=as
 
 # Dawn needs our system go:
 if [ "$ARCH" == "aarch64" ]; then
