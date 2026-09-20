@@ -158,8 +158,7 @@
 #                   * Update.
 # 153.0.8010.36-1:  09/sep/2026 by Eric Hameleers <alien@slackware.com>
 #                   * Update to M153.
-# 153.0.8010.52-1:  20/sep/2026 by Minime <slackware[at]slackwarelinux[dot]se>
-#                   * Update.
+#                   20/sep/2026 by Minime <slackware[at]slackwarelinux[dot]se>
 #                   * Fixed build for AArch64
 #
 # -----------------------------------------------------------------------------
@@ -183,8 +182,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-153.0.8010.52}
-UNGOOGLED=${UNGOOGLED:-153.0.8010.52-1}
+VERSION=${VERSION:-153.0.8010.36}
+UNGOOGLED=${UNGOOGLED:-153.0.8010.36-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
