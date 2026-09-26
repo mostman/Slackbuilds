@@ -2,7 +2,7 @@
 
 # Slackware build script for Widevine
 
-# Copyright 2023-2024 Martin Östman (Minime), Sweden
+# Copyright 2023-2026 Martin Östman (Minime), Sweden
 # All rights reserved.
 #
 # Redistribution and use of this script, with or without modification, is
@@ -57,55 +57,56 @@ set -eu
 
 rm -rf $PKG
 mkdir -p $TMP $PKG $OUTPUT
-if [ ! -f ${CWD}/${PRGNAM}0_${VERSION}+1_${DEBARCH}.deb ]; then
-  wget ${PKGURL}${PRGNAM}0_${VERSION}+1_${DEBARCH}.deb
-fi
 cd $PKG
-# Extract data.tar.gz from deb package
-ar -p $CWD/${PRGNAM}0_${VERSION}+1_${DEBARCH}.deb data.tar.xz | tar -Jxv
 
-# Get major and minor version numbers from pkgver string
+mkdir -p tmp
 
-MAJOR_VER="$(echo ${VERSION} | cut -d. -f1)"
-MINOR_VER="$(echo ${VERSION} | cut -d. -f2)"
+if [ "${DEBARCH}" == "arm64" ]; then
+  VERSION=$(python3 ${CWD}/widevine.py \
+    --os Linux \
+    --arch arm64 \
+    --output tmp) || exit 1
 
-# Construct necessary metadata file(s)
-echo "{" > manifest.json
-echo "   \"name\": \"WidevineCdm\"," >> manifest.json
-echo "   \"description\": \"Widevine Content Decryption Module\"," >> manifest.json
-echo "   \"version\": \"${VERSION}\"," >> manifest.json
-echo "   \"x-cdm-codecs\": \"vp8,vp9.0,avc1,av01\"," >> manifest.json
-echo "   \"x-cdm-host-versions\": \"${MINOR_VER}\"," >> manifest.json
-echo "   \"x-cdm-interface-versions\": \"${MINOR_VER}\"," >> manifest.json
-echo "   \"x-cdm-module-versions\": \"${MAJOR_VER}\"," >> manifest.json
-echo "   \"x-cdm-persistent-license-support\": true" >> manifest.json
-echo "}" >> manifest.json
+  if [ -z "VERSION" ]; then
+    echo "ERROR: Could not determine Widevine version."
+    exit 1
+  fi
 
-# Create firefox preferences file 
-echo "// Set preferences related to widevine loading" > widevine.js
-echo "pref(\"media.gmp-widevinecdm.version\", \"${VERSION}\");" >> widevine.js
-echo "pref(\"media.gmp-widevinecdm.visible\", true);" >> widevine.js
-echo "pref(\"media.gmp-widevinecdm.enabled\", true);" >> widevine.js
-echo "pref(\"media.gmp-widevinecdm.autoupdate\", false);" >> widevine.js
-echo "pref(\"media.eme.enabled\", true);" >> widevine.js
-echo "pref(\"media.eme.encrypted-media-encryption-scheme.enabled\", true);" >> widevine.js
+  cp tmp/_platform_specific/linux_${PKGARCH}/libwidevinecdm.so tmp/libwidevinecdm.so
+else
+  if [ ! -f ${CWD}/${PRGNAM}0_${VERSION}+1_${DEBARCH}.deb ]; then
+    wget ${PKGURL}${PRGNAM}0_${VERSION}+1_${DEBARCH}.deb
+  fi
+  # Extract data.tar.gz from deb package
+  ar -p $CWD/${PRGNAM}0_${VERSION}+1_${DEBARCH}.deb data.tar.xz | tar -Jxv -d tmp
 
-# Patch aarch64 widevine blobs from ChromeOS to work on non-ChromeOS linux, including
-# platforms with 16K page size like Apple Silicon / Asahi Linux
-# https://gist.github.com/DavidBuchanan314/c6b97add51b97e4c3ee95dc890f9e3c8
-# New version:
-# https://github.com/AsahiLinux/widevine-installer/blob/main/widevine_fixup.py
-#if [ "${DEBARCH}" == "arm64" ]; then
-#  python3 $CWD/widevine_fixup.py \
-#    opt/WidevineCdm/_platform_specific/linux_${PKGARCH}/libwidevinecdm.so libwidevinecdm.so;
-#  cp opt/WidevineCdm/_platform_specific/linux_${PKGARCH}/libwidevinecdm.so libwidevinecdm.so
-#else
-#  cp opt/WidevineCdm/_platform_specific/linux_${PKGARCH}/libwidevinecdm.so libwidevinecdm.so
-#fi
-# As there is no need to patch widevine blobs with the widevine_fixup.py.
-# As i am guessing this might already been done and this also means there is no need to
-# patch glibc on aarch64.
-cp opt/WidevineCdm/_platform_specific/linux_${PKGARCH}/libwidevinecdm.so libwidevinecdm.so
+  # Get major and minor version numbers from pkgver string
+  MAJOR_VER="$(echo ${VERSION} | cut -d. -f1)"
+  MINOR_VER="$(echo ${VERSION} | cut -d. -f2)"
+
+  # Construct necessary metadata file(s)
+  echo "{" > manifest.json
+  echo "   \"name\": \"WidevineCdm\"," >> manifest.json
+  echo "   \"description\": \"Widevine Content Decryption Module\"," >> manifest.json
+  echo "   \"version\": \"${VERSION}\"," >> manifest.json
+  echo "   \"x-cdm-codecs\": \"vp8,vp9.0,avc1,av01\"," >> manifest.json
+  echo "   \"x-cdm-host-versions\": \"${MINOR_VER}\"," >> manifest.json
+  echo "   \"x-cdm-interface-versions\": \"${MINOR_VER}\"," >> manifest.json
+  echo "   \"x-cdm-module-versions\": \"${MAJOR_VER}\"," >> manifest.json
+  echo "   \"x-cdm-persistent-license-support\": true" >> manifest.json
+  echo "}" >> tmp/manifest.json
+
+  # Create firefox preferences file 
+  echo "// Set preferences related to widevine loading" > widevine.js
+  echo "pref(\"media.gmp-widevinecdm.version\", \"${VERSION}\");" >> widevine.js
+  echo "pref(\"media.gmp-widevinecdm.visible\", true);" >> widevine.js
+  echo "pref(\"media.gmp-widevinecdm.enabled\", true);" >> widevine.js
+  echo "pref(\"media.gmp-widevinecdm.autoupdate\", false);" >> widevine.js
+  echo "pref(\"media.eme.enabled\", true);" >> widevine.js
+  echo "pref(\"media.eme.encrypted-media-encryption-scheme.enabled\", true);" >> tmp/widevine.js
+
+  cp tmp/opt/WidevineCdm/_platform_specific/linux_${PKGARCH}/libwidevinecdm.so tmp/libwidevinecdm.so
+fi
 
 chown -R root:root .
 find -L . \
@@ -114,8 +115,8 @@ find -L . \
  \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \
   -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
 
-install -D -m755 libwidevinecdm.so -t "${PKG}/opt/google/chrome/WidevineCdm/_platform_specific/linux_${PKGARCH}/"
-install -D -m644 manifest.json -t "${PKG}/opt/google/chrome/WidevineCdm/"
+install -D -m755 tmp/libwidevinecdm.so -t "${PKG}/opt/google/chrome/WidevineCdm/_platform_specific/linux_${PKGARCH}/"
+install -D -m644 tmp/manifest.json -t "${PKG}/opt/google/chrome/WidevineCdm/"
 
 # Fixing links for chromium and chromium-ungoogled
 mkdir -p usr/lib${LIBDIRSUFFIX}/chromium/
@@ -124,8 +125,7 @@ mkdir -p usr/lib${LIBDIRSUFFIX}/chromium-ungoogled/
 ln -s ../../../opt/google/chrome/WidevineCdm/ usr/lib${LIBDIRSUFFIX}/chromium-ungoogled/WidevineCdm
 
 # cleanup
-rm -rf ${PKG}/opt/WidevineCdm/
-rm libwidevinecdm.so manifest.json widevine.js
+rm -rf ${PKG}/tmp/
 
 mkdir -p $PKG/install
 cat $CWD/slack-desc > $PKG/install/slack-desc
