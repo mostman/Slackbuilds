@@ -62,6 +62,7 @@ cd $PKG
 mkdir -p tmp
 
 if [ "${DEBARCH}" == "arm64" ]; then
+  chmod 755 ${CWD}/widevine.py
   VERSION=$(python3 ${CWD}/widevine.py \
     --os Linux \
     --arch arm64 \
