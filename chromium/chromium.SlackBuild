@@ -902,7 +902,7 @@ if [ "$ARCH" == "aarch64" ]; then
 
   # AArch64: Chromium's bundled protobuf can fail to detect the UPB backend
   # when a newer system protobuf is installed. Catch the resulting exception
-  # and fall back to the pure-Python implementation.
+  # and fall back to the pure-Python implementation. Thank's Arch Linux
   sed -i \
   "s/^  except ImportError:$/  except Exception:/" \
     third_party/protobuf/python/google/protobuf/internal/api_implementation.py
