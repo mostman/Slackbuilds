@@ -1,390 +1,83 @@
---- chromium.SlackBuild.154.orig	2026-09-27 10:17:38.000000000 +0200
-+++ chromium.SlackBuild.154	2026-09-30 21:05:33.106799151 +0200
+--- chromium.SlackBuild.orig	2026-09-18 22:03:56.000000000 +0200
++++ chromium.SlackBuild.154.orig	2026-09-27 10:17:38.000000000 +0200
 @@ -1,5 +1,5 @@
  #!/bin/bash
--# $Id: chromium.SlackBuild,v 1.592 2026/09/25 18:59:29 root Exp root $
-+# $Id: chromium.SlackBuild,v 1.586 2026/09/11 18:59:32 root Exp root $
+-# $Id: chromium.SlackBuild,v 1.590 2026/09/15 20:34:04 root Exp root $
++# $Id: chromium.SlackBuild,v 1.592 2026/09/25 18:59:29 root Exp root $
  # Copyright 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026  Eric Hameleers, Eindhoven, NL
  # All rights reserved.
  #
-@@ -23,9 +23,10 @@
- #
- # -----------------------------------------------------------------------------
- #
--# Slackware SlackBuild script 
-+# Slackware SlackBuild script
- # ===========================
- # By:              Eric Hameleers <alien@slackware.com>
-+# Modified by      Martin Östman (Minime) <slackware[at]slackwarelinux[dot]se>
- # For:             chromium and chromium-ungoogled
- # Descr:           Open Source version of Chrome Web Browser
- # URL:             http://www.chromium.org/
-@@ -40,9 +41,9 @@
- #                  - /usr/bin/python symlink pointing to python3.x
- #                  - java runtime
- #                  - Internet access (for downloading toolchain bins)
--# Needs:       
-+# Needs:
- # Old Changelog:    chromium.buildhistory
--# Changelog:   
-+# Changelog:
- # 142.0.7444.134-1: 06/nov/2025 by Eric Hameleers <alien@slackware.com>
- #                   * Update.
- # 142.0.7444.162-1: 15/nov/2025 by Eric Hameleers <alien@slackware.com>
-@@ -84,16 +85,28 @@
- #                   * Update to M146.
- # 146.0.7680.75-1:  13/mar/2026 by Eric Hameleers <alien@slackware.com>
- #                   * Update.
-+#                   14/mar/2026 by Minime <slackware[at]slackwarelinux[dot]se>
-+#                   * As there are issues compiling rust for ARM32.
-+#                     Removed all ARM32 build fixes.
- # 146.0.7680.80-1:  14/mar/2026 by Eric Hameleers <alien@slackware.com>
- #                   * Update.
-+#                   16/mar/2026 by Minime <slackware[at]slackwarelinux[dot]se>
-+#                   * Fixed build for AArch64
-+#                   * Added fix for rust bytemuck error
- # 146.0.7680.153-1: 18/mar/2026 by Eric Hameleers <alien@slackware.com>
- #                   * Update.
- # 146.0.7680.164-1: 24/mar/2026 by Eric Hameleers <alien@slackware.com>
- #                   * Update.
-+#                   31/mar/2026 by Minime <slackware[at]slackwarelinux[dot]se>
-+#                   * Fixed build for AArch64
- # 146.0.7680.177-1: 01/apr/2026 by Eric Hameleers <alien@slackware.com>
- #                   * Update.
-+#                   07/apr/2026 by Minime <slackware[at]slackwarelinux[dot]se>
-+#                   * Fixed build for AArch64
- # 147.0.7727.55-1:  08/apr/2026 by Eric Hameleers <alien@slackware.com>
- #                   * Update to M147.
-+#                   14/apr/2026 by Minime <slackware[at]slackwarelinux[dot]se>
-+#                   * Fixed build for AArch64
- # 147.0.7727.101-1: 16/apr/2026 by Eric Hameleers <alien@slackware.com>
- #                   * Update.
- # 147.0.7727.116-1: 23/apr/2026 by Eric Hameleers <alien@slackware.com>
-@@ -126,7 +139,10 @@
- #                   * Update to M151.
- # 151.0.7922.75-1:  04/aug/2026 by Eric Hameleers <alien@slackware.com>
- #                   * Update.
--# 151.0.7922.108-1: 10/aug/2026 by Eric Hameleers <alien@slackware.com>
-+# 151.0.7922.108-1: 07/aug/2026 by Minime <slackware[at]slackwarelinux[dot]se>
-+#                   * Update.
-+#                   * Fixed build for AArch64
-+#                   10/aug/2026 by Eric Hameleers <alien@slackware.com>
- #                   * Update.
- # 151.0.7922.137-1: 12/aug/2026 by Eric Hameleers <alien@slackware.com>
- #                   * Update.
-@@ -144,14 +160,20 @@
+@@ -144,6 +144,8 @@
  #                   * Update to M153.
  # 153.0.8010.52-1:  18/sep/2026 by Eric Hameleers <alien@slackware.com>
  #                   * Update.
-+#                   28/sep/2026 by Minime <slackware[at]slackwarelinux[dot]se>
-+#                   * Fixed build for AArch64
- # 154.0.8037.57-1:  25/sep/2026 by Eric Hameleers <alien@slackware.com>
- #                   * Update to M154.
--# 
-+#                   30/sep/2026 by Minime <slackware[at]slackwarelinux[dot]se>
-+#                   * Fixed build for AArch64
-+#
-+
-+#
++# 154.0.8037.57-1:  25/sep/2026 by Eric Hameleers <alien@slackware.com>
++#                   * Update to M154.
+ # 
  # -----------------------------------------------------------------------------
--# 
-+#
- # Run 'sh chromium.SlackBuild' to build a Slackware package.
- # The package (.txz) and .txt file as well as build logs are created in /tmp .
--# Install it using 'installpkg'. 
-+# Install it using 'installpkg'.
- #
- # -----------------------------------------------------------------------------
+ # 
+@@ -166,8 +168,8 @@
  
-@@ -171,7 +193,7 @@
- VERSION=${VERSION:-154.0.8037.57}
- UNGOOGLED=${UNGOOGLED:-154.0.8037.57-1}
+ SRCNAM=chromium
+ PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
+-VERSION=${VERSION:-153.0.8010.52}
+-UNGOOGLED=${UNGOOGLED:-153.0.8010.52-1}
++VERSION=${VERSION:-154.0.8037.57}
++UNGOOGLED=${UNGOOGLED:-154.0.8037.57-1}
  BUILD=${BUILD:-1}
--TAG=${TAG:-alien}
-+TAG=${TAG:-SLse}
+ TAG=${TAG:-alien}
  
- # It's recommended to build 32bit binaries in a 32bit chroot on a 64bit OS.
- # Cross-compiling 32bit binaries on 64bit Slackware; set to "YES":
-@@ -296,7 +318,7 @@
- GNBIN=${GNBIN:-/usr/local/bin/gn}
- 
- # Slackware branding:
--BUILDER="by alienBOB for Slackware"
-+BUILDER="by Minime for Slackware"
- 
- # Where do we look for sources?
- SRCDIR=$(cd $(dirname $0); pwd)
-@@ -316,7 +338,7 @@
- # If you rebuild this package, you can use your own API keys. See:
- #   http://www.chromium.org/developers/how-tos/api-keys
- # This browser is now compiled without API keys. This will disable stuff like
--# browser sync and other functionality which accesses Google APIs. 
-+# browser sync and other functionality which accesses Google APIs.
- # The following variables must be set to access Google's public APIs:
- #   _google_api_key
- #   _google_default_client_id
-@@ -540,10 +562,24 @@
- # Patches and bug fixes:
- touch $OUTPUT/patch-${PRGNAM}.log
- # Arch contributions:
--#echo "-- chromium_widevine_arm.patch --"
--#cat $SRCDIR/patches/chromium_widevine_arm.patch \
--#  | patch -p1 --verbose \
--#  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-+echo "-- chromium_widevine_arm.patch --"
-+cat $SRCDIR/patches/arch/enable-widevine-arm64.patch \
-+  | patch -p1 --verbose \
-+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-+echo "-- chromium-153-crubit.patch --"
-+cat $SRCDIR/patches/arch/chromium-153-crubit.patch \
-+  | patch -p1 --verbose \
-+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-+# Because Aarch64 does not have tsgo
-+# we need to change this to tsc, this patch fixes this.
-+# Need to install Typescript on the system to build.
-+# https://github.com/Ponce/slackbuilds/tree/current/development/typescript
-+if [ "$ARCH" == "aarch64" ]; then
-+  echo "-- chromium-153-typescript.patch --"
-+  cat $SRCDIR/patches/arch/chromium-153-typescript.patch \
-+    | patch -p1 --verbose \
-+    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-+fi
- echo "-- chromium147_revert-clang-no-lifetime-dse-flag.patch --"
- cat $SRCDIR/patches/chromium147_revert-clang-no-lifetime-dse-flag.patch \
-   | patch -p1 --verbose \
-@@ -565,6 +601,10 @@
-   | patch -p1 --verbose \
-   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
- # NixOS contributions:
-+#echo "-- chromium152_dawn-llvm-22.patch --"
-+#cat $SRCDIR/patches/chromium152_dawn-llvm-22.patch \
-+#  | patch -p1 --verbose \
-+#  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
- # Debian contributions:
- echo "-- chromium149_bytemuck.patch --"
- cat $SRCDIR/patches/chromium149_bytemuck.patch \
-@@ -596,10 +636,10 @@
-   | patch -p1 --verbose \
-   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
- # Ungoogled contributions:
--echo "-- chromium152_crubit.patch --"
--cat $SRCDIR/patches/chromium152_crubit.patch \
--  | patch -p1 --verbose \
--  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-+#echo "-- chromium152_crubit.patch --"
-+#cat $SRCDIR/patches/chromium152_crubit.patch \
-+#  | patch -p1 --verbose \
-+#  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
- ## Fixes for new behavior regarding 'ar' while unbundling:
- #echo "-- chromium150_explicit_ar.patch --"
- #cat $SRCDIR/patches/chromium150_explicit_ar.patch \
-@@ -611,7 +651,7 @@
- #  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
- # Dealing with the error:
- # TypeError: unsupported operand type(s) for |: 'type' and 'NoneType'
--# Fix building using Python 3.9 on Slackware 15.0 by placing 
-+# Fix building using Python 3.9 on Slackware 15.0 by placing
- # the future import right above the first actual module import:
- sed -i ./tools/metrics/histograms/extract_histograms.py \
-   -e "/^import bisect/i from __future__ import annotations\n"
-@@ -848,6 +888,26 @@
- sed -i BUILD.gn \
-   -e 's/target_os != "linux" || /target_os == "linux" || /'
- 
-+# AArch64 platform specifics.
-+if [ "$ARCH" == "aarch64" ]; then
-+  # GN bootstrap needs libgcc for __aarch64_ldadd4_* atomic helpers.
-+  sed -i \
-+    "s/\$in \$libs -Wl,--end-group/\$in \$libs -lgcc -Wl,--end-group/" \
-+    tools/gn/build/build_linux.ninja.template
-+
-+  # Chromium's bundled host Python cannot execute on this system.
-+  # Credit: https://github.com/ungoogled-software/ungoogled-chromium/pull/3946
-+  sed -i \
-+    "s,//third_party/cpython3/host/bin/python3,python3," .gn
-+
-+  # AArch64: Chromium's bundled protobuf can fail to detect the UPB backend
-+  # when a newer system protobuf is installed. Catch the resulting exception
-+  # and fall back to the pure-Python implementation. Thank's Arch Linux
-+  sed -i \
-+  "s/^  except ImportError:$/  except Exception:/" \
-+    third_party/protobuf/python/google/protobuf/internal/api_implementation.py
-+fi
-+
- # Prevent a build failure (yes, 'x64' even on 32bit Slackware):
- mkdir -p third_party/node/linux/node-linux-x64/bin
- # In case a binary is already there:
-@@ -952,7 +1012,7 @@
-     "ozone_platform_wayland=${do_wayland}"
-     #"rtc_use_pipewire=${do_wayland}"
-     #"rtc_link_pipewire=${do_wayland}"
--    #'rtc_pipewire_version="0.3"' # Otherwise chromium tries to link absent 0.2 
-+    #'rtc_pipewire_version="0.3"' # Otherwise chromium tries to link absent 0.2
-     'proprietary_codecs=true'
-     'remove_webcore_debug_symbols=true'
-     'symbol_level=0'
-@@ -1231,6 +1291,9 @@
-     #--host-cc /usr/bin/clang \
-     #--host-cxx /usr/bin/clang++ \
- 
-+  # Make sure the directory exists
-+  mkdir -p third_party/llvm-build/Release+Asserts
-+
-   # Building gn for Chromium 110 fails when this file is not present:
-   if [ ! -f third_party/llvm-build/Release+Asserts/cr_build_revision ]; then
-     CLANG_REVISION=$(grep ^CLANG_REVISION tools/clang/scripts/update.py |cut -d= -f2 |tr -d " '")
-@@ -1349,7 +1412,7 @@
-   fi
-   cd third_party/ffmpeg
-     ## To prevent error on x86_64:
--    ## "clang-5.0: error: invalid linker name in argument '-fuse-ld=lld'" 
-+    ## "clang-5.0: error: invalid linker name in argument '-fuse-ld=lld'"
-     ## in third_party/ffmpeg/build.x64.linux/ChromeOS/ffbuild/config.log
-     #sed -e "s/--extra-ldflags=-fuse-ld=lld/--extra-ldflags=''/" \
-     #    -i chromium/scripts/build_ffmpeg.py
-@@ -1386,7 +1449,8 @@
- 
- # Generate the ninja build files:
- 
--if [ ! -x $GNBIN 1>/dev/null 2>/dev/null ] ; then
-+if [ ! -x $GNBIN 1>/dev/null 2>/dev/null ]; then
-+
-   echo "-- Bootstrapping 'gn'."
- 
-   if [ "${GOOGLE_CLANG}" == "src" ] && [  ${BUILD_CLANG} -eq 1 ]; then
-@@ -1395,11 +1459,47 @@
-   fi
- 
-   if [ -e tools/gn/build/gen.py ]; then
--    # Build the embedded version. The '--use-custom-libcxx' is required
--    # since 153, because gn adopted C++23 features:
--    LDFLAGS="$LDFLAGS" python3 tools/gn/bootstrap/bootstrap.py \
--      --use-custom-libcxx \
--      2>&1 | tee $OUTPUT/gyp-${PRGNAM}.log
-+    if [ "$ARCH" == "aarch64" ]; then
-+      # Use system toolchain:
-+      rm -rf third_party/llvm-build
-+      rm -rf third_party/rust-toolchain
-+
-+      # Fix path to rust:
-+      mkdir -p third_party/rust-toolchain/bin
-+      ln -s /usr/bin/rustc third_party/rust-toolchain/bin/rustc
-+
-+      _gn_bootstrap_conf+=(
-+        "use_sysroot=${do_sysroot}"
-+        "is_clang=${do_clang}"
-+        'clang_use_chrome_plugins=false'
-+        'treat_warnings_as_errors=false'
-+        'is_debug=false'
-+        'is_official_build=true'
-+        'target_cpu="arm64"'
-+        'v8_target_cpu="arm64"'
-+        'target_os="linux"'
-+        'custom_toolchain="//build/toolchain/linux/unbundle:default"'
-+        'host_toolchain="//build/toolchain/linux/unbundle:default"'
-+        'clang_base_path="/usr"'
-+        "clang_version=\"$(clang -dumpversion |cut -d. -f1)\""
-+        'safe_browsing_mode=0'
-+        'rust_sysroot_absolute="/usr"'
-+        'rust_bindgen_root="/usr"'
-+        "rustc_version=\"$(rustc --version | cut -d' ' -f2)\""
-+      )
-+      # Build the embedded version. The '--use-custom-libcxx' is required
-+      # since 153, because gn adopted C++23 features:
-+      LDFLAGS="$LDFLAGS" python3 tools/gn/bootstrap/bootstrap.py \
-+        --gn-gen-args="${_gn_bootstrap_conf[*]}" \
-+        --use-custom-libcxx \
-+        2>&1 | tee $OUTPUT/gyp-${PRGNAM}.log
-+    else
-+      # Build the embedded version. The '--use-custom-libcxx' is required
-+      # since 153, because gn adopted C++23 features:
-+      LDFLAGS="$LDFLAGS" python3 tools/gn/bootstrap/bootstrap.py \
-+        --use-custom-libcxx \
-+        2>&1 | tee $OUTPUT/gyp-${PRGNAM}.log
-+    fi
-   else
-     # Download and build the latest:
-     git clone https://gn.googlesource.com/gn gn.git
-@@ -1414,6 +1514,7 @@
-     popd
-     install -m0755 -D -t out/Release gn.git/out/gn
-   fi
-+
- else
-    mkdir -p out/Release
-    ln -s ${GNBIN} out/Release/
-@@ -1433,10 +1534,10 @@
- 
- if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
-   # Use system toolchain:
--
-   rm -rf third_party/llvm-build
-   rm -rf third_party/rust-toolchain
--  # The build does want to see a 'rustc' binary here regardless:
-+
-+  # Fix path to rust:
-   mkdir -p third_party/rust-toolchain/bin
-   ln -s /usr/bin/rustc third_party/rust-toolchain/bin/rustc
- 
-@@ -1468,9 +1569,14 @@
- fi
- 
- # Dawn needs our system go:
--rm -rf third_party/dawn/tools/golang/linux-amd64
--#ln -s ${GOROOT} third_party/dawn/tools/golang/linux-${SYSROOT_ARCH}
--ln -s ${GOROOT} third_party/dawn/tools/golang/linux-amd64
-+if [ "${CROSS32}" = "YES" ]; then
-+  rm -rf third_party/dawn/tools/golang/linux-amd64
-+  ln -s ${GOROOT} third_party/dawn/tools/golang/linux-amd64
-+else
-+  echo "Fixing Dawn golang"
-+  rm -rf third_party/dawn/tools/golang/linux-${SYSROOT_ARCH}
-+  ln -s ${GOROOT} third_party/dawn/tools/golang/linux-${SYSROOT_ARCH}
-+fi
- 
- echo "-- Generating ninja build files."
- out/Release/gn gen out/Release -v --args="${_chromium_conf[*]}" \
-@@ -1570,9 +1676,9 @@
- # Install appdata:
- # This file provides the 'process_template' function:
- if [ -f chrome/installer/linux/common/installer.include ]; then
--  source chrome/installer/linux/common/installer.include 
-+  source chrome/installer/linux/common/installer.include
- else
--  source remoting/host/installer/linux/installer.include 
-+  source remoting/host/installer/linux/installer.include
+@@ -1574,6 +1576,29 @@
  fi
  source chrome/installer/linux/common/chromium-browser.info 
  
-@@ -1649,6 +1755,18 @@
- install -D -m0644 out/Release/${PRGNAM}.desktop \
-   $PKG/usr/share/applications/${PRGNAM}.desktop
- 
-+# Fix user-agent for aarch64
-+# Not needed any more as latest libwidevinecdm format has changed
-+#if [ "$ARCH" == "aarch64" ]; then
-+#  MAJOR_VER="$(echo ${VERSION} | cut -d. -f1)"
-+#  cp out/Release/${PRGNAM}.desktop out/Release/${PRGNAM}-netflix.desktop
-+#  sed -i out/Release/${PRGNAM}-netflix.desktop \
-+#    -e "s/Name\=Chromium-ungoogled Web Browser/Name\=Chromium-ungoogled Netflix/" \
-+#    -e "s/\/${PRGNAM}/\/${PRGNAM} \-\-user-agent=\"Mozilla\/5.0 \(X11; CrOS ${ARCH} 10895.56.0\) AppleWebKit\/537.36 \(KHTML, like Gecko\) Chrome\/${MAJOR_VER}.0.0.0 Safari\/537.36\"/"
-+#  install -D -m0644 out/Release/${PRGNAM}-netflix.desktop \
-+#    $PKG/usr/share/applications/${PRGNAM}-netflix.desktop
-+#fi
++# This step used to be done for us, now we need to do it manually. We use
++# the 'process_template' function from an earlier sourced script:
++APPSTREAM_SCREENSHOT_URL=""
++appstream_screenshot_url=""
++DESKTOP_EXEC=${PRGNAM}
++desktop_exec=${PRGNAM}
++DESKTOP_ICON=${PRGNAM}
++desktop_icon=${PRGNAM}
++EXTRA_DESKTOP_ENTRIES=""
++extra_desktop_entries=""
++MENUNAME="${PRGNAM^} Web Browser"
++menuname="${PRGNAM^} Web Browser"
++PACKAGE=${PRGNAM}
++package=${PRGNAM}
++PROGNAME=${PRGNAM}
++progname=${PRGNAM}
++StartupWMClass="${PRGNAM}"
++startup_wm_class="${PRGNAM}"
++URI_SCHEME="x-scheme-handler/${PRGNAM}"
++uri_scheme="x-scheme-handler/${PRGNAM}"
++USR_BIN_SYMLINK_NAME=${PRGNAM}
++usr_bin_symlink_name=${PRGNAM}
 +
- # Install desktop icons:
- for size in 16 32; do
-   install -D -m0644 \
-@@ -1796,5 +1914,12 @@
- cd -
- cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
+ mkdir -p $PKG/usr/share/metainfo
+ if [ $USE_UNGOOGLED -eq 0 ]; then
+   process_template chrome/installer/linux/common/appdata.xml.template \
+@@ -1614,23 +1639,6 @@
+ # Add resource files:
+ cp -a out/Release/resources $PKG/usr/lib${LIBDIRSUFFIX}/${PRGNAM}/
  
-+# Cleanup
-+if [ "${GOOGLE_CLANG}" == "src" ] && [  ${BUILD_CLANG} -eq 1 ]; then
-+  if  [ -f ${MYCLANG_PATH}/ld ]; then
-+    rm ${MYCLANG_PATH}/ld
-+  fi
-+fi
-+
- # Restore the original umask:
- umask ${_UMASK_}
+-# This step used to be done for us, now we need to do it manually. We use
+-# the 'process_template' function from an earlier sourced script:
+-EXTRA_DESKTOP_ENTRIES=""
+-extra_desktop_entries=""
+-MENUNAME="${PRGNAM^} Web Browser"
+-menuname="${PRGNAM^} Web Browser"
+-PACKAGE=${PRGNAM}
+-package=${PRGNAM}
+-PROGNAME=${PRGNAM}
+-progname=${PRGNAM}
+-StartupWMClass="${PRGNAM}"
+-startup_wm_class="${PRGNAM}"
+-URI_SCHEME=""
+-uri_scheme=""
+-USR_BIN_SYMLINK_NAME=${PRGNAM}
+-usr_bin_symlink_name=${PRGNAM}
+-
+ # Install a man page:
+ process_template chrome/app/resources/manpage.1.in out/Release/${PRGNAM}.1
+ install -D -m0644 out/Release/${PRGNAM}.1 $PKG/usr/man/man1/${PRGNAM}.1
