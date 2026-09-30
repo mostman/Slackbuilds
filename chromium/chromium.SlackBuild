@@ -567,10 +567,10 @@ echo "-- chromium_widevine_arm.patch --"
 cat $SRCDIR/patches/arch/enable-widevine-arm64.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-#echo "-- chromium-153-crubit.patch --"
-#cat $SRCDIR/patches/arch/chromium-153-crubit.patch \
-#  | patch -p1 --verbose \
-#  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+echo "-- chromium-153-crubit.patch --"
+cat $SRCDIR/patches/arch/chromium-153-crubit.patch \
+  | patch -p1 --verbose \
+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # Because Aarch64 does not have tsgo
 # we need to change this to tsc, this patch fixes this.
 # Need to install Typescript on the system to build.
