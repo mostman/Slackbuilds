@@ -1,5 +1,5 @@
 --- chromium.SlackBuild.154.orig	2026-09-27 10:17:38.000000000 +0200
-+++ chromium.SlackBuild.154	2026-09-30 00:49:47.799523573 +0200
++++ chromium.SlackBuild.154	2026-09-30 21:05:33.106799151 +0200
 @@ -1,5 +1,5 @@
  #!/bin/bash
 -# $Id: chromium.SlackBuild,v 1.592 2026/09/25 18:59:29 root Exp root $
@@ -187,7 +187,7 @@
  # the future import right above the first actual module import:
  sed -i ./tools/metrics/histograms/extract_histograms.py \
    -e "/^import bisect/i from __future__ import annotations\n"
-@@ -848,6 +888,19 @@
+@@ -848,6 +888,26 @@
  sed -i BUILD.gn \
    -e 's/target_os != "linux" || /target_os == "linux" || /'
  
@@ -202,12 +202,19 @@
 +  # Credit: https://github.com/ungoogled-software/ungoogled-chromium/pull/3946
 +  sed -i \
 +    "s,//third_party/cpython3/host/bin/python3,python3," .gn
++
++  # AArch64: Chromium's bundled protobuf can fail to detect the UPB backend
++  # when a newer system protobuf is installed. Catch the resulting exception
++  # and fall back to the pure-Python implementation. Thank's Arch Linux
++  sed -i \
++  "s/^  except ImportError:$/  except Exception:/" \
++    third_party/protobuf/python/google/protobuf/internal/api_implementation.py
 +fi
 +
  # Prevent a build failure (yes, 'x64' even on 32bit Slackware):
  mkdir -p third_party/node/linux/node-linux-x64/bin
  # In case a binary is already there:
-@@ -952,7 +1005,7 @@
+@@ -952,7 +1012,7 @@
      "ozone_platform_wayland=${do_wayland}"
      #"rtc_use_pipewire=${do_wayland}"
      #"rtc_link_pipewire=${do_wayland}"
@@ -216,7 +223,7 @@
      'proprietary_codecs=true'
      'remove_webcore_debug_symbols=true'
      'symbol_level=0'
-@@ -1231,6 +1284,9 @@
+@@ -1231,6 +1291,9 @@
      #--host-cc /usr/bin/clang \
      #--host-cxx /usr/bin/clang++ \
  
@@ -226,7 +233,7 @@
    # Building gn for Chromium 110 fails when this file is not present:
    if [ ! -f third_party/llvm-build/Release+Asserts/cr_build_revision ]; then
      CLANG_REVISION=$(grep ^CLANG_REVISION tools/clang/scripts/update.py |cut -d= -f2 |tr -d " '")
-@@ -1349,7 +1405,7 @@
+@@ -1349,7 +1412,7 @@
    fi
    cd third_party/ffmpeg
      ## To prevent error on x86_64:
@@ -235,7 +242,7 @@
      ## in third_party/ffmpeg/build.x64.linux/ChromeOS/ffbuild/config.log
      #sed -e "s/--extra-ldflags=-fuse-ld=lld/--extra-ldflags=''/" \
      #    -i chromium/scripts/build_ffmpeg.py
-@@ -1386,7 +1442,8 @@
+@@ -1386,7 +1449,8 @@
  
  # Generate the ninja build files:
  
@@ -245,7 +252,7 @@
    echo "-- Bootstrapping 'gn'."
  
    if [ "${GOOGLE_CLANG}" == "src" ] && [  ${BUILD_CLANG} -eq 1 ]; then
-@@ -1395,11 +1452,47 @@
+@@ -1395,11 +1459,47 @@
    fi
  
    if [ -e tools/gn/build/gen.py ]; then
@@ -298,7 +305,7 @@
    else
      # Download and build the latest:
      git clone https://gn.googlesource.com/gn gn.git
-@@ -1414,6 +1507,7 @@
+@@ -1414,6 +1514,7 @@
      popd
      install -m0755 -D -t out/Release gn.git/out/gn
    fi
@@ -306,7 +313,7 @@
  else
     mkdir -p out/Release
     ln -s ${GNBIN} out/Release/
-@@ -1433,10 +1527,10 @@
+@@ -1433,10 +1534,10 @@
  
  if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
    # Use system toolchain:
@@ -319,7 +326,7 @@
    mkdir -p third_party/rust-toolchain/bin
    ln -s /usr/bin/rustc third_party/rust-toolchain/bin/rustc
  
-@@ -1468,9 +1562,14 @@
+@@ -1468,9 +1569,14 @@
  fi
  
  # Dawn needs our system go:
@@ -337,7 +344,7 @@
  
  echo "-- Generating ninja build files."
  out/Release/gn gen out/Release -v --args="${_chromium_conf[*]}" \
-@@ -1570,9 +1669,9 @@
+@@ -1570,9 +1676,9 @@
  # Install appdata:
  # This file provides the 'process_template' function:
  if [ -f chrome/installer/linux/common/installer.include ]; then
@@ -349,7 +356,7 @@
  fi
  source chrome/installer/linux/common/chromium-browser.info 
  
-@@ -1649,6 +1748,18 @@
+@@ -1649,6 +1755,18 @@
  install -D -m0644 out/Release/${PRGNAM}.desktop \
    $PKG/usr/share/applications/${PRGNAM}.desktop
  
@@ -368,7 +375,7 @@
  # Install desktop icons:
  for size in 16 32; do
    install -D -m0644 \
-@@ -1796,5 +1907,12 @@
+@@ -1796,5 +1914,12 @@
  cd -
  cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
  
