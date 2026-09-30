@@ -899,6 +899,13 @@ if [ "$ARCH" == "aarch64" ]; then
   # Credit: https://github.com/ungoogled-software/ungoogled-chromium/pull/3946
   sed -i \
     "s,//third_party/cpython3/host/bin/python3,python3," .gn
+
+  # AArch64: Chromium's bundled protobuf can fail to detect the UPB backend
+  # when a newer system protobuf is installed. Catch the resulting exception
+  # and fall back to the pure-Python implementation.
+  sed -i \
+  "s/^  except ImportError:$/  except Exception:/" \
+    third_party/protobuf/python/google/protobuf/internal/api_implementation.py
 fi
 
 # Prevent a build failure (yes, 'x64' even on 32bit Slackware):
