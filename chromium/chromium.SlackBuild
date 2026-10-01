@@ -579,12 +579,12 @@ cat $SRCDIR/patches/arch/chromium-153-crubit.patch \
 # Need to install Typescript on the system to build.
 # https://github.com/Ponce/slackbuilds/tree/current/development/typescript
 # Should be fixed in 154 source code
-#if [ "$ARCH" == "aarch64" ]; then
-#  echo "-- chromium-153-typescript.patch --"
-#  cat $SRCDIR/patches/arch/chromium-153-typescript.patch \
-#    | patch -p1 --verbose \
-#    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-#fi
+if [ "$ARCH" == "aarch64" ]; then
+  echo "-- chromium-153-typescript.patch --"
+  cat $SRCDIR/patches/arch/chromium-153-typescript.patch \
+    | patch -p1 --verbose \
+    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+fi
 echo "-- chromium147_revert-clang-no-lifetime-dse-flag.patch --"
 cat $SRCDIR/patches/chromium147_revert-clang-no-lifetime-dse-flag.patch \
   | patch -p1 --verbose \
