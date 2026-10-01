@@ -472,8 +472,11 @@ umask 0022
 
 # Source locations:
 SOURCE[0]="$SRCDIR/${SRCNAM}-${VERSION}.tar.xz"
+# Old stable release URL
 #SRCURL[0]="https://commondatastorage.googleapis.com/${SRCNAM}-browser-official/${SRCNAM}-${VERSION}.tar.xz"
-SRCURL[0]="https://github.com/chromium-linux-tarballs/chromium-tarballs/releases/download/${VERSION}/${SRCNAM}-${VERSION}-linux.tar.xz"
+# New stable release URL
+SRCURL[0]="https://storage.googleapis.com/${SRCNAM}-browser-official/${SRCNAM}-${VERSION}.tar.xz"
+#SRCURL[0]="https://gsdview.appspot.com/${SRCNAM}-browser-official/${SRCNAM}-${VERSION}.tar.xz"
 
 SOURCE[1]="$SRCDIR/widevine-versions.txt"
 SRCURL[1]="https://dl.google.com/widevine-cdm/versions.txt"
