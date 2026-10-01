@@ -472,8 +472,11 @@ umask 0022
 
 # Source locations:
 SOURCE[0]="$SRCDIR/${SRCNAM}-${VERSION}.tar.xz"
+# Old stable release URL
 #SRCURL[0]="https://commondatastorage.googleapis.com/${SRCNAM}-browser-official/${SRCNAM}-${VERSION}.tar.xz"
-SRCURL[0]="https://github.com/chromium-linux-tarballs/chromium-tarballs/releases/download/${VERSION}/${SRCNAM}-${VERSION}-linux.tar.xz"
+# New stable release URL
+SRCURL[0]="https://storage.googleapis.com/${SRCNAM}-browser-official/${SRCNAM}-${VERSION}.tar.xz"
+#SRCURL[0]="https://gsdview.appspot.com/${SRCNAM}-browser-official/${SRCNAM}-${VERSION}.tar.xz"
 
 SOURCE[1]="$SRCDIR/widevine-versions.txt"
 SRCURL[1]="https://dl.google.com/widevine-cdm/versions.txt"
@@ -567,7 +570,7 @@ echo "-- chromium_widevine_arm.patch --"
 cat $SRCDIR/patches/arch/enable-widevine-arm64.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-echo "-- chromium-153-crubit.patch --"
+#cho "-- chromium-153-crubit.patch --"
 cat $SRCDIR/patches/arch/chromium-153-crubit.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
@@ -576,12 +579,12 @@ cat $SRCDIR/patches/arch/chromium-153-crubit.patch \
 # Need to install Typescript on the system to build.
 # https://github.com/Ponce/slackbuilds/tree/current/development/typescript
 # Should be fixed in 154 source code
-#if [ "$ARCH" == "aarch64" ]; then
-#  echo "-- chromium-153-typescript.patch --"
-#  cat $SRCDIR/patches/arch/chromium-153-typescript.patch \
-#    | patch -p1 --verbose \
-#    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-#fi
+if [ "$ARCH" == "aarch64" ]; then
+  echo "-- chromium-153-typescript.patch --"
+  cat $SRCDIR/patches/arch/chromium-153-typescript.patch \
+    | patch -p1 --verbose \
+    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+fi
 echo "-- chromium147_revert-clang-no-lifetime-dse-flag.patch --"
 cat $SRCDIR/patches/chromium147_revert-clang-no-lifetime-dse-flag.patch \
   | patch -p1 --verbose \
