@@ -29,25 +29,6 @@
  
 --- a/third_party/blink/renderer/platform/BUILD.gn	2026-10-02 22:11:20.530813191 +0200
 +++ b/third_party/blink/renderer/platform/BUILD.gn	2026-10-02 22:26:30.293399237 +0200
-@@ -186,6 +186,18 @@
-   ]
- }
- 
-+rust_static_library("font_format_check") {
-+  allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
-+  crate_root = "fonts/opentype/format_check.rs"
-+  sources = [ crate_root ]
-+  cxx_bindings = [ crate_root ]
-+  deps = [
-+    "//third_party/rust/font_types/v0_12:lib",
-+    "//third_party/rust/read_fonts/v0_43:lib",
-+    "//third_party/rust/skrifa/v0_46:lib",
-+  ]
-+}
-+
- rust_static_library("rustfft_ffi") {
-   allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
-   crate_root = "audio/rustfft_ffi.rs"
 @@ -1794,7 +1806,6 @@
      ":allow_discouraged_type",
      ":blink_platform_public_deps",
