@@ -674,8 +674,8 @@ sed -i third_party/dawn/tools/python/cipd_deps.py \
 
 if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
   # Adjust expectations about where to find the clang libs on Slackware:
-  echo "-- chromium-134-bindgen-custom-toolchain.patch --"
-  cat $SRCDIR/patches/chromium-134-bindgen-custom-toolchain.patch \
+  echo "-- chromium-154-bindgen-custom-toolchain.patch --"
+  cat $SRCDIR/patches/chromium-154-bindgen-custom-toolchain.patch \
     | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
   echo "-- compiler-rt-adjust-paths.patch --"
   cat $SRCDIR/patches/compiler-rt-adjust-paths.patch | patch -p1 --verbose \
