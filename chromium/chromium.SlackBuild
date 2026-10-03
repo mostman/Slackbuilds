@@ -929,6 +929,11 @@ if [ "$ARCH" == "aarch64" ]; then
   ln -s ../../../../devtools-frontend/src/node_modules/@typescript/tsc/bin/tsc \
     third_party/typescript/linux-amd64/src/lib/tsc
 
+  if ! third_party/typescript/linux-amd64/src/lib/tsc --version | grep -q 'Version 6.0.2'; then
+    echo "ERROR: Chromium TypeScript 6.0.2 was not found!"
+    exit 1
+  fi
+
   # The bundled esbuild is x86-64; fetch the ARM64 Chromium-pinned version.
   rm -f third_party/devtools-frontend/src/third_party/esbuild/esbuild
 
