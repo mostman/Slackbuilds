@@ -909,6 +909,11 @@ sed -i \
   "s/^  except ImportError:$/  except Exception:/" \
   third_party/protobuf/python/google/protobuf/internal/api_implementation.py
 
+# Fix TypeScript 6.0.2 --isolatedDeclarations diagnostic.
+sed -i \
+  's/readonly response?: DispatchHttpRequestResult,/readonly response?: DispatchHttpRequestResult | undefined,/' \
+  third_party/devtools-frontend/src/front_end/core/host/DispatchHttpRequestClient.ts
+
 # AArch64-specific fixes.
 if [ "$ARCH" == "aarch64" ]; then
 
