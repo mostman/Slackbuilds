@@ -1,5 +1,5 @@
---- chromium.SlackBuild.154.orig	2026-09-27 10:17:38.000000000 +0200
-+++ chromium.SlackBuild.154	2026-09-30 23:43:36.258738283 +0200
+--- chromium.SlackBuild.154.orig	2026-09-30 23:47:57.798144077 +0200
++++ chromium.SlackBuild	2026-10-03 02:13:53.658140237 +0200
 @@ -1,5 +1,5 @@
  #!/bin/bash
 -# $Id: chromium.SlackBuild,v 1.592 2026/09/25 18:59:29 root Exp root $
@@ -72,18 +72,15 @@
  #                   * Update.
  # 151.0.7922.137-1: 12/aug/2026 by Eric Hameleers <alien@slackware.com>
  #                   * Update.
-@@ -144,14 +160,20 @@
+@@ -144,14 +160,16 @@
  #                   * Update to M153.
  # 153.0.8010.52-1:  18/sep/2026 by Eric Hameleers <alien@slackware.com>
  #                   * Update.
+-# 154.0.8037.57-1:  25/sep/2026 by Eric Hameleers <alien@slackware.com>
+-#                   * Update to M154.
 +#                   28/sep/2026 by Minime <slackware[at]slackwarelinux[dot]se>
 +#                   * Fixed build for AArch64
- # 154.0.8037.57-1:  25/sep/2026 by Eric Hameleers <alien@slackware.com>
- #                   * Update to M154.
--# 
-+#                   30/sep/2026 by Minime <slackware[at]slackwarelinux[dot]se>
-+#                   * Fixed build for AArch64
-+#
+ # 
 +
 +#
  # -----------------------------------------------------------------------------
@@ -96,16 +93,21 @@
  #
  # -----------------------------------------------------------------------------
  
-@@ -171,7 +193,7 @@
- VERSION=${VERSION:-154.0.8037.57}
- UNGOOGLED=${UNGOOGLED:-154.0.8037.57-1}
+@@ -168,10 +186,10 @@
+ 
+ SRCNAM=chromium
+ PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
+-VERSION=${VERSION:-154.0.8037.57}
+-UNGOOGLED=${UNGOOGLED:-154.0.8037.57-1}
++VERSION=${VERSION:-153.0.8010.52}
++UNGOOGLED=${UNGOOGLED:-153.0.8010.52-1}
  BUILD=${BUILD:-1}
 -TAG=${TAG:-alien}
 +TAG=${TAG:-SLse}
  
  # It's recommended to build 32bit binaries in a 32bit chroot on a 64bit OS.
  # Cross-compiling 32bit binaries on 64bit Slackware; set to "YES":
-@@ -296,7 +318,7 @@
+@@ -296,7 +314,7 @@
  GNBIN=${GNBIN:-/usr/local/bin/gn}
  
  # Slackware branding:
@@ -114,7 +116,7 @@
  
  # Where do we look for sources?
  SRCDIR=$(cd $(dirname $0); pwd)
-@@ -316,7 +338,7 @@
+@@ -316,7 +334,7 @@
  # If you rebuild this package, you can use your own API keys. See:
  #   http://www.chromium.org/developers/how-tos/api-keys
  # This browser is now compiled without API keys. This will disable stuff like
@@ -123,45 +125,36 @@
  # The following variables must be set to access Google's public APIs:
  #   _google_api_key
  #   _google_default_client_id
-@@ -450,7 +472,8 @@
- 
- # Source locations:
- SOURCE[0]="$SRCDIR/${SRCNAM}-${VERSION}.tar.xz"
--SRCURL[0]="https://commondatastorage.googleapis.com/${SRCNAM}-browser-official/${SRCNAM}-${VERSION}.tar.xz"
-+#SRCURL[0]="https://commondatastorage.googleapis.com/${SRCNAM}-browser-official/${SRCNAM}-${VERSION}.tar.xz"
-+SRCURL[0]="https://github.com/chromium-linux-tarballs/chromium-tarballs/releases/download/${VERSION}/${SRCNAM}-${VERSION}-linux.tar.xz"
- 
- SOURCE[1]="$SRCDIR/widevine-versions.txt"
- SRCURL[1]="https://dl.google.com/widevine-cdm/versions.txt"
-@@ -540,10 +563,25 @@
+@@ -540,10 +558,24 @@
  # Patches and bug fixes:
  touch $OUTPUT/patch-${PRGNAM}.log
  # Arch contributions:
 -#echo "-- chromium_widevine_arm.patch --"
 -#cat $SRCDIR/patches/chromium_widevine_arm.patch \
+-#  | patch -p1 --verbose \
+-#  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 +echo "-- chromium_widevine_arm.patch --"
 +cat $SRCDIR/patches/arch/enable-widevine-arm64.patch \
 +  | patch -p1 --verbose \
 +  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-+#echo "-- chromium-153-crubit.patch --"
-+#cat $SRCDIR/patches/arch/chromium-153-crubit.patch \
- #  | patch -p1 --verbose \
- #  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
++echo "-- chromium-153-crubit.patch --"
++cat $SRCDIR/patches/arch/chromium-153-crubit.patch \
++  | patch -p1 --verbose \
++  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 +# Because Aarch64 does not have tsgo
 +# we need to change this to tsc, this patch fixes this.
 +# Need to install Typescript on the system to build.
 +# https://github.com/Ponce/slackbuilds/tree/current/development/typescript
-+# Should be fixed in 154 source code
-+#if [ "$ARCH" == "aarch64" ]; then
-+#  echo "-- chromium-153-typescript.patch --"
-+#  cat $SRCDIR/patches/arch/chromium-153-typescript.patch \
-+#    | patch -p1 --verbose \
-+#    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-+#fi
++if [ "$ARCH" == "aarch64" ]; then
++  echo "-- chromium-153-typescript.patch --"
++  cat $SRCDIR/patches/arch/chromium-153-typescript.patch \
++    | patch -p1 --verbose \
++    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
++fi
  echo "-- chromium147_revert-clang-no-lifetime-dse-flag.patch --"
  cat $SRCDIR/patches/chromium147_revert-clang-no-lifetime-dse-flag.patch \
    | patch -p1 --verbose \
-@@ -565,6 +603,10 @@
+@@ -565,6 +597,10 @@
    | patch -p1 --verbose \
    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
  # NixOS contributions:
@@ -172,7 +165,7 @@
  # Debian contributions:
  echo "-- chromium149_bytemuck.patch --"
  cat $SRCDIR/patches/chromium149_bytemuck.patch \
-@@ -596,10 +638,10 @@
+@@ -596,10 +632,10 @@
    | patch -p1 --verbose \
    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
  # Ungoogled contributions:
@@ -187,7 +180,7 @@
  ## Fixes for new behavior regarding 'ar' while unbundling:
  #echo "-- chromium150_explicit_ar.patch --"
  #cat $SRCDIR/patches/chromium150_explicit_ar.patch \
-@@ -611,7 +653,7 @@
+@@ -611,7 +647,7 @@
  #  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
  # Dealing with the error:
  # TypeError: unsupported operand type(s) for |: 'type' and 'NoneType'
@@ -196,7 +189,7 @@
  # the future import right above the first actual module import:
  sed -i ./tools/metrics/histograms/extract_histograms.py \
    -e "/^import bisect/i from __future__ import annotations\n"
-@@ -848,6 +890,31 @@
+@@ -848,6 +884,30 @@
  sed -i BUILD.gn \
    -e 's/target_os != "linux" || /target_os == "linux" || /'
  
@@ -222,22 +215,12 @@
 +  # Use system Python instead of the incompatible bundled host Python.
 +  sed -i \
 +    "s,//third_party/cpython3/host/bin/python3,python3," .gn
-+
 +fi
 +
  # Prevent a build failure (yes, 'x64' even on 32bit Slackware):
  mkdir -p third_party/node/linux/node-linux-x64/bin
  # In case a binary is already there:
-@@ -930,7 +997,7 @@
-     'blink_symbol_level=0'
-     "enable_hevc_parser_and_hw_decoder=${do_hevc}"
-     "enable_platform_hevc=${do_hevc}"
--    "enable_platform_hevc_decoding=${do_hevc}"
-+    #"enable_platform_hevc_decoding=${do_hevc}"
-     "enable_platform_ac3_eac3_audio=${do_hevc}"
-     "enable_platform_dolby_vision=${do_hevc}"
-     'enable_platform_mpeg_h_audio=true'
-@@ -952,7 +1019,7 @@
+@@ -952,7 +1012,7 @@
      "ozone_platform_wayland=${do_wayland}"
      #"rtc_use_pipewire=${do_wayland}"
      #"rtc_link_pipewire=${do_wayland}"
@@ -246,7 +229,7 @@
      'proprietary_codecs=true'
      'remove_webcore_debug_symbols=true'
      'symbol_level=0'
-@@ -1231,6 +1298,9 @@
+@@ -1231,6 +1291,9 @@
      #--host-cc /usr/bin/clang \
      #--host-cxx /usr/bin/clang++ \
  
@@ -256,7 +239,7 @@
    # Building gn for Chromium 110 fails when this file is not present:
    if [ ! -f third_party/llvm-build/Release+Asserts/cr_build_revision ]; then
      CLANG_REVISION=$(grep ^CLANG_REVISION tools/clang/scripts/update.py |cut -d= -f2 |tr -d " '")
-@@ -1349,7 +1419,7 @@
+@@ -1349,7 +1412,7 @@
    fi
    cd third_party/ffmpeg
      ## To prevent error on x86_64:
@@ -265,7 +248,7 @@
      ## in third_party/ffmpeg/build.x64.linux/ChromeOS/ffbuild/config.log
      #sed -e "s/--extra-ldflags=-fuse-ld=lld/--extra-ldflags=''/" \
      #    -i chromium/scripts/build_ffmpeg.py
-@@ -1386,7 +1456,8 @@
+@@ -1386,7 +1449,8 @@
  
  # Generate the ninja build files:
  
@@ -275,7 +258,7 @@
    echo "-- Bootstrapping 'gn'."
  
    if [ "${GOOGLE_CLANG}" == "src" ] && [  ${BUILD_CLANG} -eq 1 ]; then
-@@ -1395,11 +1466,47 @@
+@@ -1395,11 +1459,47 @@
    fi
  
    if [ -e tools/gn/build/gen.py ]; then
@@ -328,7 +311,7 @@
    else
      # Download and build the latest:
      git clone https://gn.googlesource.com/gn gn.git
-@@ -1414,6 +1521,7 @@
+@@ -1414,11 +1514,14 @@
      popd
      install -m0755 -D -t out/Release gn.git/out/gn
    fi
@@ -336,7 +319,14 @@
  else
     mkdir -p out/Release
     ln -s ${GNBIN} out/Release/
-@@ -1433,10 +1541,10 @@
+ fi
+ 
++#echo "Build is past tools/gn/bootstrap/bootstrap.py"
++
+ #if [ "${GOOGLE_CLANG}" == "src" ] && [  ${BUILD_CLANG} -eq 1 ]; then
+ #  # Remove symlink again:
+ #  rm $MYCLANG_PATH/ld
+@@ -1433,10 +1536,10 @@
  
  if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
    # Use system toolchain:
@@ -349,14 +339,13 @@
    mkdir -p third_party/rust-toolchain/bin
    ln -s /usr/bin/rustc third_party/rust-toolchain/bin/rustc
  
-@@ -1468,9 +1576,15 @@
+@@ -1468,9 +1571,14 @@
  fi
  
  # Dawn needs our system go:
 -rm -rf third_party/dawn/tools/golang/linux-amd64
 -#ln -s ${GOROOT} third_party/dawn/tools/golang/linux-${SYSROOT_ARCH}
 -ln -s ${GOROOT} third_party/dawn/tools/golang/linux-amd64
-+mkdir -p third_party/dawn/tools/golang
 +if [ "${CROSS32}" = "YES" ]; then
 +  rm -rf third_party/dawn/tools/golang/linux-amd64
 +  ln -s ${GOROOT} third_party/dawn/tools/golang/linux-amd64
@@ -368,7 +357,7 @@
  
  echo "-- Generating ninja build files."
  out/Release/gn gen out/Release -v --args="${_chromium_conf[*]}" \
-@@ -1570,9 +1684,9 @@
+@@ -1570,34 +1678,11 @@
  # Install appdata:
  # This file provides the 'process_template' function:
  if [ -f chrome/installer/linux/common/installer.include ]; then
@@ -378,9 +367,59 @@
 -  source remoting/host/installer/linux/installer.include 
 +  source remoting/host/installer/linux/installer.include
  fi
- source chrome/installer/linux/common/chromium-browser.info 
+-source chrome/installer/linux/common/chromium-browser.info 
+-
+-# This step used to be done for us, now we need to do it manually. We use
+-# the 'process_template' function from an earlier sourced script:
+-APPSTREAM_SCREENSHOT_URL=""
+-appstream_screenshot_url=""
+-DESKTOP_EXEC=${PRGNAM}
+-desktop_exec=${PRGNAM}
+-DESKTOP_ICON=${PRGNAM}
+-desktop_icon=${PRGNAM}
+-EXTRA_DESKTOP_ENTRIES=""
+-extra_desktop_entries=""
+-MENUNAME="${PRGNAM^} Web Browser"
+-menuname="${PRGNAM^} Web Browser"
+-PACKAGE=${PRGNAM}
+-package=${PRGNAM}
+-PROGNAME=${PRGNAM}
+-progname=${PRGNAM}
+-StartupWMClass="${PRGNAM}"
+-startup_wm_class="${PRGNAM}"
+-URI_SCHEME="x-scheme-handler/${PRGNAM}"
+-uri_scheme="x-scheme-handler/${PRGNAM}"
+-USR_BIN_SYMLINK_NAME=${PRGNAM}
+-usr_bin_symlink_name=${PRGNAM}
++source chrome/installer/linux/common/chromium-browser.info
  
-@@ -1649,6 +1763,18 @@
+ mkdir -p $PKG/usr/share/metainfo
+ if [ $USE_UNGOOGLED -eq 0 ]; then
+@@ -1639,6 +1724,23 @@
+ # Add resource files:
+ cp -a out/Release/resources $PKG/usr/lib${LIBDIRSUFFIX}/${PRGNAM}/
+ 
++# This step used to be done for us, now we need to do it manually. We use
++# the 'process_template' function from an earlier sourced script:
++EXTRA_DESKTOP_ENTRIES=""
++extra_desktop_entries=""
++MENUNAME="${PRGNAM^} Web Browser"
++menuname="${PRGNAM^} Web Browser"
++PACKAGE=${PRGNAM}
++package=${PRGNAM}
++PROGNAME=${PRGNAM}
++progname=${PRGNAM}
++StartupWMClass="${PRGNAM}"
++startup_wm_class="${PRGNAM}"
++URI_SCHEME=""
++uri_scheme=""
++USR_BIN_SYMLINK_NAME=${PRGNAM}
++usr_bin_symlink_name=${PRGNAM}
++
+ # Install a man page:
+ process_template chrome/app/resources/manpage.1.in out/Release/${PRGNAM}.1
+ install -D -m0644 out/Release/${PRGNAM}.1 $PKG/usr/man/man1/${PRGNAM}.1
+@@ -1649,6 +1751,18 @@
  install -D -m0644 out/Release/${PRGNAM}.desktop \
    $PKG/usr/share/applications/${PRGNAM}.desktop
  
@@ -399,7 +438,7 @@
  # Install desktop icons:
  for size in 16 32; do
    install -D -m0644 \
-@@ -1796,5 +1922,12 @@
+@@ -1796,5 +1910,12 @@
  cd -
  cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
  
