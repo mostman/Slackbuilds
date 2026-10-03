@@ -39,6 +39,7 @@
 #                  - cmake >= 3.31.3
 #                  - python3 >= 3.10, python3-setuptools
 #                  - /usr/bin/python symlink pointing to python3.x
+#                  - Typescript >= 7.0.2
 #                  - java runtime
 #                  - Internet access (for downloading toolchain bins)
 # Needs:
@@ -164,7 +165,9 @@
 #                   * Fixed build for AArch64
 # 154.0.8037.57-1:  25/sep/2026 by Eric Hameleers <alien@slackware.com>
 #                   * Update to M154.
-#                   30/sep/2026 by Minime <slackware[at]slackwarelinux[dot]se>
+# 154.0.8037.92-1:  30/sep/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+#                   03/oct/2026 by Minime <slackware[at]slackwarelinux[dot]se>
 #                   * Fixed build for AArch64
 #
 
@@ -190,8 +193,10 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-154.0.8037.57}
-UNGOOGLED=${UNGOOGLED:-154.0.8037.57-1}
+#VERSION=${VERSION:-154.0.8037.57}
+#UNGOOGLED=${UNGOOGLED:-154.0.8037.57-1}
+VERSION=${VERSION:-154.0.8037.92}
+UNGOOGLED=${UNGOOGLED:-154.0.8037.92-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
@@ -475,8 +480,11 @@ SOURCE[0]="$SRCDIR/${SRCNAM}-${VERSION}.tar.xz"
 # Old stable release URL
 #SRCURL[0]="https://commondatastorage.googleapis.com/${SRCNAM}-browser-official/${SRCNAM}-${VERSION}.tar.xz"
 # New stable release URL
-SRCURL[0]="https://storage.googleapis.com/${SRCNAM}-browser-official/${SRCNAM}-${VERSION}.tar.xz"
+#SRCURL[0]="https://storage.googleapis.com/${SRCNAM}-browser-official/${SRCNAM}-${VERSION}.tar.xz"
 #SRCURL[0]="https://gsdview.appspot.com/${SRCNAM}-browser-official/${SRCNAM}-${VERSION}.tar.xz"
+
+# Pre -release
+SRCURL[0]="https://github.com/${SRCNAM}-linux-tarballs/${SRCNAM}-tarballs/releases/download/${VERSION}/${SRCNAM}-${VERSION}-linux.tar.xz"
 
 SOURCE[1]="$SRCDIR/widevine-versions.txt"
 SRCURL[1]="https://dl.google.com/widevine-cdm/versions.txt"
@@ -570,7 +578,7 @@ echo "-- chromium_widevine_arm.patch --"
 cat $SRCDIR/patches/arch/enable-widevine-arm64.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-#cho "-- chromium-154-crubit.patch --"
+echo "-- chromium-154-crubit.patch --"
 cat $SRCDIR/patches/arch/chromium-154-crubit.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
@@ -676,7 +684,7 @@ if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
   # Adjust expectations about where to find the clang libs on Slackware:
   echo "-- chromium-154-bindgen-custom-toolchain.patch --"
   cat $SRCDIR/patches/chromium-154-bindgen-custom-toolchain.patch \
-    | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+  #  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
   echo "-- compiler-rt-adjust-paths.patch --"
   cat $SRCDIR/patches/compiler-rt-adjust-paths.patch | patch -p1 --verbose \
     2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
@@ -916,6 +924,9 @@ if [ "$ARCH" == "aarch64" ]; then
   sed -i \
     "s,//third_party/cpython3/host/bin/python3,python3," .gn
 
+  # The provided 'Typescript' is x86 which won't work for aarch64 build:
+  rm -f third_party/typescript/linux-amd64/src/lib/tsc
+  ln -s /usr/bin/tsc third_party/typescript/linux-amd64/src/lib/tsc
 fi
 
 # Prevent a build failure (yes, 'x64' even on 32bit Slackware):
