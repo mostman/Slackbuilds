@@ -1,5 +1,6 @@
---- a/components/cbor/BUILD.gn	2026-10-02 22:10:43.684991870 +0200
-+++ b/components/cbor/BUILD.gn	2026-10-02 22:19:07.750788464 +0200
+diff -ruN a/components/cbor/BUILD.gn b/components/cbor/BUILD.gn
+--- a/components/cbor/BUILD.gn	2026-10-03 03:24:29.529593885 +0200
++++ b/components/cbor/BUILD.gn	2026-10-03 03:35:35.924477534 +0200
 @@ -12,7 +12,7 @@
    # TODO(crbug.com/535682335): Remove `USE_CBOR_RUST` buildflag entirely,
    # unconditionally enable Rust CBOR parser, and drop `is_cronet_build` check
@@ -27,9 +28,10 @@
      deps += [ "//components/cbor/rust:cbor_rust_unittests" ]
    }
  
---- a/third_party/blink/renderer/platform/BUILD.gn	2026-10-02 22:11:20.530813191 +0200
-+++ b/third_party/blink/renderer/platform/BUILD.gn	2026-10-02 22:26:30.293399237 +0200
-@@ -1794,7 +1806,6 @@
+diff -ruN a/third_party/blink/renderer/platform/BUILD.gn b/third_party/blink/renderer/platform/BUILD.gn
+--- a/third_party/blink/renderer/platform/BUILD.gn	2026-10-03 03:31:53.596308833 +0200
++++ b/third_party/blink/renderer/platform/BUILD.gn	2026-10-03 04:01:54.539344637 +0200
+@@ -1794,7 +1794,6 @@
      ":allow_discouraged_type",
      ":blink_platform_public_deps",
      ":platform_export",
@@ -37,40 +39,35 @@
      "//gpu/command_buffer/client:raster_interface",
      "//media/capture:capture_lib",
      "//mojo/public/cpp/base",
-@@ -1821,8 +1832,8 @@
+@@ -1821,8 +1820,9 @@
      "//ui/native_theme/features",
    ]
    deps = [
 +    ":font_format_check",
++    "fonts:font_format",
      ":rustfft_ffi",
 -    "fonts:font_format_bindings",
      "//base:base_static",
      "//base/allocator:buildflags",
      "//build:chromecast_buildflags",
---- a/third_party/blink/renderer/platform/fonts/BUILD.gn	2026-10-02 22:11:20.604282541 +0200
-+++ /dev/null							1970-01-01 01:00:00.000000000 +0100
-@@ -1,19 +0,0 @@
--# Copyright 2026 The Chromium Authors
--# Use of this source code is governed by a BSD-style license that can be
--# found in the LICENSE file.
--
--import("//build/rust/rust_static_library.gni")
--
--rust_static_library("font_format") {
--  crate_root = "opentype/format_check.rs"
--  sources = [ crate_root ]
+diff -ruN a/third_party/blink/renderer/platform/fonts/BUILD.gn b/third_party/blink/renderer/platform/fonts/BUILD.gn
+--- a/third_party/blink/renderer/platform/fonts/BUILD.gn	2026-10-03 03:33:07.285382296 +0200
++++ b/third_party/blink/renderer/platform/fonts/BUILD.gn	2026-10-03 03:51:12.825600419 +0200
+@@ -7,10 +7,7 @@
+ rust_static_library("font_format") {
+   crate_root = "opentype/format_check.rs"
+   sources = [ crate_root ]
 -  cpp_api_from_rust = {
 -    target_name = "font_format_bindings"
 -    cpp_namespace = "font_format"
 -  }
--  deps = [
--    "//third_party/rust/font_types/v0_12:lib",
--    "//third_party/rust/read_fonts/v0_43:lib",
--    "//third_party/rust/skrifa/v0_46:lib",
--  ]
--}
---- a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc	2026-10-02 22:11:20.608455230 +0200
-+++ b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc	2026-10-02 22:34:07.533557885 +0200
++  cxx_bindings = [ crate_root ]
+   deps = [
+     "//third_party/rust/font_types/v0_12:lib",
+     "//third_party/rust/read_fonts/v0_43:lib",
+diff -ruN a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc
+--- a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc	2026-10-03 03:34:33.396001137 +0200
++++ b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc	2026-10-03 03:35:35.927152925 +0200
 @@ -7,6 +7,7 @@
  #include "base/containers/span.h"
  #include "base/containers/span_rust.h"
@@ -134,8 +131,9 @@
  }
  
  FontFormatCheck::VariableFontSubType FontFormatCheck::ProbeVariableFont(
---- a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h	2026-10-02 22:11:20.608482619 +0200
-+++ b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h	2026-10-02 22:36:19.364046590 +0200
+diff -ruN a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h
+--- a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h	2026-10-03 03:34:33.396031600 +0200
++++ b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h	2026-10-03 03:35:35.931385040 +0200
 @@ -5,7 +5,7 @@
  #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_FONT_FORMAT_CHECK_H_
  #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_FONT_FORMAT_CHECK_H_
@@ -163,9 +161,9 @@
  };
  
  }  // namespace blink
-diff -urN a/third_party/blink/renderer/platform/fonts/opentype/format_check.rs b/third_party/blink/renderer/platform/fonts/opentype/format_check.rs
---- a/third_party/blink/renderer/platform/fonts/opentype/format_check.rs	2026-10-02 22:11:20.608503489 +0200
-+++ b/third_party/blink/renderer/platform/fonts/opentype/format_check.rs	2026-10-02 22:42:18.739499334 +0200
+diff -ruN a/third_party/blink/renderer/platform/fonts/opentype/format_check.rs b/third_party/blink/renderer/platform/fonts/opentype/format_check.rs
+--- a/third_party/blink/renderer/platform/fonts/opentype/format_check.rs	2026-10-03 03:34:33.396187693 +0200
++++ b/third_party/blink/renderer/platform/fonts/opentype/format_check.rs	2026-10-03 03:35:35.931669003 +0200
 @@ -23,7 +23,7 @@
      format_flags: Option<FontFormatFlags>,
  }
