@@ -1,5 +1,5 @@
 --- chromium.SlackBuild.154.orig	2026-09-30 17:23:08.000000000 +0200
-+++ chromium.SlackBuild	2026-10-03 23:07:51.742160589 +0200
++++ chromium.SlackBuild	2026-10-03 23:16:55.464267136 +0200
 @@ -1,5 +1,5 @@
  #!/bin/bash
 -# $Id: chromium.SlackBuild,v 1.596 2026/09/30 15:23:01 root Exp root $
@@ -162,12 +162,12 @@
 +# Need to install Typescript on the system to build.
 +# https://github.com/Ponce/slackbuilds/tree/current/development/typescript
 +# Should be fixed in 154 source code
-+if [ "$ARCH" == "aarch64" ]; then
-+  echo "-- chromium-153-typescript.patch --"
-+  cat $SRCDIR/patches/arch/chromium-153-typescript.patch \
-+    | patch -p1 --verbose \
-+    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-+fi
++#if [ "$ARCH" == "aarch64" ]; then
++#  echo "-- chromium-153-typescript.patch --"
++#  cat $SRCDIR/patches/arch/chromium-153-typescript.patch \
++#    | patch -p1 --verbose \
++#    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
++#fi
  echo "-- chromium147_revert-clang-no-lifetime-dse-flag.patch --"
  cat $SRCDIR/patches/chromium147_revert-clang-no-lifetime-dse-flag.patch \
    | patch -p1 --verbose \
@@ -219,7 +219,7 @@
    echo "-- compiler-rt-adjust-paths.patch --"
    cat $SRCDIR/patches/compiler-rt-adjust-paths.patch | patch -p1 --verbose \
      2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-@@ -850,6 +898,58 @@
+@@ -850,6 +898,63 @@
  sed -i BUILD.gn \
    -e 's/target_os != "linux" || /target_os == "linux" || /'
  
@@ -252,6 +252,11 @@
 +  ln -s ../../../../devtools-frontend/src/node_modules/@typescript/tsc/bin/tsc \
 +    third_party/typescript/linux-amd64/src/lib/tsc
 +
++  if ! third_party/typescript/linux-amd64/src/lib/tsc --version | grep -q 'Version 6.0.2'; then
++    echo "ERROR: Chromium TypeScript 6.0.2 was not found!"
++    exit 1
++  fi
++
 +  # The bundled esbuild is x86-64; fetch the ARM64 Chromium-pinned version.
 +  rm -f third_party/devtools-frontend/src/third_party/esbuild/esbuild
 +
@@ -278,7 +283,7 @@
  # Prevent a build failure (yes, 'x64' even on 32bit Slackware):
  mkdir -p third_party/node/linux/node-linux-x64/bin
  # In case a binary is already there:
-@@ -932,7 +1032,7 @@
+@@ -932,7 +1037,7 @@
      'blink_symbol_level=0'
      "enable_hevc_parser_and_hw_decoder=${do_hevc}"
      "enable_platform_hevc=${do_hevc}"
@@ -287,7 +292,7 @@
      "enable_platform_ac3_eac3_audio=${do_hevc}"
      "enable_platform_dolby_vision=${do_hevc}"
      'enable_platform_mpeg_h_audio=true'
-@@ -954,7 +1054,7 @@
+@@ -954,7 +1059,7 @@
      "ozone_platform_wayland=${do_wayland}"
      #"rtc_use_pipewire=${do_wayland}"
      #"rtc_link_pipewire=${do_wayland}"
@@ -296,7 +301,7 @@
      'proprietary_codecs=true'
      'remove_webcore_debug_symbols=true'
      'symbol_level=0'
-@@ -1233,6 +1333,9 @@
+@@ -1233,6 +1338,9 @@
      #--host-cc /usr/bin/clang \
      #--host-cxx /usr/bin/clang++ \
  
@@ -306,7 +311,7 @@
    # Building gn for Chromium 110 fails when this file is not present:
    if [ ! -f third_party/llvm-build/Release+Asserts/cr_build_revision ]; then
      CLANG_REVISION=$(grep ^CLANG_REVISION tools/clang/scripts/update.py |cut -d= -f2 |tr -d " '")
-@@ -1351,7 +1454,7 @@
+@@ -1351,7 +1459,7 @@
    fi
    cd third_party/ffmpeg
      ## To prevent error on x86_64:
@@ -315,7 +320,7 @@
      ## in third_party/ffmpeg/build.x64.linux/ChromeOS/ffbuild/config.log
      #sed -e "s/--extra-ldflags=-fuse-ld=lld/--extra-ldflags=''/" \
      #    -i chromium/scripts/build_ffmpeg.py
-@@ -1388,7 +1491,8 @@
+@@ -1388,7 +1496,8 @@
  
  # Generate the ninja build files:
  
@@ -325,7 +330,7 @@
    echo "-- Bootstrapping 'gn'."
  
    if [ "${GOOGLE_CLANG}" == "src" ] && [  ${BUILD_CLANG} -eq 1 ]; then
-@@ -1397,11 +1501,47 @@
+@@ -1397,11 +1506,47 @@
    fi
  
    if [ -e tools/gn/build/gen.py ]; then
@@ -378,7 +383,7 @@
    else
      # Download and build the latest:
      git clone https://gn.googlesource.com/gn gn.git
-@@ -1416,6 +1556,7 @@
+@@ -1416,6 +1561,7 @@
      popd
      install -m0755 -D -t out/Release gn.git/out/gn
    fi
@@ -386,7 +391,7 @@
  else
     mkdir -p out/Release
     ln -s ${GNBIN} out/Release/
-@@ -1435,10 +1576,10 @@
+@@ -1435,10 +1581,10 @@
  
  if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
    # Use system toolchain:
@@ -399,7 +404,7 @@
    mkdir -p third_party/rust-toolchain/bin
    ln -s /usr/bin/rustc third_party/rust-toolchain/bin/rustc
  
-@@ -1470,9 +1611,15 @@
+@@ -1470,9 +1616,15 @@
  fi
  
  # Dawn needs our system go:
@@ -418,7 +423,7 @@
  
  echo "-- Generating ninja build files."
  out/Release/gn gen out/Release -v --args="${_chromium_conf[*]}" \
-@@ -1572,9 +1719,9 @@
+@@ -1572,9 +1724,9 @@
  # Install appdata:
  # This file provides the 'process_template' function:
  if [ -f chrome/installer/linux/common/installer.include ]; then
@@ -430,7 +435,7 @@
  fi
  source chrome/installer/linux/common/chromium-browser.info 
  
-@@ -1651,6 +1798,18 @@
+@@ -1651,6 +1803,18 @@
  install -D -m0644 out/Release/${PRGNAM}.desktop \
    $PKG/usr/share/applications/${PRGNAM}.desktop
  
@@ -449,7 +454,7 @@
  # Install desktop icons:
  for size in 16 32; do
    install -D -m0644 \
-@@ -1798,5 +1957,12 @@
+@@ -1798,5 +1962,12 @@
  cd -
  cat $PKG/install/slack-desc | grep "^${PRGNAM}" > $OUTPUT/${PRGNAM}-${VERSION}-${PKGARCH}-${BUILD}${TAG}.txt
  
