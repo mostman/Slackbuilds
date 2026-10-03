@@ -1,5 +1,5 @@
 # Alien BOB´s Chromium slackbuild adopted for Slackware ARM (SARPI 15.0) and Slackware AArch64 (Slackware ARM project)
-***Note:*** SARPI supports neither RPi4 nor RPi5 on Aarch64...
+***Note:*** SARPI supports neither RPi4 nor RPi5 on Aarch64...   
 Adopted Alien BOB´s Chromium Slackbuild for Slackware ARM SARPI-15.0 and Slackware AArch64 SAPRI-Current so one can compile chromium/chromium-ungoogled for your Slackware ARM and AArch64 Rasberry Pi.
 
 This is built on SARPI 15.0 (Rasberry Pi 4) and SARPI Current (Rasberry Pi 4 & 5).
