@@ -26,8 +26,8 @@ dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * nasm >= 2.14 (yasm no longer being used) (Is avalible throught slack package)
 * cmake >= 3.13.4 (Is avalible throught slack package)
 * python3 >= 3.7, python3-setuptools (Is avalible throught slack package)
-* Typescript (Is avalible throught slackbuilds.org) from chromium version 153 <
-* java runtime (Slackware ARM package Is avalible [here](https://github.com/mostman/Slackbuilds/releases/download/21.2/jdk-8u381-arm-1_SLse.tgz) and AArch64 package [here](https://github.com/mostman/Slackbuilds/releases/download/21.2/jdk-8u461-aarch64-1_SBo.tgz))
+* Typescript (Is avalible throught [Ponce/slackbuilds](https://github.com/Ponce/slackbuilds/tree/current/development/typescript)) from chromium version 153 <
+* java runtime (Slackware ARM package Is avalible [here](https://github.com/mostman/Slackbuilds/releases/download/21.2/jdk-8u381-arm-1_SLse.tgz) and AArch64 package [here](https://github.com/mostman/Slackbuilds/releases/download/21.3/jdk-8u491-aarch64-1_SBo.tgz))
 * Internet access (for downloading toolchain bins)
 
 # Optional dependencies to build:
