@@ -924,9 +924,33 @@ if [ "$ARCH" == "aarch64" ]; then
   sed -i \
     "s,//third_party/cpython3/host/bin/python3,python3," .gn
 
-  # The provided 'Typescript' is x86 which won't work for aarch64 build:
+  # The provided TypeScript compiler is x86-64.
+  # Use Chromium's own TypeScript 6.0.2 package instead.
   rm -f third_party/typescript/linux-amd64/src/lib/tsc
-  ln -s /usr/bin/tsc third_party/typescript/linux-amd64/src/lib/tsc
+  ln -s ../../../../devtools-frontend/src/node_modules/@typescript/tsc/bin/tsc \
+    third_party/typescript/linux-amd64/src/lib/tsc
+
+  # The bundled esbuild is x86-64; fetch the ARM64 Chromium-pinned version.
+  rm -f third_party/devtools-frontend/src/third_party/esbuild/esbuild
+
+  ESBUILD_TMP="/tmp/esbuild-arm64"
+  rm -rf "$ESBUILD_TMP"
+  mkdir -p "$ESBUILD_TMP"
+
+  third_party/depot_tools/cipd install \
+    infra/3pp/tools/esbuild/linux-arm64 \
+    version:3@0.25.1.chromium.2 \
+    -root "$ESBUILD_TMP"
+
+  cp "$ESBUILD_TMP/esbuild" \
+    third_party/devtools-frontend/src/third_party/esbuild/esbuild
+
+  rm -rf "$ESBUILD_TMP"
+
+  if ! file third_party/devtools-frontend/src/third_party/esbuild/esbuild | grep -q 'ARM aarch64'; then
+    echo "ERROR: ARM64 esbuild was not installed correctly!"
+    exit 1
+  fi
 fi
 
 # Prevent a build failure (yes, 'x64' even on 32bit Slackware):
