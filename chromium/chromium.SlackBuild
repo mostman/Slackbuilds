@@ -39,6 +39,7 @@
 #                  - cmake >= 3.31.3
 #                  - python3 >= 3.10, python3-setuptools
 #                  - /usr/bin/python symlink pointing to python3.x
+#                  - Typescript >= 7.0.2
 #                  - java runtime
 #                  - Internet access (for downloading toolchain bins)
 # Needs:
@@ -579,17 +580,6 @@ echo "-- chromium-154-crubit.patch --"
 cat $SRCDIR/patches/arch/chromium-154-crubit.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-# Because Aarch64 does not have tsgo
-# we need to change this to tsc, this patch fixes this.
-# Need to install Typescript on the system to build.
-# https://github.com/Ponce/slackbuilds/tree/current/development/typescript
-# Should be fixed in 154 source code
-#if [ "$ARCH" == "aarch64" ]; then
-#  echo "-- chromium-153-typescript.patch --"
-#  cat $SRCDIR/patches/arch/chromium-153-typescript.patch \
-#    | patch -p1 --verbose \
-#    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-#fi
 echo "-- chromium147_revert-clang-no-lifetime-dse-flag.patch --"
 cat $SRCDIR/patches/chromium147_revert-clang-no-lifetime-dse-flag.patch \
   | patch -p1 --verbose \
@@ -931,11 +921,6 @@ if [ "$ARCH" == "aarch64" ]; then
   rm -f third_party/typescript/linux-amd64/src/lib/tsc
   ln -s ../../../../devtools-frontend/src/node_modules/@typescript/tsc/bin/tsc \
     third_party/typescript/linux-amd64/src/lib/tsc
-
-  if ! third_party/typescript/linux-amd64/src/lib/tsc --version | grep -q 'Version 6.0.2'; then
-    echo "ERROR: Chromium TypeScript 6.0.2 was not found!"
-    exit 1
-  fi
 
   # The bundled esbuild is x86-64; fetch the ARM64 Chromium-pinned version.
   rm -f third_party/devtools-frontend/src/third_party/esbuild/esbuild
