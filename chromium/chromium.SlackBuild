@@ -169,6 +169,10 @@
 #                   * Update.
 #                   03/oct/2026 by Minime <slackware[at]slackwarelinux[dot]se>
 #                   * Fixed build for AArch64
+# 154.0.8037.97-1:  03/oct/2026 by Eric Hameleers <alien@slackware.com>
+#                   * Update.
+#                   04/oct/2026 by Minime <slackware[at]slackwarelinux[dot]se>
+#                   * Fixed build for AArch64
 #
 
 #
@@ -193,8 +197,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-VERSION=${VERSION:-154.0.8037.92}
-UNGOOGLED=${UNGOOGLED:-154.0.8037.92-1}
+VERSION=${VERSION:-154.0.8037.97}
+UNGOOGLED=${UNGOOGLED:-154.0.8037.97-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
@@ -908,6 +912,11 @@ if [ "$ARCH" == "aarch64" ]; then
   rm -f third_party/typescript/linux-amd64/src/lib/tsc
   ln -s ../../../../devtools-frontend/src/node_modules/@typescript/tsc/bin/tsc \
     third_party/typescript/linux-amd64/src/lib/tsc
+
+  if ! third_party/typescript/linux-amd64/src/lib/tsc --version | grep -q 'Version 6.0.2'; then
+    echo "ERROR: Chromium TypeScript 6.0.2 was not found!"
+    exit 1
+  fi
 
   # Allow TypeScript compiler library definitions from the ARM64 compiler installation.
   sed -i "/'third_party\/node\/node_modules\/',/a\    'third_party/devtools-frontend/src/node_modules/@typescript/tsc/lib/'," \
@@ -1802,18 +1811,6 @@ process_template chrome/installer/linux/common/desktop.template \
   out/Release/${PRGNAM}.desktop
 install -D -m0644 out/Release/${PRGNAM}.desktop \
   $PKG/usr/share/applications/${PRGNAM}.desktop
-
-# Fix user-agent for aarch64
-# Not needed any more as latest libwidevinecdm format has changed
-#if [ "$ARCH" == "aarch64" ]; then
-#  MAJOR_VER="$(echo ${VERSION} | cut -d. -f1)"
-#  cp out/Release/${PRGNAM}.desktop out/Release/${PRGNAM}-netflix.desktop
-#  sed -i out/Release/${PRGNAM}-netflix.desktop \
-#    -e "s/Name\=Chromium-ungoogled Web Browser/Name\=Chromium-ungoogled Netflix/" \
-#    -e "s/\/${PRGNAM}/\/${PRGNAM} \-\-user-agent=\"Mozilla\/5.0 \(X11; CrOS ${ARCH} 10895.56.0\) AppleWebKit\/537.36 \(KHTML, like Gecko\) Chrome\/${MAJOR_VER}.0.0.0 Safari\/537.36\"/"
-#  install -D -m0644 out/Release/${PRGNAM}-netflix.desktop \
-#    $PKG/usr/share/applications/${PRGNAM}-netflix.desktop
-#fi
 
 # Install desktop icons:
 for size in 16 32; do
