@@ -917,11 +917,11 @@ if [ "$ARCH" == "aarch64" ]; then
   mkdir -p node_modules/@typescript/lib-dom
 
   cat > node_modules/@typescript/lib-dom/package.json <<'EOF'
-  {
-    "name": "@typescript/lib-dom",
-    "types": "lib.dom.d.ts"
-  }
-  EOF
+{
+  "name": "@typescript/lib-dom",
+  "types": "lib.dom.d.ts"
+}
+EOF
 
   ln -sf ../../../third_party/typescript/linux-amd64/src/lib/lib.dom.d.ts \
     node_modules/@typescript/lib-dom/lib.dom.d.ts
