@@ -1,5 +1,5 @@
 --- chromium.SlackBuild.154.orig	2026-09-30 17:23:08.000000000 +0200
-+++ chromium.SlackBuild.154	2026-10-04 18:19:02.704898594 +0200
++++ chromium.SlackBuild.154	2026-10-04 18:43:02.292364036 +0200
 @@ -1,5 +1,5 @@
  #!/bin/bash
 -# $Id: chromium.SlackBuild,v 1.596 2026/09/30 15:23:01 root Exp root $
@@ -257,11 +257,11 @@
 +  mkdir -p node_modules/@typescript/lib-dom
 +
 +  cat > node_modules/@typescript/lib-dom/package.json <<'EOF'
-+  {
-+    "name": "@typescript/lib-dom",
-+    "types": "lib.dom.d.ts"
-+  }
-+  EOF
++{
++  "name": "@typescript/lib-dom",
++  "types": "lib.dom.d.ts"
++}
++EOF
 +
 +  ln -sf ../../../third_party/typescript/linux-amd64/src/lib/lib.dom.d.ts \
 +    node_modules/@typescript/lib-dom/lib.dom.d.ts
