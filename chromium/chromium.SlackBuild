@@ -39,7 +39,6 @@
 #                  - cmake >= 3.31.3
 #                  - python3 >= 3.10, python3-setuptools
 #                  - /usr/bin/python symlink pointing to python3.x
-#                  - Typescript >= 7.0.2
 #                  - java runtime
 #                  - Internet access (for downloading toolchain bins)
 # Needs:
