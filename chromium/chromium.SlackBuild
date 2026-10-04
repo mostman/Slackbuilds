@@ -193,6 +193,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
+#VERSION=${VERSION:-154.0.8037.57}
+#UNGOOGLED=${UNGOOGLED:-154.0.8037.57-1}
 VERSION=${VERSION:-154.0.8037.92}
 UNGOOGLED=${UNGOOGLED:-154.0.8037.92-1}
 BUILD=${BUILD:-1}
@@ -636,19 +638,6 @@ cat $SRCDIR/patches/chromium149_v8-sandbox-sanitizer-death-callback-weak.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # Ungoogled contributions:
-#echo "-- chromium152_crubit.patch --"
-#cat $SRCDIR/patches/chromium152_crubit.patch \
-#  | patch -p1 --verbose \
-#  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-## Fixes for new behavior regarding 'ar' while unbundling:
-#echo "-- chromium150_explicit_ar.patch --"
-#cat $SRCDIR/patches/chromium150_explicit_ar.patch \
-#  | patch -p1 --verbose \
-#  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
-#echo "-- chromium150_empty_ar.patch --"
-#cat $SRCDIR/patches/chromium150_empty_ar.patch \
-#  | patch -p1 --verbose \
-#  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 # Dealing with the error:
 # TypeError: unsupported operand type(s) for |: 'type' and 'NoneType'
 # Fix building using Python 3.9 on Slackware 15.0 by placing
@@ -921,6 +910,29 @@ if [ "$ARCH" == "aarch64" ]; then
   rm -f third_party/typescript/linux-amd64/src/lib/tsc
   ln -s ../../../../devtools-frontend/src/node_modules/@typescript/tsc/bin/tsc \
     third_party/typescript/linux-amd64/src/lib/tsc
+
+  # Allow TypeScript compiler library definitions from the ARM64 compiler installation.
+  sed -i "/'third_party\/node\/node_modules\/',/a\    'third_party/devtools-frontend/src/node_modules/@typescript/tsc/lib/'," \
+  tools/typescript/validate_tsconfig.py
+
+  # Use Chromium's DOM library definitions with the ARM64 TypeScript compiler.
+  mkdir -p node_modules/@typescript/lib-dom
+
+  cat > node_modules/@typescript/lib-dom/package.json <<'EOF'
+  {
+    "name": "@typescript/lib-dom",
+    "types": "lib.dom.d.ts"
+  }
+  EOF
+
+  ln -sf ../../../third_party/typescript/linux-amd64/src/lib/lib.dom.d.ts \
+    node_modules/@typescript/lib-dom/lib.dom.d.ts
+
+  # Use Chromium 154 DOM library definitions with AArch64 TypeScript:
+  echo "-- chromium-154-typescript-aarch64-libReplacement.patch --"
+  cat $SRCDIR/patches/aarch64/chromium-154-typescript-aarch64-libReplacement.patch \
+    | patch -p1 --verbose \
+    2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 
   # The bundled esbuild is x86-64; fetch the ARM64 Chromium-pinned version.
   rm -f third_party/devtools-frontend/src/third_party/esbuild/esbuild
