@@ -1,5 +1,5 @@
 # Alien BOB´s Chromium slackbuild adopted for Slackware ARM (SARPI 15.0) and Slackware AArch64 (Slackware ARM project)
-***Note:*** SARPI supports neither RPi4 nor RPi5 on Aarch64...   
+***Note:*** SARPI supports neither RPi4 nor RPi5 on Aarch64 (Hard to say if SARPI even supports RPI4 on ARM for that matter?!)...   
 Adopted Alien BOB´s Chromium Slackbuild for Slackware ARM SARPI-15.0 and Slackware AArch64 SAPRI-Current so one can compile chromium/chromium-ungoogled for your Slackware ARM and AArch64 Rasberry Pi.
 
 This is built on SARPI 15.0 (Rasberry Pi 4) and SARPI Current (Rasberry Pi 4 & 5).
@@ -17,6 +17,7 @@ dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * Fixed compiling google's internal llvm/clang for ARM, just use system clang for AArch64.
 * Also made it possible to use eithers systems llvm/clang version or my slackbuild llvm/clang version instead of chromiums llvm/clang build.
 * Patched chromium for arm and aarch64 to support Widevine. (Using my patched glibc will also make Widevine 4.10.2252.x and latest 4.10.2557.x working on ARM and aarch64)
+* Fixed Chromium's internal tools, such as adapted Rust/Crubit/bindgen, TypeScript and esbuild to work in Aarch64.
 
 # Dependencies needed to build:
 * ninja (Is avalible throught slack package)
@@ -26,7 +27,6 @@ dbus-arch-deps.h, graphene-config.h and arm-linux-gnueabihf.conf.
 * nasm >= 2.14 (yasm no longer being used) (Is avalible throught slack package)
 * cmake >= 3.13.4 (Is avalible throught slack package)
 * python3 >= 3.7, python3-setuptools (Is avalible throught slack package)
-* Typescript (Is avalible throught [Ponce/slackbuilds](https://github.com/Ponce/slackbuilds/tree/current/development/typescript)) from chromium version 153 <
 * java runtime (Slackware ARM package Is avalible [here](https://github.com/mostman/Slackbuilds/releases/download/21.2/jdk-8u381-arm-1_SLse.tgz) and AArch64 package [here](https://github.com/mostman/Slackbuilds/releases/download/21.3/jdk-8u491-aarch64-1_SBo.tgz))
 * Internet access (for downloading toolchain bins)
 
