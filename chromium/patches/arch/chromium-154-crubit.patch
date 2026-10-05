@@ -420,7 +420,7 @@ diff -urN a/components/web_package/signed_web_bundles/rust/cxx_ffi.rs b/componen
 +}
 diff -urN a/third_party/blink/renderer/platform/BUILD.gn b/third_party/blink/renderer/platform/BUILD.gn
 --- a/third_party/blink/renderer/platform/BUILD.gn	2026-10-05 19:00:24.347515521 +0200
-+++ b/third_party/blink/renderer/platform/BUILD.gn	2026-10-05 19:05:55.167177760 +0200
++++ b/third_party/blink/renderer/platform/BUILD.gn	2026-10-05 20:00:17.899793062 +0200
 @@ -1794,7 +1794,6 @@
      ":allow_discouraged_type",
      ":blink_platform_public_deps",
@@ -429,11 +429,10 @@ diff -urN a/third_party/blink/renderer/platform/BUILD.gn b/third_party/blink/ren
      "//gpu/command_buffer/client:raster_interface",
      "//media/capture:capture_lib",
      "//mojo/public/cpp/base",
-@@ -1821,8 +1820,9 @@
+@@ -1821,8 +1820,8 @@
      "//ui/native_theme/features",
    ]
    deps = [
-+    ":font_format_check",
 +    "fonts:font_format",
      ":rustfft_ffi",
 -    "fonts:font_format_bindings",
