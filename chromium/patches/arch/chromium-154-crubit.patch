@@ -1,6 +1,6 @@
 diff -urN a/components/cbor/BUILD.gn b/components/cbor/BUILD.gn
---- a/components/cbor/BUILD.gn	2026-10-05 21:43:41.058867873 +0200
-+++ b/components/cbor/BUILD.gn	2026-10-05 21:53:17.841037848 +0200
+--- a/components/cbor/BUILD.gn	2026-10-06 23:27:13.526100316 +0200
++++ b/components/cbor/BUILD.gn	2026-10-06 23:32:42.103752939 +0200
 @@ -12,7 +12,7 @@
    # TODO(crbug.com/535682335): Remove `USE_CBOR_RUST` buildflag entirely,
    # unconditionally enable Rust CBOR parser, and drop `is_cronet_build` check
@@ -29,8 +29,8 @@ diff -urN a/components/cbor/BUILD.gn b/components/cbor/BUILD.gn
    }
  
 diff -urN a/components/private_verification_tokens/common/BUILD.gn b/components/private_verification_tokens/common/BUILD.gn
---- a/components/private_verification_tokens/common/BUILD.gn	2026-10-05 21:43:41.059149780 +0200
-+++ b/components/private_verification_tokens/common/BUILD.gn	2026-10-05 21:53:17.841324422 +0200
+--- a/components/private_verification_tokens/common/BUILD.gn	2026-10-06 23:28:22.714433492 +0200
++++ b/components/private_verification_tokens/common/BUILD.gn	2026-10-06 23:32:42.104117347 +0200
 @@ -204,7 +204,7 @@
      ]
      public_deps = [
@@ -50,8 +50,8 @@ diff -urN a/components/private_verification_tokens/common/BUILD.gn b/components/
    }
  
 diff -urN a/components/private_verification_tokens/common/athm_ffi/BUILD.gn b/components/private_verification_tokens/common/athm_ffi/BUILD.gn
---- a/components/private_verification_tokens/common/athm_ffi/BUILD.gn	2026-10-05 21:43:41.061453264 +0200
-+++ b/components/private_verification_tokens/common/athm_ffi/BUILD.gn	2026-10-05 21:53:17.843628165 +0200
+--- a/components/private_verification_tokens/common/athm_ffi/BUILD.gn	2026-10-06 23:28:22.719315939 +0200
++++ b/components/private_verification_tokens/common/athm_ffi/BUILD.gn	2026-10-06 23:32:42.106300144 +0200
 @@ -17,11 +17,11 @@
      "privacy_pass_common.rs",
      "privacy_pass_issuer.rs",
@@ -70,7 +70,7 @@ diff -urN a/components/private_verification_tokens/common/athm_ffi/BUILD.gn b/co
      ":*",
 diff -urN a/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs b/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs
 --- a/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs	1970-01-01 01:00:00.000000000 +0100
-+++ b/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs	2026-10-05 21:53:17.843846535 +0200
++++ b/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs	2026-10-06 23:32:42.106532996 +0200
 @@ -0,0 +1,161 @@
 +use alloc::{boxed::Box, vec::Vec};
 +
@@ -234,8 +234,8 @@ diff -urN a/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs b/
 +        .map(|value| Box::new(CxxTokenRequest(value)))
 +}
 diff -urN a/components/web_package/BUILD.gn b/components/web_package/BUILD.gn
---- a/components/web_package/BUILD.gn	2026-10-05 21:43:41.069315845 +0200
-+++ b/components/web_package/BUILD.gn	2026-10-05 21:53:17.844046536 +0200
+--- a/components/web_package/BUILD.gn	2026-10-06 23:28:55.610363646 +0200
++++ b/components/web_package/BUILD.gn	2026-10-06 23:32:42.106785182 +0200
 @@ -40,7 +40,7 @@
      "//base",
      "//components/base32",
@@ -255,8 +255,8 @@ diff -urN a/components/web_package/BUILD.gn b/components/web_package/BUILD.gn
      "//mojo/public/cpp/bindings",
    ]
 diff -urN a/components/web_package/signed_web_bundles/rust/BUILD.gn b/components/web_package/signed_web_bundles/rust/BUILD.gn
---- a/components/web_package/signed_web_bundles/rust/BUILD.gn	2026-10-05 21:43:41.069473697 +0200
-+++ b/components/web_package/signed_web_bundles/rust/BUILD.gn	2026-10-05 21:53:17.844207591 +0200
+--- a/components/web_package/signed_web_bundles/rust/BUILD.gn	2026-10-06 23:29:28.249289266 +0200
++++ b/components/web_package/signed_web_bundles/rust/BUILD.gn	2026-10-06 23:32:42.107055200 +0200
 @@ -12,14 +12,17 @@
      "integrity_block.rs",
      "signature_verifier.rs",
@@ -282,7 +282,7 @@ diff -urN a/components/web_package/signed_web_bundles/rust/BUILD.gn b/components
      "//components/cbor/rust:cbor",
 diff -urN a/components/web_package/signed_web_bundles/rust/cxx_ffi.rs b/components/web_package/signed_web_bundles/rust/cxx_ffi.rs
 --- a/components/web_package/signed_web_bundles/rust/cxx_ffi.rs	1970-01-01 01:00:00.000000000 +0100
-+++ b/components/web_package/signed_web_bundles/rust/cxx_ffi.rs	2026-10-05 21:53:17.844684036 +0200
++++ b/components/web_package/signed_web_bundles/rust/cxx_ffi.rs	2026-10-06 23:32:42.107225219 +0200
 @@ -0,0 +1,221 @@
 +// Copyright 2026 The Chromium Authors
 +// Use of this source code is governed by a BSD-style license that can be
@@ -506,8 +506,8 @@ diff -urN a/components/web_package/signed_web_bundles/rust/cxx_ffi.rs b/componen
 +    }
 +}
 diff -urN a/components/web_package/signed_web_bundles/rust/lib.rs b/components/web_package/signed_web_bundles/rust/lib.rs
---- a/components/web_package/signed_web_bundles/rust/lib.rs	2026-10-05 21:43:41.070104939 +0200
-+++ b/components/web_package/signed_web_bundles/rust/lib.rs	2026-10-05 21:53:17.844897370 +0200
+--- a/components/web_package/signed_web_bundles/rust/lib.rs	2026-10-06 23:29:28.252597453 +0200
++++ b/components/web_package/signed_web_bundles/rust/lib.rs	2026-10-06 23:32:42.107442312 +0200
 @@ -11,6 +11,7 @@
  mod integrity_block;
  mod signature_verifier;
@@ -517,8 +517,8 @@ diff -urN a/components/web_package/signed_web_bundles/rust/lib.rs b/components/w
  pub use constants::{
      ECDSA_P256_PUBLIC_KEY_ATTRIBUTE_NAME, ECDSA_P256_PUBLIC_KEY_LEN, ECDSA_P256_SIGNATURE_MAX_LEN,
 diff -urN a/third_party/blink/renderer/platform/BUILD.gn b/third_party/blink/renderer/platform/BUILD.gn
---- a/third_party/blink/renderer/platform/BUILD.gn	2026-10-05 21:43:41.070429069 +0200
-+++ b/third_party/blink/renderer/platform/BUILD.gn	2026-10-05 21:53:17.845254944 +0200
+--- a/third_party/blink/renderer/platform/BUILD.gn	2026-10-06 23:30:10.250675043 +0200
++++ b/third_party/blink/renderer/platform/BUILD.gn	2026-10-06 23:32:42.107803404 +0200
 @@ -1794,7 +1794,6 @@
      ":allow_discouraged_type",
      ":blink_platform_public_deps",
@@ -538,10 +538,13 @@ diff -urN a/third_party/blink/renderer/platform/BUILD.gn b/third_party/blink/ren
      "//base/allocator:buildflags",
      "//build:chromecast_buildflags",
 diff -urN a/third_party/blink/renderer/platform/fonts/BUILD.gn b/third_party/blink/renderer/platform/fonts/BUILD.gn
---- a/third_party/blink/renderer/platform/fonts/BUILD.gn	2026-10-05 21:43:41.070828050 +0200
-+++ b/third_party/blink/renderer/platform/fonts/BUILD.gn	2026-10-05 21:53:17.845683667 +0200
-@@ -7,10 +7,7 @@
+--- a/third_party/blink/renderer/platform/fonts/BUILD.gn	2026-10-06 23:30:38.894598329 +0200
++++ b/third_party/blink/renderer/platform/fonts/BUILD.gn	2026-10-06 23:34:38.331534071 +0200
+@@ -5,12 +5,10 @@
+ import("//build/rust/rust_static_library.gni")
+ 
  rust_static_library("font_format") {
++  allow_unsafe = true
    crate_root = "opentype/format_check.rs"
    sources = [ crate_root ]
 -  cpp_api_from_rust = {
@@ -553,8 +556,8 @@ diff -urN a/third_party/blink/renderer/platform/fonts/BUILD.gn b/third_party/bli
      "//third_party/rust/font_types/v0_12:lib",
      "//third_party/rust/read_fonts/v0_43:lib",
 diff -urN a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc
---- a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc	2026-10-05 21:43:41.072911682 +0200
-+++ b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc	2026-10-05 22:07:43.389251770 +0200
+--- a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc	2026-10-06 23:31:20.473490125 +0200
++++ b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc	2026-10-06 23:32:42.110395128 +0200
 @@ -7,6 +7,7 @@
  #include "base/containers/span.h"
  #include "base/containers/span_rust.h"
@@ -619,8 +622,8 @@ diff -urN a/third_party/blink/renderer/platform/fonts/opentype/font_format_check
  
  FontFormatCheck::VariableFontSubType FontFormatCheck::ProbeVariableFont(
 diff -urN a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h
---- a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h	2026-10-05 21:43:41.073154460 +0200
-+++ b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h	2026-10-05 21:53:17.848128428 +0200
+--- a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h	2026-10-06 23:31:20.473525718 +0200
++++ b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h	2026-10-06 23:32:42.110589813 +0200
 @@ -5,7 +5,7 @@
  #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_FONT_FORMAT_CHECK_H_
  #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_FONT_FORMAT_CHECK_H_
@@ -649,8 +652,8 @@ diff -urN a/third_party/blink/renderer/platform/fonts/opentype/font_format_check
  
  }  // namespace blink
 diff -urN a/third_party/blink/renderer/platform/fonts/opentype/format_check.rs b/third_party/blink/renderer/platform/fonts/opentype/format_check.rs
---- a/third_party/blink/renderer/platform/fonts/opentype/format_check.rs	2026-10-05 21:43:41.073393034 +0200
-+++ b/third_party/blink/renderer/platform/fonts/opentype/format_check.rs	2026-10-05 21:53:17.848379373 +0200
+--- a/third_party/blink/renderer/platform/fonts/opentype/format_check.rs	2026-10-06 23:31:20.474089681 +0200
++++ b/third_party/blink/renderer/platform/fonts/opentype/format_check.rs	2026-10-06 23:32:42.110866869 +0200
 @@ -23,7 +23,7 @@
      format_flags: Option<FontFormatFlags>,
  }
