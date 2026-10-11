@@ -306,7 +306,7 @@ diff -urN a/components/web_package/signed_web_bundles/ed25519_signature.cc b/com
  }  // namespace web_package
 diff -urN a/components/web_package/signed_web_bundles/integrity_block_parser.cc b/components/web_package/signed_web_bundles/integrity_block_parser.cc
 --- a/components/web_package/signed_web_bundles/integrity_block_parser.cc	2026-10-11 14:11:20.283665235 +0200
-+++ b/components/web_package/signed_web_bundles/integrity_block_parser.cc	2026-10-11 15:26:51.152531390 +0200
++++ b/components/web_package/signed_web_bundles/integrity_block_parser.cc	2026-10-11 16:27:04.299749243 +0200
 @@ -22,7 +22,7 @@
  #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
  #include "components/web_package/signed_web_bundles/ed25519_signature.h"
@@ -316,7 +316,7 @@ diff -urN a/components/web_package/signed_web_bundles/integrity_block_parser.cc 
  #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
  #include "components/web_package/signed_web_bundles/types.h"
  
-@@ -30,44 +30,57 @@
+@@ -30,31 +30,39 @@
  
  namespace {
  
@@ -327,86 +327,61 @@ diff -urN a/components/web_package/signed_web_bundles/integrity_block_parser.cc 
  base::expected<mojom::BundleIntegrityBlockSignatureStackEntryPtr, std::string>
  CreateSignatureStackEntry(
 -    const signed_web_bundles::rust::SignatureStackEntry& entry) {
--  auto parsed_sig = mojom::BundleIntegrityBlockSignatureStackEntry::New();
-+const signed_web_bundles::rust::CxxSignatureStackEntry& entry) {
-+auto parsed_sig = mojom::BundleIntegrityBlockSignatureStackEntry::New();
++    const signed_web_bundles::rust::CxxSignatureStackEntry& entry) {
+   auto parsed_sig = mojom::BundleIntegrityBlockSignatureStackEntry::New();
  
 -  switch (entry.signature_type.tag) {
--    case SignatureType::Ed25519: {
++  const auto signature_type = entry.signature_type();
++  const auto public_key = entry.public_key();
++  const auto signature = entry.signature();
++
++  switch (signature_type) {
+     case SignatureType::Ed25519: {
 -      ASSIGN_OR_RETURN(auto public_key,
 -                       Ed25519PublicKey::Create(entry.public_key.to_span()));
 -      ASSIGN_OR_RETURN(auto signature,
 -                       Ed25519Signature::Create(entry.signature.to_span()));
--      parsed_sig->signature_info = mojom::SignatureInfo::NewEd25519(
++      ASSIGN_OR_RETURN(auto key,
++                       Ed25519PublicKey::Create(base::span<const uint8_t>(
++                           public_key.data(), public_key.size())));
++      ASSIGN_OR_RETURN(auto sig,
++                       Ed25519Signature::Create(base::span<const uint8_t>(
++                           signature.data(), signature.size())));
+       parsed_sig->signature_info = mojom::SignatureInfo::NewEd25519(
 -          mojom::SignatureInfoEd25519::New(public_key, signature));
--      break;
--    }
--    case SignatureType::EcdsaP256SHA256: {
++          mojom::SignatureInfoEd25519::New(std::move(key), std::move(sig)));
+       break;
+     }
+     case SignatureType::EcdsaP256SHA256: {
 -      ASSIGN_OR_RETURN(auto public_key,
 -                       EcdsaP256PublicKey::Create(entry.public_key.to_span()));
 -      ASSIGN_OR_RETURN(auto signature, EcdsaP256SHA256Signature::Create(
 -                                           entry.signature.to_span()));
--      parsed_sig->signature_info = mojom::SignatureInfo::NewEcdsaP256Sha256(
++      ASSIGN_OR_RETURN(auto key,
++                       EcdsaP256PublicKey::Create(base::span<const uint8_t>(
++                           public_key.data(), public_key.size())));
++      ASSIGN_OR_RETURN(auto sig,
++                       EcdsaP256SHA256Signature::Create(base::span<const uint8_t>(
++                           signature.data(), signature.size())));
+       parsed_sig->signature_info = mojom::SignatureInfo::NewEcdsaP256Sha256(
 -          mojom::SignatureInfoEcdsaP256SHA256::New(public_key, signature));
--      break;
--    }
--    case SignatureType::Unknown: {
--      parsed_sig->signature_info =
--          mojom::SignatureInfo::NewUnknown(mojom::SignatureInfoUnknown::New());
--      break;
--    }
--  }
-+const auto signature_type = entry.signature_type();
-+const auto public_key = entry.public_key();
-+const auto signature = entry.signature();
-+
-+switch (signature_type) {
-+case SignatureType::Ed25519: {
-+ASSIGN_OR_RETURN(
-+auto key,
-+Ed25519PublicKey::Create(base::span<const uint8_t>(
-+public_key.data(), public_key.size())));
-+ASSIGN_OR_RETURN(
-+auto sig,
-+Ed25519Signature::Create(base::span<const uint8_t>(
-+signature.data(), signature.size())));
-+parsed_sig->signature_info = mojom::SignatureInfo::NewEd25519(
-+mojom::SignatureInfoEd25519::New(std::move(key), std::move(sig)));
-+break;
-+}
-+case SignatureType::EcdsaP256SHA256: {
-+ASSIGN_OR_RETURN(
-+auto key,
-+EcdsaP256PublicKey::Create(base::span<const uint8_t>(
-+public_key.data(), public_key.size())));
-+ASSIGN_OR_RETURN(
-+auto sig,
-+EcdsaP256SHA256Signature::Create(base::span<const uint8_t>(
-+signature.data(), signature.size())));
-+parsed_sig->signature_info = mojom::SignatureInfo::NewEcdsaP256Sha256(
-+mojom::SignatureInfoEcdsaP256SHA256::New(std::move(key),
-+std::move(sig)));
-+break;
-+}
-+case SignatureType::Unknown: {
-+parsed_sig->signature_info =
-+mojom::SignatureInfo::NewUnknown(mojom::SignatureInfoUnknown::New());
-+break;
-+}
-+}
++          mojom::SignatureInfoEcdsaP256SHA256::New(std::move(key),
++          std::move(sig)));
+       break;
+     }
+     case SignatureType::Unknown: {
+@@ -64,8 +72,9 @@
+     }
+   }
  
--  parsed_sig->attributes_cbor =
++  const auto attributes_cbor = entry.attributes_cbor();
+   parsed_sig->attributes_cbor =
 -      BinaryData(entry.attributes_cbor.begin(), entry.attributes_cbor.end());
-+const auto attributes_cbor = entry.attributes_cbor();
-+parsed_sig->attributes_cbor =
-+BinaryData(attributes_cbor.begin(), attributes_cbor.end());
++      BinaryData(attributes_cbor.begin(), attributes_cbor.end());
  
--  return parsed_sig;
-+return parsed_sig;
+   return parsed_sig;
  }
- 
- }  // namespace
-@@ -97,6 +110,8 @@
+@@ -97,6 +106,8 @@
                                      weak_factory_.GetWeakPtr()));
  }
  
@@ -415,7 +390,7 @@ diff -urN a/components/web_package/signed_web_bundles/integrity_block_parser.cc 
  void IntegrityBlockParser::OnIntegrityBlockRead(
      const std::optional<BinaryData>& data) {
    if (!data) {
-@@ -104,34 +119,41 @@
+@@ -104,34 +115,41 @@
      return;
    }
  
