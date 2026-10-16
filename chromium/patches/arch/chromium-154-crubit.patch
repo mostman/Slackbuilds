@@ -1,6 +1,6 @@
 diff -urN a/components/cbor/BUILD.gn b/components/cbor/BUILD.gn
---- a/components/cbor/BUILD.gn	2026-10-11 14:22:33.989435556 +0200
-+++ b/components/cbor/BUILD.gn	2026-10-11 14:06:30.994364248 +0200
+--- a/components/cbor/BUILD.gn	2026-10-16 01:22:51.760975977 +0200
++++ b/components/cbor/BUILD.gn	2026-10-16 01:21:03.091632381 +0200
 @@ -12,7 +12,7 @@
    # TODO(crbug.com/535682335): Remove `USE_CBOR_RUST` buildflag entirely,
    # unconditionally enable Rust CBOR parser, and drop `is_cronet_build` check
@@ -29,8 +29,8 @@ diff -urN a/components/cbor/BUILD.gn b/components/cbor/BUILD.gn
    }
  
 diff -urN a/components/private_verification_tokens/common/BUILD.gn b/components/private_verification_tokens/common/BUILD.gn
---- a/components/private_verification_tokens/common/BUILD.gn	2026-10-11 14:22:33.989728704 +0200
-+++ b/components/private_verification_tokens/common/BUILD.gn	2026-10-11 14:06:51.894789572 +0200
+--- a/components/private_verification_tokens/common/BUILD.gn	2026-10-16 01:22:51.761247736 +0200
++++ b/components/private_verification_tokens/common/BUILD.gn	2026-10-16 01:21:18.755749136 +0200
 @@ -204,7 +204,7 @@
      ]
      public_deps = [
@@ -50,8 +50,8 @@ diff -urN a/components/private_verification_tokens/common/BUILD.gn b/components/
    }
  
 diff -urN a/components/private_verification_tokens/common/athm_ffi/BUILD.gn b/components/private_verification_tokens/common/athm_ffi/BUILD.gn
---- a/components/private_verification_tokens/common/athm_ffi/BUILD.gn	2026-10-11 14:22:33.992017057 +0200
-+++ b/components/private_verification_tokens/common/athm_ffi/BUILD.gn	2026-10-11 14:06:51.894919258 +0200
+--- a/components/private_verification_tokens/common/athm_ffi/BUILD.gn	2026-10-16 01:22:51.769219389 +0200
++++ b/components/private_verification_tokens/common/athm_ffi/BUILD.gn	2026-10-16 01:21:18.755879488 +0200
 @@ -17,11 +17,11 @@
      "privacy_pass_common.rs",
      "privacy_pass_issuer.rs",
@@ -63,15 +63,19 @@ diff -urN a/components/private_verification_tokens/common/athm_ffi/BUILD.gn b/co
 -    cpp_namespace = "private_verification_tokens"
 -  }
 +
-+  cxx_bindings = [ crate_root ]
++  cxx_bindings = [ "cxx_ffi.rs" ]
 +
    deps = [ "//third_party/anonymous_tokens:athm" ]
    visibility = [
      ":*",
 diff -urN a/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs b/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs
 --- a/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs	1970-01-01 01:00:00.000000000 +0100
-+++ b/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs	2026-10-11 14:06:51.894962517 +0200
-@@ -0,0 +1,161 @@
++++ b/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs	2026-10-16 01:47:22.111109838 +0200
+@@ -0,0 +1,268 @@
++// Copyright 2026 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
 +use alloc::{boxed::Box, vec::Vec};
 +
 +use crate::{AthmClientRequest, AthmKeyMaterial, AthmParameters, AthmStatus, TokenRequest};
@@ -79,6 +83,7 @@ diff -urN a/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs b/
 +#[cxx::bridge(namespace = "private_verification_tokens")]
 +mod ffi {
 +    enum AthmStatus {
++        Ok,
 +        InvalidInput,
 +        OperationFailed,
 +    }
@@ -89,59 +94,79 @@ diff -urN a/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs b/
 +        type CxxAthmClientRequest;
 +        type CxxTokenRequest;
 +
++        type AthmKeyMaterialNewResult;
++        fn athm_key_material_new_err(self: &AthmKeyMaterialNewResult) -> bool;
++        fn athm_key_material_new_status(self: &AthmKeyMaterialNewResult) -> AthmStatus;
++        fn athm_key_material_new_unwrap(self: &mut AthmKeyMaterialNewResult) -> Box<CxxAthmKeyMaterial>;
++
++        type AthmBytesResult;
++        fn athm_bytes_result_err(self: &AthmBytesResult) -> bool;
++        fn athm_bytes_result_status(self: &AthmBytesResult) -> AthmStatus;
++        fn athm_bytes_result_unwrap(self: &mut AthmBytesResult) -> Vec<u8>;
++
++        type AthmVerifyResult;
++        fn athm_verify_result_err(self: &AthmVerifyResult) -> bool;
++        fn athm_verify_result_status(self: &AthmVerifyResult) -> AthmStatus;
++        fn athm_verify_result_unwrap(self: &mut AthmVerifyResult) -> u8;
++
++        type AthmParametersNewResult;
++        fn athm_parameters_new_err(self: &AthmParametersNewResult) -> bool;
++        fn athm_parameters_new_status(self: &AthmParametersNewResult) -> AthmStatus;
++        fn athm_parameters_new_unwrap(self: &mut AthmParametersNewResult) -> Box<CxxAthmParameters>;
++
++        type AthmClientRequestNewResult;
++        fn athm_client_request_new_err(self: &AthmClientRequestNewResult) -> bool;
++        fn athm_client_request_new_status(self: &AthmClientRequestNewResult) -> AthmStatus;
++        fn athm_client_request_new_unwrap(self: &mut AthmClientRequestNewResult) -> Box<CxxAthmClientRequest>;
++
++        type AthmTokenRequestDecodeResult;
++        fn token_request_decode_err(self: &AthmTokenRequestDecodeResult) -> bool;
++        fn token_request_decode_status(self: &AthmTokenRequestDecodeResult) -> AthmStatus;
++        fn token_request_decode_unwrap(self: &mut AthmTokenRequestDecodeResult) -> Box<CxxTokenRequest>;
++
 +        fn athm_key_material_new(
 +            num_buckets: u8,
 +            deployment_id: &[u8],
-+        ) -> Result<Box<CxxAthmKeyMaterial>, AthmStatus>;
++        ) -> Box<AthmKeyMaterialNewResult>;
 +
-+        fn athm_key_material_public_key(
-+            key_material: &CxxAthmKeyMaterial,
-+        ) -> Vec<u8>;
++        fn athm_key_material_public_key(key_material: &CxxAthmKeyMaterial) -> Vec<u8>;
 +
-+        fn athm_key_material_public_key_proof(
-+            key_material: &CxxAthmKeyMaterial,
-+        ) -> Vec<u8>;
++        fn athm_key_material_public_key_proof(key_material: &CxxAthmKeyMaterial) -> Vec<u8>;
 +
 +        fn athm_key_material_issue(
 +            key_material: &CxxAthmKeyMaterial,
 +            request: &CxxTokenRequest,
 +            hidden_metadata: u8,
-+        ) -> Result<Vec<u8>, AthmStatus>;
++        ) -> Box<AthmBytesResult>;
 +
 +        fn athm_key_material_verify(
 +            key_material: &CxxAthmKeyMaterial,
 +            token: &[u8],
-+        ) -> Result<u8, AthmStatus>;
++        ) -> Box<AthmVerifyResult>;
 +
 +        fn athm_parameters_new(
 +            num_buckets: u8,
 +            deployment_id: &[u8],
-+        ) -> Result<Box<CxxAthmParameters>, AthmStatus>;
++        ) -> Box<AthmParametersNewResult>;
 +
-+        fn athm_parameters_token_response_size(
-+            params: &CxxAthmParameters,
-+        ) -> usize;
++        fn athm_parameters_token_response_size(params: &CxxAthmParameters) -> usize;
 +
 +        fn athm_client_request_new(
 +            public_key: &[u8],
 +            public_key_proof: &[u8],
 +            params: &CxxAthmParameters,
-+        ) -> Result<Box<CxxAthmClientRequest>, AthmStatus>;
++        ) -> Box<AthmClientRequestNewResult>;
 +
-+        fn athm_client_request_request(
-+            request: &CxxAthmClientRequest,
-+        ) -> Vec<u8>;
++        fn athm_client_request_request(request: &CxxAthmClientRequest) -> Vec<u8>;
 +
 +        fn athm_client_request_finalize(
 +            request: &CxxAthmClientRequest,
 +            public_key: &[u8],
 +            response: &[u8],
 +            params: &CxxAthmParameters,
-+        ) -> Result<Vec<u8>, AthmStatus>;
++        ) -> Box<AthmBytesResult>;
 +
-+        fn token_request_decode(
-+            bytes: &[u8],
-+        ) -> Result<Box<CxxTokenRequest>, AthmStatus>;
++        fn token_request_decode(bytes: &[u8]) -> Box<AthmTokenRequestDecodeResult>;
 +    }
 +}
 +
@@ -150,23 +175,106 @@ diff -urN a/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs b/
 +struct CxxAthmClientRequest(AthmClientRequest);
 +struct CxxTokenRequest(TokenRequest);
 +
++struct AthmKeyMaterialNewResult(Option<Result<Box<CxxAthmKeyMaterial>, AthmStatus>>);
++struct AthmBytesResult(Option<Result<Vec<u8>, AthmStatus>>);
++struct AthmVerifyResult(Option<Result<u8, AthmStatus>>);
++struct AthmParametersNewResult(Option<Result<Box<CxxAthmParameters>, AthmStatus>>);
++struct AthmClientRequestNewResult(Option<Result<Box<CxxAthmClientRequest>, AthmStatus>>);
++struct AthmTokenRequestDecodeResult(Option<Result<Box<CxxTokenRequest>, AthmStatus>>);
++
++fn ffi_status(status: &AthmStatus) -> ffi::AthmStatus {
++    match status {
++        AthmStatus::InvalidInput => ffi::AthmStatus::InvalidInput,
++        AthmStatus::OperationFailed => ffi::AthmStatus::OperationFailed,
++    }
++}
++
++macro_rules! result_accessors {
++    ($err_fn:ident, $status_fn:ident, $unwrap_fn:ident, $wrapper:ty, $value:ty) => {
++        fn $err_fn(result: &$wrapper) -> bool {
++            result.0.as_ref().expect("result already consumed").is_err()
++        }
++
++        fn $status_fn(result: &$wrapper) -> ffi::AthmStatus {
++            match result.0.as_ref().expect("result already consumed") {
++                Ok(_) => ffi::AthmStatus::Ok,
++                Err(status) => ffi_status(status),
++            }
++        }
++
++        fn $unwrap_fn(result: &mut $wrapper) -> $value {
++            result
++                .0
++                .take()
++                .expect("result already consumed")
++                .expect("unwrap called on an error")
++        }
++    };
++}
++
++result_accessors!(
++    athm_key_material_new_err,
++    athm_key_material_new_status,
++    athm_key_material_new_unwrap,
++    AthmKeyMaterialNewResult,
++    Box<CxxAthmKeyMaterial>
++);
++
++result_accessors!(
++    athm_bytes_result_err,
++    athm_bytes_result_status,
++    athm_bytes_result_unwrap,
++    AthmBytesResult,
++    Vec<u8>
++);
++
++result_accessors!(
++    athm_verify_result_err,
++    athm_verify_result_status,
++    athm_verify_result_unwrap,
++    AthmVerifyResult,
++    u8
++);
++
++result_accessors!(
++    athm_parameters_new_err,
++    athm_parameters_new_status,
++    athm_parameters_new_unwrap,
++    AthmParametersNewResult,
++    Box<CxxAthmParameters>
++);
++
++result_accessors!(
++    athm_client_request_new_err,
++    athm_client_request_new_status,
++    athm_client_request_new_unwrap,
++    AthmClientRequestNewResult,
++    Box<CxxAthmClientRequest>
++);
++
++result_accessors!(
++    token_request_decode_err,
++    token_request_decode_status,
++    token_request_decode_unwrap,
++    AthmTokenRequestDecodeResult,
++    Box<CxxTokenRequest>
++);
++
 +fn athm_key_material_new(
 +    num_buckets: u8,
 +    deployment_id: &[u8],
-+) -> Result<Box<CxxAthmKeyMaterial>, AthmStatus> {
-+    AthmKeyMaterial::try_new(num_buckets, deployment_id)
-+        .map(|value| Box::new(CxxAthmKeyMaterial(value)))
++) -> Box<AthmKeyMaterialNewResult> {
++    Box::new(AthmKeyMaterialNewResult(Some(
++        AthmKeyMaterial::try_new(num_buckets, deployment_id)
++            .map(|value| Box::new(CxxAthmKeyMaterial(value))),
++    )))
 +}
 +
-+fn athm_key_material_public_key(
-+    key_material: &CxxAthmKeyMaterial,
-+) -> Vec<u8> {
++fn athm_key_material_public_key(key_material: &CxxAthmKeyMaterial) -> Vec<u8> {
 +    key_material.0.public_key()
 +}
 +
-+fn athm_key_material_public_key_proof(
-+    key_material: &CxxAthmKeyMaterial,
-+) -> Vec<u8> {
++fn athm_key_material_public_key_proof(key_material: &CxxAthmKeyMaterial) -> Vec<u8> {
 +    key_material.0.public_key_proof()
 +}
 +
@@ -174,28 +282,30 @@ diff -urN a/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs b/
 +    key_material: &CxxAthmKeyMaterial,
 +    request: &CxxTokenRequest,
 +    hidden_metadata: u8,
-+) -> Result<Vec<u8>, AthmStatus> {
-+    key_material.0.issue(&request.0, hidden_metadata)
++) -> Box<AthmBytesResult> {
++    Box::new(AthmBytesResult(Some(
++        key_material.0.issue(&request.0, hidden_metadata),
++    )))
 +}
 +
 +fn athm_key_material_verify(
 +    key_material: &CxxAthmKeyMaterial,
 +    token: &[u8],
-+) -> Result<u8, AthmStatus> {
-+    key_material.0.verify(token)
++) -> Box<AthmVerifyResult> {
++    Box::new(AthmVerifyResult(Some(key_material.0.verify(token))))
 +}
 +
 +fn athm_parameters_new(
 +    num_buckets: u8,
 +    deployment_id: &[u8],
-+) -> Result<Box<CxxAthmParameters>, AthmStatus> {
-+    AthmParameters::try_new(num_buckets, deployment_id)
-+        .map(|value| Box::new(CxxAthmParameters(value)))
++) -> Box<AthmParametersNewResult> {
++    Box::new(AthmParametersNewResult(Some(
++        AthmParameters::try_new(num_buckets, deployment_id)
++            .map(|value| Box::new(CxxAthmParameters(value))),
++    )))
 +}
 +
-+fn athm_parameters_token_response_size(
-+    params: &CxxAthmParameters,
-+) -> usize {
++fn athm_parameters_token_response_size(params: &CxxAthmParameters) -> usize {
 +    params.0.token_response_size()
 +}
 +
@@ -203,18 +313,14 @@ diff -urN a/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs b/
 +    public_key: &[u8],
 +    public_key_proof: &[u8],
 +    params: &CxxAthmParameters,
-+) -> Result<Box<CxxAthmClientRequest>, AthmStatus> {
-+    AthmClientRequest::try_new(
-+        public_key,
-+        public_key_proof,
-+        &params.0,
-+    )
-+    .map(|value| Box::new(CxxAthmClientRequest(value)))
++) -> Box<AthmClientRequestNewResult> {
++    Box::new(AthmClientRequestNewResult(Some(
++        AthmClientRequest::try_new(public_key, public_key_proof, &params.0)
++            .map(|value| Box::new(CxxAthmClientRequest(value))),
++    )))
 +}
 +
-+fn athm_client_request_request(
-+    request: &CxxAthmClientRequest,
-+) -> Vec<u8> {
++fn athm_client_request_request(request: &CxxAthmClientRequest) -> Vec<u8> {
 +    request.0.request()
 +}
 +
@@ -223,19 +329,20 @@ diff -urN a/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs b/
 +    public_key: &[u8],
 +    response: &[u8],
 +    params: &CxxAthmParameters,
-+) -> Result<Vec<u8>, AthmStatus> {
-+    request.0.finalize(public_key, response, &params.0)
++) -> Box<AthmBytesResult> {
++    Box::new(AthmBytesResult(Some(
++        request.0.finalize(public_key, response, &params.0),
++    )))
 +}
 +
-+fn token_request_decode(
-+    bytes: &[u8],
-+) -> Result<Box<CxxTokenRequest>, AthmStatus> {
-+    TokenRequest::decode(bytes)
-+        .map(|value| Box::new(CxxTokenRequest(value)))
++fn token_request_decode(bytes: &[u8]) -> Box<AthmTokenRequestDecodeResult> {
++    Box::new(AthmTokenRequestDecodeResult(Some(
++        TokenRequest::decode(bytes).map(|value| Box::new(CxxTokenRequest(value))),
++    )))
 +}
 diff -urN a/components/web_package/BUILD.gn b/components/web_package/BUILD.gn
---- a/components/web_package/BUILD.gn	2026-10-11 14:22:33.992674002 +0200
-+++ b/components/web_package/BUILD.gn	2026-10-11 14:07:08.610054367 +0200
+--- a/components/web_package/BUILD.gn	2026-10-16 01:22:51.769766463 +0200
++++ b/components/web_package/BUILD.gn	2026-10-16 01:21:32.106744256 +0200
 @@ -40,7 +40,7 @@
      "//base",
      "//components/base32",
@@ -255,8 +362,8 @@ diff -urN a/components/web_package/BUILD.gn b/components/web_package/BUILD.gn
      "//mojo/public/cpp/bindings",
    ]
 diff -urN a/components/web_package/signed_web_bundles/ecdsa_p256_sha256_signature.cc b/components/web_package/signed_web_bundles/ecdsa_p256_sha256_signature.cc
---- a/components/web_package/signed_web_bundles/ecdsa_p256_sha256_signature.cc	2026-10-11 14:22:33.992841262 +0200
-+++ b/components/web_package/signed_web_bundles/ecdsa_p256_sha256_signature.cc	2026-10-11 14:39:47.103609734 +0200
+--- a/components/web_package/signed_web_bundles/ecdsa_p256_sha256_signature.cc	2026-10-16 01:22:51.770006501 +0200
++++ b/components/web_package/signed_web_bundles/ecdsa_p256_sha256_signature.cc	2026-10-16 01:21:45.832581462 +0200
 @@ -9,7 +9,7 @@
  #include "base/strings/stringprintf.h"
  #include "base/types/expected.h"
@@ -279,8 +386,8 @@ diff -urN a/components/web_package/signed_web_bundles/ecdsa_p256_sha256_signatur
  
  }  // namespace web_package
 diff -urN a/components/web_package/signed_web_bundles/ed25519_signature.cc b/components/web_package/signed_web_bundles/ed25519_signature.cc
---- a/components/web_package/signed_web_bundles/ed25519_signature.cc	2026-10-11 14:22:33.993144484 +0200
-+++ b/components/web_package/signed_web_bundles/ed25519_signature.cc	2026-10-11 14:41:41.349140282 +0200
+--- a/components/web_package/signed_web_bundles/ed25519_signature.cc	2026-10-16 01:22:51.770293038 +0200
++++ b/components/web_package/signed_web_bundles/ed25519_signature.cc	2026-10-16 01:21:45.832774980 +0200
 @@ -7,7 +7,7 @@
  #include <algorithm>
  
@@ -305,8 +412,8 @@ diff -urN a/components/web_package/signed_web_bundles/ed25519_signature.cc b/com
  
  }  // namespace web_package
 diff -urN a/components/web_package/signed_web_bundles/integrity_block_parser.cc b/components/web_package/signed_web_bundles/integrity_block_parser.cc
---- a/components/web_package/signed_web_bundles/integrity_block_parser.cc	2026-10-11 14:11:20.283665235 +0200
-+++ b/components/web_package/signed_web_bundles/integrity_block_parser.cc	2026-10-11 16:27:04.299749243 +0200
+--- a/components/web_package/signed_web_bundles/integrity_block_parser.cc	2026-10-16 01:22:51.770727501 +0200
++++ b/components/web_package/signed_web_bundles/integrity_block_parser.cc	2026-10-16 01:21:45.833002629 +0200
 @@ -22,7 +22,7 @@
  #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
  #include "components/web_package/signed_web_bundles/ed25519_signature.h"
@@ -449,8 +556,8 @@ diff -urN a/components/web_package/signed_web_bundles/integrity_block_parser.cc 
      integrity_block->signature_stack.push_back(std::move(parsed_sig));
    }
 diff -urN a/components/web_package/signed_web_bundles/rust/BUILD.gn b/components/web_package/signed_web_bundles/rust/BUILD.gn
---- a/components/web_package/signed_web_bundles/rust/BUILD.gn	2026-10-11 14:22:33.993361984 +0200
-+++ b/components/web_package/signed_web_bundles/rust/BUILD.gn	2026-10-11 14:11:26.680318323 +0200
+--- a/components/web_package/signed_web_bundles/rust/BUILD.gn	2026-10-16 01:22:51.771133649 +0200
++++ b/components/web_package/signed_web_bundles/rust/BUILD.gn	2026-10-16 01:21:59.212027004 +0200
 @@ -12,14 +12,17 @@
      "integrity_block.rs",
      "signature_verifier.rs",
@@ -476,7 +583,7 @@ diff -urN a/components/web_package/signed_web_bundles/rust/BUILD.gn b/components
      "//components/cbor/rust:cbor",
 diff -urN a/components/web_package/signed_web_bundles/rust/cxx_ffi.rs b/components/web_package/signed_web_bundles/rust/cxx_ffi.rs
 --- a/components/web_package/signed_web_bundles/rust/cxx_ffi.rs	1970-01-01 01:00:00.000000000 +0100
-+++ b/components/web_package/signed_web_bundles/rust/cxx_ffi.rs	2026-10-11 14:11:26.680409360 +0200
++++ b/components/web_package/signed_web_bundles/rust/cxx_ffi.rs	2026-10-16 01:21:59.214468413 +0200
 @@ -0,0 +1,221 @@
 +// Copyright 2026 The Chromium Authors
 +// Use of this source code is governed by a BSD-style license that can be
@@ -700,8 +807,8 @@ diff -urN a/components/web_package/signed_web_bundles/rust/cxx_ffi.rs b/componen
 +    }
 +}
 diff -urN a/components/web_package/signed_web_bundles/rust/lib.rs b/components/web_package/signed_web_bundles/rust/lib.rs
---- a/components/web_package/signed_web_bundles/rust/lib.rs	2026-10-11 14:22:33.993770429 +0200
-+++ b/components/web_package/signed_web_bundles/rust/lib.rs	2026-10-11 14:11:26.684711567 +0200
+--- a/components/web_package/signed_web_bundles/rust/lib.rs	2026-10-16 01:22:51.771610261 +0200
++++ b/components/web_package/signed_web_bundles/rust/lib.rs	2026-10-16 01:21:59.215288709 +0200
 @@ -11,6 +11,7 @@
  mod integrity_block;
  mod signature_verifier;
@@ -711,8 +818,8 @@ diff -urN a/components/web_package/signed_web_bundles/rust/lib.rs b/components/w
  pub use constants::{
      ECDSA_P256_PUBLIC_KEY_ATTRIBUTE_NAME, ECDSA_P256_PUBLIC_KEY_LEN, ECDSA_P256_SIGNATURE_MAX_LEN,
 diff -urN a/components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.cc b/components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.cc
---- a/components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.cc	2026-10-11 14:11:20.289743332 +0200
-+++ b/components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.cc	2026-10-11 15:51:18.693245304 +0200
+--- a/components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.cc	2026-10-16 01:22:51.771836705 +0200
++++ b/components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.cc	2026-10-16 01:21:45.833785425 +0200
 @@ -22,7 +22,7 @@
  #include "base/types/expected_macros.h"
  #include "components/web_package/signed_web_bundles/identity_validator.h"
@@ -766,8 +873,8 @@ diff -urN a/components/web_package/signed_web_bundles/signed_web_bundle_signatur
  }
  
 diff -urN a/components/web_package/signed_web_bundles/signed_web_bundle_utils.cc b/components/web_package/signed_web_bundles/signed_web_bundle_utils.cc
---- a/components/web_package/signed_web_bundles/signed_web_bundle_utils.cc	2026-10-11 14:11:20.290813295 +0200
-+++ b/components/web_package/signed_web_bundles/signed_web_bundle_utils.cc	2026-10-11 14:56:40.464485219 +0200
+--- a/components/web_package/signed_web_bundles/signed_web_bundle_utils.cc	2026-10-16 01:22:51.772055020 +0200
++++ b/components/web_package/signed_web_bundles/signed_web_bundle_utils.cc	2026-10-16 01:21:45.833890462 +0200
 @@ -7,15 +7,19 @@
  #include <cstdint>
  #include <vector>
@@ -792,8 +899,8 @@ diff -urN a/components/web_package/signed_web_bundles/signed_web_bundle_utils.cc
  }
  
 diff -urN a/third_party/blink/renderer/platform/BUILD.gn b/third_party/blink/renderer/platform/BUILD.gn
---- a/third_party/blink/renderer/platform/BUILD.gn	2026-10-11 14:22:34.028314193 +0200
-+++ b/third_party/blink/renderer/platform/BUILD.gn	2026-10-11 14:07:33.893809120 +0200
+--- a/third_party/blink/renderer/platform/BUILD.gn	2026-10-16 01:22:51.772639484 +0200
++++ b/third_party/blink/renderer/platform/BUILD.gn	2026-10-16 01:22:11.328236796 +0200
 @@ -1794,7 +1794,6 @@
      ":allow_discouraged_type",
      ":blink_platform_public_deps",
@@ -813,8 +920,8 @@ diff -urN a/third_party/blink/renderer/platform/BUILD.gn b/third_party/blink/ren
      "//base/allocator:buildflags",
      "//build:chromecast_buildflags",
 diff -urN a/third_party/blink/renderer/platform/fonts/BUILD.gn b/third_party/blink/renderer/platform/fonts/BUILD.gn
---- a/third_party/blink/renderer/platform/fonts/BUILD.gn	2026-10-11 14:22:34.028759398 +0200
-+++ b/third_party/blink/renderer/platform/fonts/BUILD.gn	2026-10-11 14:07:47.393036118 +0200
+--- a/third_party/blink/renderer/platform/fonts/BUILD.gn	2026-10-16 01:22:51.773075910 +0200
++++ b/third_party/blink/renderer/platform/fonts/BUILD.gn	2026-10-16 01:22:24.285375722 +0200
 @@ -5,12 +5,10 @@
  import("//build/rust/rust_static_library.gni")
  
@@ -831,8 +938,8 @@ diff -urN a/third_party/blink/renderer/platform/fonts/BUILD.gn b/third_party/bli
      "//third_party/rust/font_types/v0_12:lib",
      "//third_party/rust/read_fonts/v0_43:lib",
 diff -urN a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc
---- a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc	2026-10-11 14:22:34.032832900 +0200
-+++ b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc	2026-10-11 14:07:47.397832917 +0200
+--- a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc	2026-10-16 01:22:51.775364115 +0200
++++ b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc	2026-10-16 01:22:24.290158429 +0200
 @@ -7,6 +7,7 @@
  #include "base/containers/span.h"
  #include "base/containers/span_rust.h"
@@ -897,8 +1004,8 @@ diff -urN a/third_party/blink/renderer/platform/fonts/opentype/font_format_check
  
  FontFormatCheck::VariableFontSubType FontFormatCheck::ProbeVariableFont(
 diff -urN a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h
---- a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h	2026-10-11 14:22:34.033018826 +0200
-+++ b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h	2026-10-11 14:07:47.397947991 +0200
+--- a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h	2026-10-16 01:22:51.775588689 +0200
++++ b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h	2026-10-16 01:22:24.290275781 +0200
 @@ -5,7 +5,7 @@
  #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_FONT_FORMAT_CHECK_H_
  #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_FONT_FORMAT_CHECK_H_
@@ -927,8 +1034,8 @@ diff -urN a/third_party/blink/renderer/platform/fonts/opentype/font_format_check
  
  }  // namespace blink
 diff -urN a/third_party/blink/renderer/platform/fonts/opentype/format_check.rs b/third_party/blink/renderer/platform/fonts/opentype/format_check.rs
---- a/third_party/blink/renderer/platform/fonts/opentype/format_check.rs	2026-10-11 14:22:34.033308808 +0200
-+++ b/third_party/blink/renderer/platform/fonts/opentype/format_check.rs	2026-10-11 14:07:47.397978454 +0200
+--- a/third_party/blink/renderer/platform/fonts/opentype/format_check.rs	2026-10-16 01:22:51.775869930 +0200
++++ b/third_party/blink/renderer/platform/fonts/opentype/format_check.rs	2026-10-16 01:22:24.290303781 +0200
 @@ -23,7 +23,7 @@
      format_flags: Option<FontFormatFlags>,
  }
