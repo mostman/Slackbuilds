@@ -513,7 +513,16 @@ diff -urN a/components/private_verification_tokens/common/privacy_pass_athm_batc
      absl::Status status =
 diff -urN a/components/private_verification_tokens/common/privacy_pass_athm_batch_request.h b/components/private_verification_tokens/common/privacy_pass_athm_batch_request.h
 --- a/components/private_verification_tokens/common/privacy_pass_athm_batch_request.h	2026-10-17 23:23:48.976056917 +0200
-+++ b/components/private_verification_tokens/common/privacy_pass_athm_batch_request.h	2026-10-17 23:37:55.586932490 +0200
++++ b/components/private_verification_tokens/common/privacy_pass_athm_batch_request.h	2026-10-18 00:13:11.734833191 +0200
+@@ -10,7 +10,7 @@
+ 
+ #include "base/containers/span.h"
+ #include "base/types/expected.h"
+-#include "components/private_verification_tokens/common/athm_ffi/athm_ffi.h"
++#include "components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs.h"
+ #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
+ 
+ namespace private_verification_tokens {
 @@ -81,13 +81,13 @@
  
   private:
