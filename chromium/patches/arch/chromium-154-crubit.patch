@@ -793,8 +793,8 @@ diff -urN a/components/web_package/signed_web_bundles/rust/BUILD.gn b/components
      "//components/cbor/rust:cbor",
 diff -urN a/components/web_package/signed_web_bundles/rust/cxx_ffi.rs b/components/web_package/signed_web_bundles/rust/cxx_ffi.rs
 --- a/components/web_package/signed_web_bundles/rust/cxx_ffi.rs	1970-01-01 01:00:00.000000000 +0100
-+++ b/components/web_package/signed_web_bundles/rust/cxx_ffi.rs	2026-10-23 19:20:11.520769202 +0200
-@@ -0,0 +1,227 @@
++++ b/components/web_package/signed_web_bundles/rust/cxx_ffi.rs	2026-10-23 19:37:29.321838059 +0200
+@@ -0,0 +1,232 @@
 +// Copyright 2026 The Chromium Authors
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -947,69 +947,74 @@ diff -urN a/components/web_package/signed_web_bundles/rust/cxx_ffi.rs b/componen
 +    }
 +}
 +
-+fn size(block: &CxxIntegrityBlock) -> usize {
-+    block.size
-+}
++impl CxxIntegrityBlock {
++    fn size(&self) -> usize {
++        self.size
++    }
 +
-+fn web_bundle_id(block: &CxxIntegrityBlock) -> String {
-+    block.web_bundle_id.clone()
-+}
++    fn web_bundle_id(&self) -> String {
++        self.web_bundle_id.clone()
++    }
 +
-+fn attributes_cbor(block: &CxxIntegrityBlock) -> Vec<u8> {
-+    block.attributes_cbor.clone()
-+}
++    fn attributes_cbor(&self) -> Vec<u8> {
++        self.attributes_cbor.clone()
++    }
 +
-+fn signature_stack_size(block: &CxxIntegrityBlock) -> usize {
-+    block.signature_stack.len()
-+}
++    fn signature_stack_size(&self) -> usize {
++        self.signature_stack.len()
++    }
 +
-+fn signature_stack_entry(
-+    block: &CxxIntegrityBlock,
-+    index: usize,
-+) -> Box<CxxSignatureStackEntry> {
-+    Box::new(
-+        block
-+            .signature_stack
-+            .get(index)
-+            .expect("signature stack index out of bounds")
-+            .clone(),
-+    )
-+}
-+
-+fn signature_stack_entry_attributes_cbor(
-+        entry: &CxxSignatureStackEntry,
-+    ) -> Vec<u8> {
-+    entry.attributes_cbor.clone()
-+}
-+
-+fn signature_type(entry: &CxxSignatureStackEntry) -> ffi::SignatureType {
-+    match entry.signature_type {
-+        crate::SignatureType::Ed25519 => ffi::SignatureType::Ed25519,
-+        crate::SignatureType::EcdsaP256SHA256 => {
-+            ffi::SignatureType::EcdsaP256SHA256
-+        }
-+        crate::SignatureType::Unknown => ffi::SignatureType::Unknown,
++    fn signature_stack_entry(
++        &self,
++        index: usize,
++    ) -> Box<CxxSignatureStackEntry> {
++        Box::new(
++            self.signature_stack
++                .get(index)
++                .expect("signature stack index out of bounds")
++                .clone(),
++        )
 +    }
 +}
 +
-+fn public_key(entry: &CxxSignatureStackEntry) -> Vec<u8> {
-+    entry.public_key.clone()
-+}
++impl CxxSignatureStackEntry {
++    fn signature_stack_entry_attributes_cbor(&self) -> Vec<u8> {
++        self.attributes_cbor.clone()
++    }
 +
-+fn signature(entry: &CxxSignatureStackEntry) -> Vec<u8> {
-+    entry.signature.clone()
++    fn signature_type(&self) -> ffi::SignatureType {
++        match self.signature_type {
++            crate::SignatureType::Ed25519 => ffi::SignatureType::Ed25519,
++            crate::SignatureType::EcdsaP256SHA256 => {
++                ffi::SignatureType::EcdsaP256SHA256
++            }
++            crate::SignatureType::Unknown => ffi::SignatureType::Unknown,
++        }
++    }
++
++    fn public_key(&self) -> Vec<u8> {
++        self.public_key.clone()
++    }
++
++    fn signature(&self) -> Vec<u8> {
++        self.signature.clone()
++    }
 +}
 +
 +fn new_sha512_hasher() -> Box<Sha512Hasher> {
 +    Box::new(Sha512Hasher::new())
 +}
 +
-+fn sha512_update(hasher: &mut Sha512Hasher, chunk: &[u8]) {
-+    hasher.update(chunk);
-+}
++impl Sha512Hasher {
++    fn sha512_update(&mut self, chunk: &[u8]) {
++        self.update(chunk);
++    }
 +
-+fn sha512_finish(hasher: &mut Sha512Hasher) -> Vec<u8> {
-+    hasher.finish().to_vec()
++    fn sha512_finish(&mut self) -> Vec<u8> {
++        core::mem::replace(self, Sha512Hasher::new())
++            .finish()
++            .to_vec()
++    }
 +}
 +
 +impl Clone for CxxSignatureStackEntry {
