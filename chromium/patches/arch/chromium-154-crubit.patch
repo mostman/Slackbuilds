@@ -70,8 +70,8 @@ diff -urN a/components/private_verification_tokens/common/athm_ffi/BUILD.gn b/co
      ":*",
 diff -urN a/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs b/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs
 --- a/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs	1970-01-01 01:00:00.000000000 +0100
-+++ b/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs	2026-10-23 19:01:01.169951121 +0200
-@@ -0,0 +1,268 @@
++++ b/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs	2026-10-23 19:56:28.643538541 +0200
+@@ -0,0 +1,272 @@
 +// Copyright 2026 The Chromium Authors
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -190,24 +190,28 @@ diff -urN a/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs b/
 +}
 +
 +macro_rules! result_accessors {
-+    ($err_fn:ident, $status_fn:ident, $unwrap_fn:ident, $wrapper:ty, $value:ty) => {
-+        fn $err_fn(result: &$wrapper) -> bool {
-+            result.0.as_ref().expect("result already consumed").is_err()
-+        }
-+
-+        fn $status_fn(result: &$wrapper) -> ffi::AthmStatus {
-+            match result.0.as_ref().expect("result already consumed") {
-+                Ok(_) => ffi::AthmStatus::Ok,
-+                Err(status) => ffi_status(status),
++    ($err_fn:ident, $status_fn:ident, $unwrap_fn:ident, $wrapper:ident, $value:ty) => {
++        impl $wrapper {
++            fn $err_fn(&self) -> bool {
++                self.0
++                    .as_ref()
++                    .expect("result already consumed")
++                    .is_err()
 +            }
-+        }
 +
-+        fn $unwrap_fn(result: &mut $wrapper) -> $value {
-+            result
-+                .0
-+                .take()
-+                .expect("result already consumed")
-+                .expect("unwrap called on an error")
++            fn $status_fn(&self) -> ffi::AthmStatus {
++                match self.0.as_ref().expect("result already consumed") {
++                    Ok(_) => ffi::AthmStatus::Ok,
++                    Err(status) => ffi_status(status),
++                }
++            }
++
++            fn $unwrap_fn(&mut self) -> $value {
++                self.0
++                    .take()
++                    .expect("result already consumed")
++                    .expect("unwrap called on an error")
++            }
 +        }
 +    };
 +}
