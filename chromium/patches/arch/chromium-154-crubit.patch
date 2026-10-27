@@ -362,17 +362,7 @@ diff -urN a/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs b/
 +}
 diff -urN a/components/private_verification_tokens/common/privacy_pass_athm_batch_request.cc b/components/private_verification_tokens/common/privacy_pass_athm_batch_request.cc
 --- a/components/private_verification_tokens/common/privacy_pass_athm_batch_request.cc	2026-10-27 19:33:23.618235091 +0100
-+++ b/components/private_verification_tokens/common/privacy_pass_athm_batch_request.cc	2026-10-27 19:31:57.869344967 +0100
-@@ -1,6 +1,6 @@
--// Copyright 2026 The Chromium Authors
--// Use of this source code is governed by a BSD-style license that can be
--// found in the LICENSE file.
-+ // Copyright 2026 The Chromium Authors
-+ // Use of this source code is governed by a BSD-style license that can be
-+ // found in the LICENSE file.
- 
- #include "components/private_verification_tokens/common/privacy_pass_athm_batch_request.h"
- 
++++ b/components/private_verification_tokens/common/privacy_pass_athm_batch_request.cc	2026-10-27 19:59:13.344137058 +0100
 @@ -10,13 +10,11 @@
  
  #include "base/containers/to_vector.h"
