@@ -1,6 +1,6 @@
 diff -urN a/components/cbor/BUILD.gn b/components/cbor/BUILD.gn
---- a/components/cbor/BUILD.gn	2026-10-27 19:33:23.616652257 +0100
-+++ b/components/cbor/BUILD.gn	2026-10-27 19:31:45.928340235 +0100
+--- a/components/cbor/BUILD.gn	2026-10-29 16:02:56.842224009 +0100
++++ b/components/cbor/BUILD.gn	2026-10-29 16:04:59.304929018 +0100
 @@ -12,7 +12,7 @@
    # TODO(crbug.com/535682335): Remove `USE_CBOR_RUST` buildflag entirely,
    # unconditionally enable Rust CBOR parser, and drop `is_cronet_build` check
@@ -29,8 +29,8 @@ diff -urN a/components/cbor/BUILD.gn b/components/cbor/BUILD.gn
    }
  
 diff -urN a/components/private_verification_tokens/common/BUILD.gn b/components/private_verification_tokens/common/BUILD.gn
---- a/components/private_verification_tokens/common/BUILD.gn	2026-10-27 19:40:56.734794675 +0100
-+++ b/components/private_verification_tokens/common/BUILD.gn	2026-10-27 19:43:28.905051431 +0100
+--- a/components/private_verification_tokens/common/BUILD.gn	2026-10-29 16:03:10.955043259 +0100
++++ b/components/private_verification_tokens/common/BUILD.gn	2026-10-29 16:04:59.305249981 +0100
 @@ -204,7 +204,7 @@
      ]
      public_deps = [
@@ -55,9 +55,17 @@ diff -urN a/components/private_verification_tokens/common/BUILD.gn b/components/
    }
  
 diff -urN a/components/private_verification_tokens/common/athm_ffi/BUILD.gn b/components/private_verification_tokens/common/athm_ffi/BUILD.gn
---- a/components/private_verification_tokens/common/athm_ffi/BUILD.gn	2026-10-27 19:33:23.617459646 +0100
-+++ b/components/private_verification_tokens/common/athm_ffi/BUILD.gn	2026-10-27 19:31:57.868898504 +0100
-@@ -17,11 +17,11 @@
+--- a/components/private_verification_tokens/common/athm_ffi/BUILD.gn	2026-10-29 16:03:10.955188815 +0100
++++ b/components/private_verification_tokens/common/athm_ffi/BUILD.gn	2026-10-29 16:08:38.251769500 +0100
+@@ -9,6 +9,7 @@
+ 
+ rust_static_library("athm_ffi") {
+   crate_root = "athm_ffi.rs"
++  allow_unsafe = true
+   sources = [
+     "athm_ffi.rs",
+     "client.rs",
+@@ -17,11 +18,11 @@
      "privacy_pass_common.rs",
      "privacy_pass_issuer.rs",
      "types.rs",
@@ -74,11 +82,14 @@ diff -urN a/components/private_verification_tokens/common/athm_ffi/BUILD.gn b/co
    visibility = [
      ":*",
 diff -urN a/components/private_verification_tokens/common/athm_ffi/athm_ffi.rs b/components/private_verification_tokens/common/athm_ffi/athm_ffi.rs
---- a/components/private_verification_tokens/common/athm_ffi/athm_ffi.rs	2026-10-27 19:33:23.617735091 +0100
-+++ b/components/private_verification_tokens/common/athm_ffi/athm_ffi.rs	2026-10-27 19:31:57.868939670 +0100
-@@ -29,6 +29,7 @@
+--- a/components/private_verification_tokens/common/athm_ffi/athm_ffi.rs	2026-10-29 16:03:10.955239945 +0100
++++ b/components/private_verification_tokens/common/athm_ffi/athm_ffi.rs	2026-10-29 16:17:07.978068902 +0100
+@@ -28,7 +28,10 @@
+ //! TODO: These entry points decode untrusted serialized input and are prime
  //! fuzz targets; add cargo-fuzz/libfuzzer coverage for them in a follow-up.
  
++extern crate alloc;
++
  pub mod client;
 +pub mod cxx_ffi;
  pub mod issuer;
@@ -86,7 +97,7 @@ diff -urN a/components/private_verification_tokens/common/athm_ffi/athm_ffi.rs b
  pub mod privacy_pass_common;
 diff -urN a/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs b/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs
 --- a/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs	1970-01-01 01:00:00.000000000 +0100
-+++ b/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs	2026-10-27 19:31:57.868968152 +0100
++++ b/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs	2026-10-29 16:04:59.307918594 +0100
 @@ -0,0 +1,272 @@
 +// Copyright 2026 The Chromium Authors
 +// Use of this source code is governed by a BSD-style license that can be
@@ -361,8 +372,8 @@ diff -urN a/components/private_verification_tokens/common/athm_ffi/cxx_ffi.rs b/
 +    )))
 +}
 diff -urN a/components/private_verification_tokens/common/privacy_pass_athm_batch_request.cc b/components/private_verification_tokens/common/privacy_pass_athm_batch_request.cc
---- a/components/private_verification_tokens/common/privacy_pass_athm_batch_request.cc	2026-10-27 19:33:23.618235091 +0100
-+++ b/components/private_verification_tokens/common/privacy_pass_athm_batch_request.cc	2026-10-27 19:59:13.344137058 +0100
+--- a/components/private_verification_tokens/common/privacy_pass_athm_batch_request.cc	2026-10-29 16:03:10.959638947 +0100
++++ b/components/private_verification_tokens/common/privacy_pass_athm_batch_request.cc	2026-10-29 16:04:59.308239668 +0100
 @@ -10,13 +10,11 @@
  
  #include "base/containers/to_vector.h"
@@ -522,8 +533,8 @@ diff -urN a/components/private_verification_tokens/common/privacy_pass_athm_batc
      std::string marshaled_token;
      absl::Status status =
 diff -urN a/components/private_verification_tokens/common/privacy_pass_athm_batch_request.h b/components/private_verification_tokens/common/privacy_pass_athm_batch_request.h
---- a/components/private_verification_tokens/common/privacy_pass_athm_batch_request.h	2026-10-27 19:33:23.618451591 +0100
-+++ b/components/private_verification_tokens/common/privacy_pass_athm_batch_request.h	2026-10-27 19:31:57.869376615 +0100
+--- a/components/private_verification_tokens/common/privacy_pass_athm_batch_request.h	2026-10-29 16:03:10.959677355 +0100
++++ b/components/private_verification_tokens/common/privacy_pass_athm_batch_request.h	2026-10-29 16:04:59.308458946 +0100
 @@ -10,7 +10,7 @@
  
  #include "base/containers/span.h"
@@ -552,8 +563,8 @@ diff -urN a/components/private_verification_tokens/common/privacy_pass_athm_batc
  };
  
 diff -urN a/components/web_package/BUILD.gn b/components/web_package/BUILD.gn
---- a/components/web_package/BUILD.gn	2026-10-27 19:33:23.618759721 +0100
-+++ b/components/web_package/BUILD.gn	2026-10-27 19:32:12.972421961 +0100
+--- a/components/web_package/BUILD.gn	2026-10-29 16:03:29.476452885 +0100
++++ b/components/web_package/BUILD.gn	2026-10-29 16:04:59.308747705 +0100
 @@ -40,7 +40,8 @@
      "//base",
      "//components/base32",
@@ -575,8 +586,8 @@ diff -urN a/components/web_package/BUILD.gn b/components/web_package/BUILD.gn
      "//mojo/public/cpp/bindings",
    ]
 diff -urN a/components/web_package/signed_web_bundles/ecdsa_p256_sha256_signature.cc b/components/web_package/signed_web_bundles/ecdsa_p256_sha256_signature.cc
---- a/components/web_package/signed_web_bundles/ecdsa_p256_sha256_signature.cc	2026-10-27 19:33:23.619020999 +0100
-+++ b/components/web_package/signed_web_bundles/ecdsa_p256_sha256_signature.cc	2026-10-27 19:32:25.422435967 +0100
+--- a/components/web_package/signed_web_bundles/ecdsa_p256_sha256_signature.cc	2026-10-29 16:03:43.326702039 +0100
++++ b/components/web_package/signed_web_bundles/ecdsa_p256_sha256_signature.cc	2026-10-29 16:04:59.309252558 +0100
 @@ -9,7 +9,7 @@
  #include "base/strings/stringprintf.h"
  #include "base/types/expected.h"
@@ -599,8 +610,8 @@ diff -urN a/components/web_package/signed_web_bundles/ecdsa_p256_sha256_signatur
  
  }  // namespace web_package
 diff -urN a/components/web_package/signed_web_bundles/ed25519_signature.cc b/components/web_package/signed_web_bundles/ed25519_signature.cc
---- a/components/web_package/signed_web_bundles/ed25519_signature.cc	2026-10-27 19:33:23.619317888 +0100
-+++ b/components/web_package/signed_web_bundles/ed25519_signature.cc	2026-10-27 19:32:25.422600041 +0100
+--- a/components/web_package/signed_web_bundles/ed25519_signature.cc	2026-10-29 16:03:43.327164743 +0100
++++ b/components/web_package/signed_web_bundles/ed25519_signature.cc	2026-10-29 16:04:59.309533095 +0100
 @@ -7,7 +7,7 @@
  #include <algorithm>
  
@@ -625,8 +636,8 @@ diff -urN a/components/web_package/signed_web_bundles/ed25519_signature.cc b/com
  
  }  // namespace web_package
 diff -urN a/components/web_package/signed_web_bundles/integrity_block_parser.cc b/components/web_package/signed_web_bundles/integrity_block_parser.cc
---- a/components/web_package/signed_web_bundles/integrity_block_parser.cc	2026-10-27 19:33:23.619609536 +0100
-+++ b/components/web_package/signed_web_bundles/integrity_block_parser.cc	2026-10-27 19:32:25.422819153 +0100
+--- a/components/web_package/signed_web_bundles/integrity_block_parser.cc	2026-10-29 16:03:43.327985077 +0100
++++ b/components/web_package/signed_web_bundles/integrity_block_parser.cc	2026-10-29 16:04:59.309838632 +0100
 @@ -22,7 +22,7 @@
  #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
  #include "components/web_package/signed_web_bundles/ed25519_signature.h"
@@ -770,8 +781,8 @@ diff -urN a/components/web_package/signed_web_bundles/integrity_block_parser.cc 
      integrity_block->signature_stack.push_back(std::move(parsed_sig));
    }
 diff -urN a/components/web_package/signed_web_bundles/rust/BUILD.gn b/components/web_package/signed_web_bundles/rust/BUILD.gn
---- a/components/web_package/signed_web_bundles/rust/BUILD.gn	2026-10-27 19:33:23.619786073 +0100
-+++ b/components/web_package/signed_web_bundles/rust/BUILD.gn	2026-10-27 19:32:38.279683532 +0100
+--- a/components/web_package/signed_web_bundles/rust/BUILD.gn	2026-10-29 16:03:55.885396795 +0100
++++ b/components/web_package/signed_web_bundles/rust/BUILD.gn	2026-10-29 16:04:59.310055132 +0100
 @@ -7,19 +7,23 @@
  rust_static_library("signed_web_bundles_rust") {
    crate_name = "signed_web_bundles_rust"
@@ -803,7 +814,7 @@ diff -urN a/components/web_package/signed_web_bundles/rust/BUILD.gn b/components
      "//components/cbor/rust:cbor",
 diff -urN a/components/web_package/signed_web_bundles/rust/cxx_ffi.rs b/components/web_package/signed_web_bundles/rust/cxx_ffi.rs
 --- a/components/web_package/signed_web_bundles/rust/cxx_ffi.rs	1970-01-01 01:00:00.000000000 +0100
-+++ b/components/web_package/signed_web_bundles/rust/cxx_ffi.rs	2026-10-27 19:32:38.282128052 +0100
++++ b/components/web_package/signed_web_bundles/rust/cxx_ffi.rs	2026-10-29 16:04:59.310318836 +0100
 @@ -0,0 +1,232 @@
 +// Copyright 2026 The Chromium Authors
 +// Use of this source code is governed by a BSD-style license that can be
@@ -1038,8 +1049,8 @@ diff -urN a/components/web_package/signed_web_bundles/rust/cxx_ffi.rs b/componen
 +    }
 +}
 diff -urN a/components/web_package/signed_web_bundles/rust/lib.rs b/components/web_package/signed_web_bundles/rust/lib.rs
---- a/components/web_package/signed_web_bundles/rust/lib.rs	2026-10-27 19:33:23.620257259 +0100
-+++ b/components/web_package/signed_web_bundles/rust/lib.rs	2026-10-27 19:32:38.283112293 +0100
+--- a/components/web_package/signed_web_bundles/rust/lib.rs	2026-10-29 16:03:55.888553686 +0100
++++ b/components/web_package/signed_web_bundles/rust/lib.rs	2026-10-29 16:04:59.310528688 +0100
 @@ -3,7 +3,7 @@
  // found in the LICENSE file.
  
@@ -1059,8 +1070,8 @@ diff -urN a/components/web_package/signed_web_bundles/rust/lib.rs b/components/w
  pub use constants::{
      ECDSA_P256_PUBLIC_KEY_ATTRIBUTE_NAME, ECDSA_P256_PUBLIC_KEY_LEN, ECDSA_P256_SIGNATURE_MAX_LEN,
 diff -urN a/components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.cc b/components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.cc
---- a/components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.cc	2026-10-27 19:33:23.620405240 +0100
-+++ b/components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.cc	2026-10-27 19:32:25.423631412 +0100
+--- a/components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.cc	2026-10-29 16:03:43.331936190 +0100
++++ b/components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.cc	2026-10-29 16:04:59.310707688 +0100
 @@ -22,7 +22,7 @@
  #include "base/types/expected_macros.h"
  #include "components/web_package/signed_web_bundles/identity_validator.h"
@@ -1114,8 +1125,8 @@ diff -urN a/components/web_package/signed_web_bundles/signed_web_bundle_signatur
  }
  
 diff -urN a/components/web_package/signed_web_bundles/signed_web_bundle_utils.cc b/components/web_package/signed_web_bundles/signed_web_bundle_utils.cc
---- a/components/web_package/signed_web_bundles/signed_web_bundle_utils.cc	2026-10-27 19:33:23.620639315 +0100
-+++ b/components/web_package/signed_web_bundles/signed_web_bundle_utils.cc	2026-10-27 19:32:25.423738153 +0100
+--- a/components/web_package/signed_web_bundles/signed_web_bundle_utils.cc	2026-10-29 16:03:43.332369783 +0100
++++ b/components/web_package/signed_web_bundles/signed_web_bundle_utils.cc	2026-10-29 16:04:59.310909429 +0100
 @@ -7,15 +7,19 @@
  #include <cstdint>
  #include <vector>
@@ -1140,8 +1151,8 @@ diff -urN a/components/web_package/signed_web_bundles/signed_web_bundle_utils.cc
  }
  
 diff -urN a/third_party/blink/renderer/platform/BUILD.gn b/third_party/blink/renderer/platform/BUILD.gn
---- a/third_party/blink/renderer/platform/BUILD.gn	2026-10-27 19:33:23.621309852 +0100
-+++ b/third_party/blink/renderer/platform/BUILD.gn	2026-10-27 19:32:51.042873584 +0100
+--- a/third_party/blink/renderer/platform/BUILD.gn	2026-10-29 16:04:09.378263650 +0100
++++ b/third_party/blink/renderer/platform/BUILD.gn	2026-10-29 16:04:59.311452503 +0100
 @@ -1794,7 +1794,6 @@
      ":allow_discouraged_type",
      ":blink_platform_public_deps",
@@ -1161,8 +1172,8 @@ diff -urN a/third_party/blink/renderer/platform/BUILD.gn b/third_party/blink/ren
      "//base/allocator:buildflags",
      "//build:chromecast_buildflags",
 diff -urN a/third_party/blink/renderer/platform/fonts/BUILD.gn b/third_party/blink/renderer/platform/fonts/BUILD.gn
---- a/third_party/blink/renderer/platform/fonts/BUILD.gn	2026-10-27 19:33:23.621646852 +0100
-+++ b/third_party/blink/renderer/platform/fonts/BUILD.gn	2026-10-27 19:33:03.994745081 +0100
+--- a/third_party/blink/renderer/platform/fonts/BUILD.gn	2026-10-29 16:04:23.712261975 +0100
++++ b/third_party/blink/renderer/platform/fonts/BUILD.gn	2026-10-29 16:04:59.311890855 +0100
 @@ -5,12 +5,10 @@
  import("//build/rust/rust_static_library.gni")
  
@@ -1179,8 +1190,8 @@ diff -urN a/third_party/blink/renderer/platform/fonts/BUILD.gn b/third_party/bli
      "//third_party/rust/font_types/v0_12:lib",
      "//third_party/rust/read_fonts/v0_43:lib",
 diff -urN a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc
---- a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc	2026-10-27 19:33:23.623616668 +0100
-+++ b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc	2026-10-27 19:33:03.999606547 +0100
+--- a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc	2026-10-29 16:04:23.749708756 +0100
++++ b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.cc	2026-10-29 16:04:59.316227599 +0100
 @@ -7,6 +7,7 @@
  #include "base/containers/span.h"
  #include "base/containers/span_rust.h"
@@ -1245,8 +1256,8 @@ diff -urN a/third_party/blink/renderer/platform/fonts/opentype/font_format_check
  
  FontFormatCheck::VariableFontSubType FontFormatCheck::ProbeVariableFont(
 diff -urN a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h
---- a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h	2026-10-27 19:33:23.623848038 +0100
-+++ b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h	2026-10-27 19:33:03.999717973 +0100
+--- a/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h	2026-10-29 16:04:23.742648807 +0100
++++ b/third_party/blink/renderer/platform/fonts/opentype/font_format_check.h	2026-10-29 16:04:59.316514691 +0100
 @@ -5,7 +5,7 @@
  #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_FONT_FORMAT_CHECK_H_
  #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_FONT_FORMAT_CHECK_H_
@@ -1275,8 +1286,8 @@ diff -urN a/third_party/blink/renderer/platform/fonts/opentype/font_format_check
  
  }  // namespace blink
 diff -urN a/third_party/blink/renderer/platform/fonts/opentype/format_check.rs b/third_party/blink/renderer/platform/fonts/opentype/format_check.rs
---- a/third_party/blink/renderer/platform/fonts/opentype/format_check.rs	2026-10-27 19:33:23.624134835 +0100
-+++ b/third_party/blink/renderer/platform/fonts/opentype/format_check.rs	2026-10-27 19:33:03.999746177 +0100
+--- a/third_party/blink/renderer/platform/fonts/opentype/format_check.rs	2026-10-29 16:04:23.743263789 +0100
++++ b/third_party/blink/renderer/platform/fonts/opentype/format_check.rs	2026-10-29 16:04:59.316790358 +0100
 @@ -23,7 +23,7 @@
      format_flags: Option<FontFormatFlags>,
  }
