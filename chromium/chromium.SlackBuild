@@ -475,14 +475,7 @@ umask 0022
 
 # Source locations:
 SOURCE[0]="$SRCDIR/${SRCNAM}-${VERSION}.tar.xz"
-# Old stable release URL
 SRCURL[0]="https://commondatastorage.googleapis.com/${SRCNAM}-browser-official/${SRCNAM}-${VERSION}.tar.xz"
-# New stable release URL
-#SRCURL[0]="https://storage.googleapis.com/${SRCNAM}-browser-official/${SRCNAM}-${VERSION}.tar.xz"
-#SRCURL[0]="https://gsdview.appspot.com/${SRCNAM}-browser-official/${SRCNAM}-${VERSION}.tar.xz"
-
-# Pre -release
-#SRCURL[0]="https://github.com/${SRCNAM}-linux-tarballs/${SRCNAM}-tarballs/releases/download/${VERSION}/${SRCNAM}-${VERSION}-linux.tar.xz"
 
 SOURCE[1]="$SRCDIR/widevine-versions.txt"
 SRCURL[1]="https://dl.google.com/widevine-cdm/versions.txt"
@@ -1546,9 +1539,18 @@ if [ ! -x $GNBIN 1>/dev/null 2>/dev/null ]; then
         --use-custom-libcxx \
         2>&1 | tee $OUTPUT/gyp-${PRGNAM}.log
     else
-      # Build the embedded version. The '--use-custom-libcxx' is required
-      # since 153, because gn adopted C++23 features:
-      LDFLAGS="$LDFLAGS" python3 tools/gn/bootstrap/bootstrap.py \
+      # Build the embedded version.
+      # On Slackware 15.0 two flags are required to bootstrap this gn from source:
+      #  --use-custom-libcxx : gn adopted C++23 (<expected>), absent from the
+      #                        system libstdc++<13; builds in-tree libc++ instead.
+      #  -fuse-ld=lld        : gn now uses TLS (__tls_get_addr); GNU ld rejects
+      #                        custom-libcxx link with "DSO missing from command
+      #                        line". lld (same linker as main build) resolves it.
+      # gn is a HOST tool: under CROSS32 it must still build 64-bit, so do not
+      # let the 32-bit target LDFLAGS (-L/usr/lib, -m32 intent) reach it, or lld
+      # tries to emit elf32-i386 from the 64-bit objects clang produced.
+      LDFLAGS="-L/usr/lib64 -fuse-ld=lld" \
+      python3 tools/gn/bootstrap/bootstrap.py \
         --use-custom-libcxx \
         2>&1 | tee $OUTPUT/gyp-${PRGNAM}.log
     fi
