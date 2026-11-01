@@ -665,9 +665,9 @@ sed -i third_party/dawn/tools/python/cipd_deps.py \
 
 if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
   # Adjust expectations about where to find the clang libs on Slackware:
-  #echo "-- chromium-154-bindgen-custom-toolchain.patch --"
-  #cat $SRCDIR/patches/chromium-154-bindgen-custom-toolchain.patch \
-  #  | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+  echo "-- chromium-154-bindgen-custom-toolchain.patch --"
+  cat $SRCDIR/patches/chromium-154-bindgen-custom-toolchain.patch \
+    | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
   echo "-- compiler-rt-adjust-paths.patch --"
   cat $SRCDIR/patches/compiler-rt-adjust-paths.patch | patch -p1 --verbose \
     2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
@@ -918,6 +918,11 @@ if [ "$ARCH" == "aarch64" ]; then
   ln -s ../../../../devtools-frontend/src/node_modules/@typescript/tsc/bin/tsc \
     third_party/typescript/linux-amd64/src/lib/tsc
 
+  if ! third_party/typescript/linux-amd64/src/lib/tsc --version | grep -q 'Version 6.0.2'; then
+    echo "ERROR: Chromium TypeScript 6.0.2 was not found!"
+    exit 1
+  fi
+
   # Allow TypeScript compiler library definitions from the ARM64 compiler installation.
   sed -i "/'third_party\/node\/node_modules\/',/a\    'third_party/devtools-frontend/src/node_modules/@typescript/tsc/lib/'," \
   tools/typescript/validate_tsconfig.py
@@ -926,11 +931,11 @@ if [ "$ARCH" == "aarch64" ]; then
   mkdir -p node_modules/@typescript/lib-dom
 
   cat > node_modules/@typescript/lib-dom/package.json <<'EOF'
-  {
-    "name": "@typescript/lib-dom",
-    "types": "lib.dom.d.ts"
-  }
-  EOF
+{
+  "name": "@typescript/lib-dom",
+  "types": "lib.dom.d.ts"
+}
+EOF
 
   ln -sf ../../../third_party/typescript/linux-amd64/src/lib/lib.dom.d.ts \
     node_modules/@typescript/lib-dom/lib.dom.d.ts
