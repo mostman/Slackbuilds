@@ -193,10 +193,8 @@ USE_DEV=${USE_DEV:-0}
 
 SRCNAM=chromium
 PRGNAM=${SRCNAM}${SRCEXT}     # chromium, chromium-dev, chromium-ungoogled, etc
-#VERSION=${VERSION:-154.0.8037.57}
-#UNGOOGLED=${UNGOOGLED:-154.0.8037.57-1}
-VERSION=${VERSION:-154.0.8037.92}
-UNGOOGLED=${UNGOOGLED:-154.0.8037.92-1}
+VERSION=${VERSION:-154.0.8037.97}
+UNGOOGLED=${UNGOOGLED:-154.0.8037.97-1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-SLse}
 
@@ -477,7 +475,14 @@ umask 0022
 
 # Source locations:
 SOURCE[0]="$SRCDIR/${SRCNAM}-${VERSION}.tar.xz"
+# Old stable release URL
 SRCURL[0]="https://commondatastorage.googleapis.com/${SRCNAM}-browser-official/${SRCNAM}-${VERSION}.tar.xz"
+# New stable release URL
+#SRCURL[0]="https://storage.googleapis.com/${SRCNAM}-browser-official/${SRCNAM}-${VERSION}.tar.xz"
+#SRCURL[0]="https://gsdview.appspot.com/${SRCNAM}-browser-official/${SRCNAM}-${VERSION}.tar.xz"
+
+# Pre -release
+#SRCURL[0]="https://github.com/${SRCNAM}-linux-tarballs/${SRCNAM}-tarballs/releases/download/${VERSION}/${SRCNAM}-${VERSION}-linux.tar.xz"
 
 SOURCE[1]="$SRCDIR/widevine-versions.txt"
 SRCURL[1]="https://dl.google.com/widevine-cdm/versions.txt"
@@ -904,6 +909,11 @@ if [ "$ARCH" == "aarch64" ]; then
   ln -s ../../../../devtools-frontend/src/node_modules/@typescript/tsc/bin/tsc \
     third_party/typescript/linux-amd64/src/lib/tsc
 
+  if ! third_party/typescript/linux-amd64/src/lib/tsc --version | grep -q 'Version 6.0.2'; then
+    echo "ERROR: Chromium TypeScript 6.0.2 was not found!"
+    exit 1
+  fi
+
   # Allow TypeScript compiler library definitions from the ARM64 compiler installation.
   sed -i "/'third_party\/node\/node_modules\/',/a\    'third_party/devtools-frontend/src/node_modules/@typescript/tsc/lib/'," \
   tools/typescript/validate_tsconfig.py
@@ -912,11 +922,11 @@ if [ "$ARCH" == "aarch64" ]; then
   mkdir -p node_modules/@typescript/lib-dom
 
   cat > node_modules/@typescript/lib-dom/package.json <<'EOF'
-  {
-    "name": "@typescript/lib-dom",
-    "types": "lib.dom.d.ts"
-  }
-  EOF
+{
+  "name": "@typescript/lib-dom",
+  "types": "lib.dom.d.ts"
+}
+EOF
 
   ln -sf ../../../third_party/typescript/linux-amd64/src/lib/lib.dom.d.ts \
     node_modules/@typescript/lib-dom/lib.dom.d.ts
