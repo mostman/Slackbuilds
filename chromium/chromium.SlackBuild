@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: chromium.SlackBuild,v 1.606 2026/10/30 12:32:33 root Exp root $
+# $Id: chromium.SlackBuild,v 1.586 2026/09/11 18:59:32 root Exp root $
 # Copyright 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026  Eric Hameleers, Eindhoven, NL
 # All rights reserved.
 #
@@ -669,8 +669,8 @@ sed -i third_party/dawn/tools/python/cipd_deps.py \
 
 if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
   # Adjust expectations about where to find the clang libs on Slackware:
-  echo "-- chromium-154-bindgen-custom-toolchain.patch --"
-  cat $SRCDIR/patches/chromium-154-bindgen-custom-toolchain.patch \
+  echo "-- chromium-156-bindgen-custom-toolchain.patch --"
+  cat $SRCDIR/patches/chromium-156-bindgen-custom-toolchain.patch \
     | patch -p1 --verbose 2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
   echo "-- compiler-rt-adjust-paths.patch --"
   cat $SRCDIR/patches/compiler-rt-adjust-paths.patch | patch -p1 --verbose \
@@ -906,6 +906,10 @@ sed -i \
 
 # AArch64-specific fixes.
 if [ "$ARCH" == "aarch64" ]; then
+  # Fix V8 Clang resource directory (Slackware uses /usr/lib64).
+  sed -i \
+    's|$clang_base_path/lib/clang/$clang_version|$clang_base_path/lib64/clang/$clang_version|' \
+    v8/BUILD.gn
 
   # GN bootstrap needs libgcc for __aarch64_ldadd4_* atomic helpers.
   sed -i \
@@ -1672,7 +1676,7 @@ LIBCLANG_PATH="/usr/lib${LIBDIRSUFFIX}" \
 LDFLAGS="$LDFLAGS" \
 LC_ALL=C \
 VERBOSE=1 \
-ninja -C out/Release \
+/usr/bin/ninja -C out/Release \
   chrome chrome_sandbox chromedriver \
   2>&1 | tee $OUTPUT/ninja-${PRGNAM}.log
 
