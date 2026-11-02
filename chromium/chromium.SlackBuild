@@ -948,8 +948,8 @@ EOF
   ln -sf ../../../third_party/typescript/linux-amd64/src/lib/lib.dom.d.ts \
     node_modules/@typescript/lib-dom/lib.dom.d.ts
 
-  # Use Chromium 154 DOM library definitions with AArch64 TypeScript:
-  echo "-- chromium-154-typescript-aarch64-libReplacement.patch --"
+  # Use Chromium 156 DOM library definitions with AArch64 TypeScript:
+  echo "-- chromium-156-typescript-aarch64-libReplacement.patch --"
   cat $SRCDIR/patches/aarch64/chromium-156-typescript-aarch64-libReplacement.patch \
     | patch -p1 --verbose \
     2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
