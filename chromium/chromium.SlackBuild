@@ -1555,7 +1555,8 @@ if [ ! -x $GNBIN 1>/dev/null 2>/dev/null ]; then
       # Build the embedded version. The '--use-custom-libcxx' is required
       # since 153, because gn adopted C++23 features:
       NINJA=/usr/bin/ninja \
-      LDFLAGS="$LDFLAGS" python3 tools/gn/bootstrap/bootstrap.py \
+      LDFLAGS="-L/usr/lib64 -fuse-ld=lld" \
+      python3 tools/gn/bootstrap/bootstrap.py \
         --gn-gen-args="${_gn_bootstrap_conf[*]}" \
         --use-custom-libcxx \
         2>&1 | tee $OUTPUT/gyp-${PRGNAM}.log
