@@ -954,6 +954,16 @@ EOF
     | patch -p1 --verbose \
     2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 
+  # Extract the Chromium-pinned esbuild version from DEPS.
+  ESBUILD_VERSION=$(sed -n \
+    "/'third_party\\/esbuild':/,/^[[:space:]]*},/s/.*'version': '[^@]*@\\([^']*\\)'.*/\\1/p" \
+    third_party/devtools-frontend/src/DEPS | head -n 1)
+
+  if [ -z "$ESBUILD_VERSION" ]; then
+    echo "ERROR: Could not determine esbuild version from DEPS!"
+    exit 1
+  fi
+
   # The bundled esbuild is x86-64; fetch the ARM64 Chromium-pinned version.
   rm -f third_party/devtools-frontend/src/third_party/esbuild/esbuild
 
@@ -962,9 +972,9 @@ EOF
   mkdir -p "$ESBUILD_TMP"
 
   third_party/depot_tools/cipd install \
-    infra/3pp/tools/esbuild/linux-arm64 \
-    version:3@0.28.2.chromium.2 \
-    -root "$ESBUILD_TMP"
+  infra/3pp/tools/esbuild/linux-arm64 \
+  "version:3@$ESBUILD_VERSION" \
+  -root "$ESBUILD_TMP"
 
   cp "$ESBUILD_TMP/esbuild" \
     third_party/devtools-frontend/src/third_party/esbuild/esbuild
@@ -973,6 +983,11 @@ EOF
 
   if ! file third_party/devtools-frontend/src/third_party/esbuild/esbuild | grep -q 'ARM aarch64'; then
     echo "ERROR: ARM64 esbuild was not installed correctly!"
+    exit 1
+  fi
+
+  if [ "$(third_party/devtools-frontend/src/third_party/esbuild/esbuild --version)" != "${ESBUILD_VERSION%%.chromium.*}" ]; then
+    echo "ERROR: Installed esbuild version does not match DEPS!"
     exit 1
   fi
 fi
