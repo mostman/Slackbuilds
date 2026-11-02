@@ -589,6 +589,10 @@ echo "-- chromium-156-crubit.patch --"
 cat $SRCDIR/patches/arch/chromium-156-crubit.patch \
   | patch -p1 --verbose \
   2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
+echo "-- chromium-156-remove-private_verification_tokens.patch --"
+cat $SRCDIR/patches/arch/chromium-156-remove-private_verification_tokens.patch \
+  | patch -p1 --verbose \
+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 echo "-- chromium147_revert-clang-no-lifetime-dse-flag.patch --"
 cat $SRCDIR/patches/chromium147_revert-clang-no-lifetime-dse-flag.patch \
   | patch -p1 --verbose \
@@ -1550,6 +1554,7 @@ if [ ! -x $GNBIN 1>/dev/null 2>/dev/null ]; then
       )
       # Build the embedded version. The '--use-custom-libcxx' is required
       # since 153, because gn adopted C++23 features:
+      NINJA=/usr/bin/ninja \
       LDFLAGS="$LDFLAGS" python3 tools/gn/bootstrap/bootstrap.py \
         --gn-gen-args="${_gn_bootstrap_conf[*]}" \
         --use-custom-libcxx \
