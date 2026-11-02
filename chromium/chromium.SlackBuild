@@ -963,7 +963,7 @@ EOF
 
   third_party/depot_tools/cipd install \
     infra/3pp/tools/esbuild/linux-arm64 \
-    version:3@0.25.1.chromium.2 \
+    version:3@0.28.2.chromium.2 \
     -root "$ESBUILD_TMP"
 
   cp "$ESBUILD_TMP/esbuild" \
