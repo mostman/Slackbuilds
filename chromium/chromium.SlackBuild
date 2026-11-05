@@ -900,12 +900,20 @@ sed -i \
   third_party/protobuf/python/google/protobuf/internal/api_implementation.py
 
 # Fix TypeScript 6.0.2 --isolatedDeclarations diagnostic.
-sed -i \
-  's/readonly response?: DispatchHttpRequestResult,/readonly response?: DispatchHttpRequestResult | undefined,/' \
-  third_party/devtools-frontend/src/front_end/core/host/DispatchHttpRequestClient.ts
+#sed -i \
+#  's/readonly response?: DispatchHttpRequestResult,/readonly response?: DispatchHttpRequestResult | undefined,/' \
+#  third_party/devtools-frontend/src/front_end/core/host/DispatchHttpRequestClient.ts
+# Fix TypeScript 6.0.2 --isolatedDeclarations diagnostic.:
+echo "-- chromium-156-isolatedDeclarations.patch --"
+cat $SRCDIR/patches/arch/chromium-156-isolatedDeclarations.patch \
+  | patch -p1 --verbose \
+  2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
 
 # AArch64-specific fixes.
 if [ "$ARCH" == "aarch64" ]; then
+  # Remove bundeled amd64 to fix v8 gn confution.
+  #rm -f buildtools/linux64/gn
+
   # Fix V8 Clang resource directory (Slackware uses /usr/lib64).
   sed -i \
     's|$clang_base_path/lib/clang/$clang_version|$clang_base_path/lib64/clang/$clang_version|' \
@@ -948,8 +956,8 @@ EOF
   ln -sf ../../../third_party/typescript/linux-amd64/src/lib/lib.dom.d.ts \
     node_modules/@typescript/lib-dom/lib.dom.d.ts
 
-  # Use Chromium 156 DOM library definitions with AArch64 TypeScript:
-  echo "-- chromium-156-typescript-aarch64-libReplacement.patch --"
+  # Use Chromium 154 DOM library definitions with AArch64 TypeScript:
+  echo "-- chromium-154-typescript-aarch64-libReplacement.patch --"
   cat $SRCDIR/patches/aarch64/chromium-156-typescript-aarch64-libReplacement.patch \
     | patch -p1 --verbose \
     2>&1 | tee -a $OUTPUT/patch-${PRGNAM}.log
@@ -1542,6 +1550,8 @@ if [ ! -x $GNBIN 1>/dev/null 2>/dev/null ]; then
     cd $MYCLANG_PATH ; ln -s lld ld ; cd - 1>/dev/null
   fi
 
+  #set -o pipefail
+
   if [ -e tools/gn/build/gen.py ]; then
     if [ "$ARCH" == "aarch64" ]; then
       # Use system toolchain:
@@ -1579,6 +1589,10 @@ if [ ! -x $GNBIN 1>/dev/null 2>/dev/null ]; then
         --gn-gen-args="${_gn_bootstrap_conf[*]}" \
         --use-custom-libcxx \
         2>&1 | tee $OUTPUT/gyp-${PRGNAM}.log
+
+      # Use the newly built ARM64 GN and its shared library.
+      rm -f buildtools/linux64/gn
+      ln -s ../../out/Release/gn buildtools/linux64/gn
     else
       # Build the embedded version.
       # On Slackware 15.0 two flags are required to bootstrap this gn from source:
@@ -1642,10 +1656,14 @@ if [ ${USE_CLANG} -eq 1 ] && [ ${BUILD_CLANG} -eq 0 ]; then
     'host_toolchain="//build/toolchain/linux/unbundle:default"'
   )
 
+  _site_packages=$(python3 -c "import site; print(site.getsitepackages()[0])")
+
   SL_CLANG=$(clang -dumpversion |cut -d. -f1)
   SL_CLANG_RESDIR=$(clang -print-resource-dir)
   _chromium_conf+=(
     "bindgen_libclang_path=\"/usr/lib${LIBDIRSUFFIX}\""
+    "v8_metagen_libclang_so=\"/usr/lib${LIBDIRSUFFIX}/libclang.so\""
+    "v8_metagen_libclang_bindings_dir=\"${_site_packages}\""
     'chrome_pgo_phase=0' # needs newer clang to read the bundled PGO profile
     'clang_base_path="/usr"'
     #"clang_base_path=\"${SL_CLANG_RESDIR}\""
