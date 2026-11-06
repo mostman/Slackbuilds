@@ -1,0 +1,24 @@
+diff -urN a/tools/typescript/ts_library.py b/tools/typescript/ts_library.py
+--- a/tools/typescript/ts_library.py	2026-11-02 23:13:57.039470746 +0100
++++ b/tools/typescript/ts_library.py	2026-11-02 23:16:15.677638476 +0100
+@@ -306,7 +306,11 @@
+ 
+   try:
+     typescript.RunTypeScript(
+-      ['--project', os.path.join(args.gen_dir, tsconfig_file)]
++      [
++        '--project',
++        os.path.join(args.gen_dir, tsconfig_file),
++        '--libReplacement',
++      ]
+     )
+   finally:
+     if args.composite:
+@@ -332,6 +336,7 @@
+       '--project',
+       os.path.join(args.gen_dir, tsconfig_file),
+       '--listFilesOnly',
++      '--libReplacement',
+     ]
+   )
+ 

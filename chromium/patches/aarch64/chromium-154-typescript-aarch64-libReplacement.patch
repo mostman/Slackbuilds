@@ -1,0 +1,24 @@
+diff -urN a/tools/typescript/ts_library.py b/tools/typescript/ts_library.py
+--- a/tools/typescript/ts_library.py	2026-10-04 16:47:42.840196741 +0200
++++ b/tools/typescript/ts_library.py	2026-10-04 17:23:06.694515295 +0200
+@@ -312,7 +312,11 @@
+       import typescript
+ 
+       typescript.RunTypeScript(
+-        ['--project', os.path.join(args.gen_dir, tsconfig_file)]
++        [
++          '--project',
++          os.path.join(args.gen_dir, tsconfig_file),
++          '--libReplacement',
++        ]
+       )
+     else:
+       node.RunNode(
+@@ -348,6 +352,7 @@
+         '--project',
+         os.path.join(args.gen_dir, tsconfig_file),
+         '--listFilesOnly',
++        '--libReplacement',
+       ]
+     )
+   else:
