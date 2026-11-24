@@ -57,7 +57,7 @@ ar -p $CWD/${PRGNAMDEB}-${VERSION}-linux${DEBARCH}.deb data.tar.xz | tar -Jxv
 
 # Prepare urllib3
 mkdir -p $TMP/u3
-pip download urllib3==1.26.20 --no-deps -d /tmp/u3
+pip download urllib3==1.26.20 --no-deps -d $TMP/u3
 cd $TMP/u3 && unzip urllib3-1.26.20*.whl
 
 # Patching for pythomn 3.9.x
